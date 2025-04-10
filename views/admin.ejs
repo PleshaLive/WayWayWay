@@ -7,7 +7,7 @@
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
-  <!-- Шрифт Blender Pro и градиентный фон -->
+  <!-- Шрифт Blender Pro и анимированный градиентный фон -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Blender+Pro:wght@500&display=swap');
 
@@ -26,7 +26,7 @@
       100% { background-position: 0% 50%; }
     }
     .container {
-      max-width: 1400px;
+      max-width: 1440px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -35,7 +35,7 @@
       margin-bottom: 30px;
     }
 
-    /* Кнопки */
+    /* Кнопки наверху */
     .top-buttons {
       text-align: center;
       margin-bottom: 20px;
@@ -55,19 +55,18 @@
       background-color: #005fa3;
     }
 
-    /* Сетка карточек команд */
+    /* Сетка карточек команд: 4 в ряд */
     .teams-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 20px;
-      justify-content: center;
+      margin-top: 20px;
     }
     .team-card {
       background: #2C243B;
       border: 2px solid #503BA9;
       border-radius: 12px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      width: 300px;
       padding: 20px;
       transition: transform 0.5s ease, box-shadow 0.5s ease;
       position: relative;
@@ -106,49 +105,44 @@
       background-color: #005fa3;
     }
 
-    /* Таблица игроков внутри команды */
+    /* Таблица игроков в карточке */
     .players-table {
       width: 100%;
-      border-collapse: collapse;
-      background-color: #1e1e1e;
+      border-collapse: separate;
+      border-spacing: 0 8px; /* расстояние между строками */
       margin-top: 10px;
     }
-    .players-table th, .players-table td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: left;
-      vertical-align: middle;
+    .players-table thead {
+      display: none; /* скрываем шапку, если хотите оставить – уберите это */
+    }
+    .players-table tr {
+      background-color: #3B2C5F; /* темный фиолет, сочетающийся с #2C243B */
+      border-radius: 8px;
+    }
+    .players-table td {
+      border: none;
+      padding: 10px;
+      font-size: 0.95rem;
       color: #e0e0e0;
-      font-size: 0.9rem;
     }
-    .players-table th {
-      background-color: #2e2e2e;
-      text-transform: uppercase;
+    .player-photo img {
+      max-height: 50px;
+      border-radius: 6px;
     }
-    .players-table img {
-      max-height: 40px;
-      vertical-align: middle;
+    .player-name {
+      font-weight: 500;
     }
+    .player-actions {
+      text-align: right;
+    }
+    .player-actions .small-btn {
+      margin: 0 4px;
+    }
+
     .no-players {
       text-align: center; 
       color: #aaa;
       margin-top: 10px;
-    }
-
-    /* Кнопки Edit/Delete в таблице игроков */
-    .small-btn {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      background-color: #007acc;
-      color: #fff;
-      cursor: pointer;
-      font-size: 0.85em;
-      transition: background-color 0.3s ease;
-      margin-right: 5px;
-    }
-    .small-btn:hover {
-      background-color: #005fa3;
     }
 
     /* Модальные окна */
@@ -227,7 +221,7 @@
     <!-- Сетка карточек команд -->
     <div id="teamsGrid" class="teams-grid">
       <% 
-        // Здесь выводим карточки команд с их игроками
+        // Выводим карточки команд, 4 в ряд
         // teams: [{id, name, logo}, ...]
         // players: [{id, name, photo, steamId, teamId}, ...]
       %>
@@ -246,28 +240,23 @@
             <button class="deleteTeam">Delete</button>
           </div>
           
-          <!-- Таблица игроков -->
+          <!-- «Таблица» игроков, но стилизована под список -->
           <% if(teamPlayers.length > 0){ %>
             <table class="players-table">
-              <thead>
-                <tr>
-                  <th>Photo</th>
-                  <th>Name</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
               <tbody>
                 <% teamPlayers.forEach(player => { %>
                   <tr data-id="<%= player.id %>">
-                    <td>
+                    <td class="player-photo">
                       <% if(player.photo){ %>
                         <img src="<%= player.photo %>" alt="<%= player.name %>">
                       <% } else { %>
                         -
                       <% } %>
                     </td>
-                    <td><%= player.name %></td>
-                    <td>
+                    <td class="player-name">
+                      <%= player.name %>
+                    </td>
+                    <td class="player-actions">
                       <button class="editPlayer small-btn">Edit</button>
                       <button class="deletePlayer small-btn">Delete</button>
                     </td>
@@ -276,7 +265,7 @@
               </tbody>
             </table>
           <% } else { %>
-            <p class="no-players">No players</p>
+            <p class="no-players">no players</p>
           <% } %>
         </div>
       <% }); %>
@@ -355,7 +344,6 @@
       $("#playerId").val("");
     }
 
-    // При загрузке
     $(document).ready(function(){
       // Кнопка "Create Team"
       $("#btn-show-team-modal").click(function(){
@@ -431,7 +419,7 @@
             data: { name, logo },
             success: function(){
               hideTeamModal();
-              location.reload(); // перезагружаем для обновления карточек
+              location.reload(); 
             }
           });
         } else {
@@ -471,7 +459,7 @@
         }
       });
 
-      // Редактирование команды (при клике Edit)
+      // Редактирование команды
       $(document).on("click", ".editTeam", function(){
         const card = $(this).closest(".team-card");
         const teamId = card.data("id");
