@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Panel - Manage Teams & Players</title>
-  <!-- Подключаем jQuery -->
+  
+  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- Подключаем шрифт Blender Pro -->
-  <link href="https://fonts.googleapis.com/css2?family=Blender+Pro:wght@500&display=swap" rel="stylesheet">
+  
+  <!-- Шрифт Blender Pro и градиентный фон -->
   <style>
-    /* Общие стили и анимированный градиентный фон */
+    @import url('https://fonts.googleapis.com/css2?family=Blender+Pro:wght@500&display=swap');
+
     body {
       margin: 0;
       padding: 0;
@@ -24,16 +26,35 @@
       100% { background-position: 0% 50%; }
     }
     .container {
-      max-width: 1440px;
-      margin: 20px auto;
+      max-width: 1400px;
+      margin: 0 auto;
       padding: 20px;
     }
     h1 {
       text-align: center;
       margin-bottom: 30px;
-      color: #ffffff;
     }
-    
+
+    /* Кнопки */
+    .top-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .top-buttons .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007acc;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      margin: 0 5px;
+      transition: background-color 0.3s ease;
+    }
+    .top-buttons .btn:hover {
+      background-color: #005fa3;
+    }
+
     /* Сетка карточек команд */
     .teams-grid {
       display: flex;
@@ -49,6 +70,7 @@
       width: 300px;
       padding: 20px;
       transition: transform 0.5s ease, box-shadow 0.5s ease;
+      position: relative;
     }
     .team-card:hover {
       transform: translateY(-10px);
@@ -58,21 +80,20 @@
       font-size: 1.5rem;
       margin: 0 0 15px;
       text-align: center;
-      color: #ffffff;
     }
     .team-logo {
       display: block;
       margin: 0 auto 15px;
-      max-height: 100px;
+      max-height: 80px;
     }
     .team-actions {
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
     .team-actions button {
-      padding: 5px 10px;
+      padding: 6px 12px;
       border: none;
       border-radius: 4px;
       background-color: #007acc;
@@ -84,37 +105,39 @@
     .team-actions button:hover {
       background-color: #005fa3;
     }
-    
-    /* Стили для списка игроков внутри команды */
-    .players-list {
-      margin-top: 10px;
-    }
-    .players-list table {
+
+    /* Таблица игроков внутри команды */
+    .players-table {
       width: 100%;
       border-collapse: collapse;
       background-color: #1e1e1e;
+      margin-top: 10px;
     }
-    .players-list th, .players-list td {
+    .players-table th, .players-table td {
       border: 1px solid #333;
       padding: 8px;
       text-align: left;
       vertical-align: middle;
-      font-size: 0.9rem;
       color: #e0e0e0;
+      font-size: 0.9rem;
     }
-    .players-list th {
+    .players-table th {
       background-color: #2e2e2e;
       text-transform: uppercase;
     }
-    .players-list img {
+    .players-table img {
       max-height: 40px;
       vertical-align: middle;
     }
-    
-    /* Кнопки small-btn для игроков */
+    .no-players {
+      text-align: center; 
+      color: #aaa;
+      margin-top: 10px;
+    }
+
+    /* Кнопки Edit/Delete в таблице игроков */
     .small-btn {
       padding: 5px 10px;
-      margin-right: 5px;
       border: none;
       border-radius: 4px;
       background-color: #007acc;
@@ -122,8 +145,71 @@
       cursor: pointer;
       font-size: 0.85em;
       transition: background-color 0.3s ease;
+      margin-right: 5px;
     }
     .small-btn:hover {
+      background-color: #005fa3;
+    }
+
+    /* Модальные окна */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal {
+      background: #1e1e1e;
+      border: 2px solid #503BA9;
+      border-radius: 12px;
+      padding: 20px;
+      width: 400px;
+      position: relative;
+    }
+    .modal h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .close-modal {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: transparent;
+      border: none;
+      color: #bbb;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .modal label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 500;
+    }
+    .modal input[type="text"],
+    .modal input[type="file"],
+    .modal select {
+      width: 100%;
+      padding: 8px;
+      background-color: #2e2e2e;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #e0e0e0;
+    }
+    .modal button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007acc;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+    .modal button:hover {
       background-color: #005fa3;
     }
   </style>
@@ -132,12 +218,21 @@
   <div class="container">
     <h1>Admin Panel</h1>
     
-    <!-- Карточки команд, выводимые в сетке -->
-    <div class="teams-grid">
-      <% teams.forEach(function(team) { 
-           var teamPlayers = players.filter(function(player) { 
-             return player.teamId == team.id;
-           });
+    <!-- Кнопки наверху: создать команду, создать игрока -->
+    <div class="top-buttons">
+      <button id="btn-show-team-modal" class="btn">Create Team</button>
+      <button id="btn-show-player-modal" class="btn">Create Player</button>
+    </div>
+
+    <!-- Сетка карточек команд -->
+    <div id="teamsGrid" class="teams-grid">
+      <% 
+        // Здесь выводим карточки команд с их игроками
+        // teams: [{id, name, logo}, ...]
+        // players: [{id, name, photo, steamId, teamId}, ...]
+      %>
+      <% teams.forEach(team => {
+           const teamPlayers = players.filter(p => p.teamId === team.id);
       %>
         <div class="team-card" data-id="<%= team.id %>">
           <h2><%= team.name %></h2>
@@ -147,72 +242,294 @@
             <p style="text-align:center; color:#aaa;">No Logo</p>
           <% } %>
           <div class="team-actions">
-            <button class="editTeam small-btn">Edit</button>
-            <button class="deleteTeam small-btn">Delete</button>
+            <button class="editTeam">Edit</button>
+            <button class="deleteTeam">Delete</button>
           </div>
-          <div class="players-list">
-            <% if(teamPlayers.length > 0){ %>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Weapon Type</th>
-                    <th>Name</th>
-                    <th>Actions</th>
+          
+          <!-- Таблица игроков -->
+          <% if(teamPlayers.length > 0){ %>
+            <table class="players-table">
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% teamPlayers.forEach(player => { %>
+                  <tr data-id="<%= player.id %>">
+                    <td>
+                      <% if(player.photo){ %>
+                        <img src="<%= player.photo %>" alt="<%= player.name %>">
+                      <% } else { %>
+                        -
+                      <% } %>
+                    </td>
+                    <td><%= player.name %></td>
+                    <td>
+                      <button class="editPlayer small-btn">Edit</button>
+                      <button class="deletePlayer small-btn">Delete</button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  <% teamPlayers.forEach(function(player){ %>
-                    <tr data-id="<%= player.id %>">
-                      <td><%= player.weapontype ? player.weapontype : '-' %></td>
-                      <td><%= player.name %></td>
-                      <td>
-                        <button class="editPlayer small-btn">Edit</button>
-                        <button class="deletePlayer small-btn">Delete</button>
-                      </td>
-                    </tr>
-                  <% }); %>
-                </tbody>
-              </table>
-            <% } else { %>
-              <p style="text-align:center; color:#aaa;">No players</p>
-            <% } %>
-          </div>
+                <% }); %>
+              </tbody>
+            </table>
+          <% } else { %>
+            <p class="no-players">No players</p>
+          <% } %>
         </div>
       <% }); %>
     </div>
   </div>
-  
-  <script>
-    $(document).ready(function(){
-      // Обработчик редактирования команды
-      $(document).on("click", ".editTeam", function(){
-        var teamId = $(this).closest(".team-card").data("id");
-        alert("Edit team with ID: " + teamId);
-        // Здесь можно добавить AJAX-запрос или открыть модальное окно для редактирования
-      });
+
+  <!-- Модальное окно для создания/редактирования команды -->
+  <div id="teamModalBackdrop" class="modal-backdrop">
+    <div class="modal" id="teamModal">
+      <button class="close-modal" id="closeTeamModal">&times;</button>
+      <h2 id="teamModalTitle">Create Team</h2>
       
-      // Обработчик удаления команды
-      $(document).on("click", ".deleteTeam", function(){
-        var teamId = $(this).closest(".team-card").data("id");
-        if(confirm("Delete team " + teamId + "?")){
-          // AJAX DELETE-запрос сюда
-          alert("Team " + teamId + " deleted (simulate)");
+      <!-- Форма загрузки логотипа -->
+      <label>Logo File:
+        <input type="file" id="teamLogoFile" accept="image/*">
+      </label>
+      <button type="button" id="uploadTeamLogoBtn">Upload Logo</button>
+      
+      <form id="teamForm">
+        <input type="hidden" name="id" id="teamId">
+        <label>Name: <input type="text" name="name" id="teamName" required></label>
+        <label>Logo URL: <input type="text" name="logo" id="teamLogo"></label>
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно для создания/редактирования игрока -->
+  <div id="playerModalBackdrop" class="modal-backdrop">
+    <div class="modal" id="playerModal">
+      <button class="close-modal" id="closePlayerModal">&times;</button>
+      <h2 id="playerModalTitle">Create Player</h2>
+      
+      <!-- Форма загрузки фото -->
+      <label>Photo File:
+        <input type="file" id="playerPhotoFile" accept="image/*">
+      </label>
+      <button type="button" id="uploadPlayerPhotoBtn">Upload Photo</button>
+      
+      <form id="playerForm">
+        <input type="hidden" name="id" id="playerId">
+        <label>Name: <input type="text" name="name" id="playerName" required></label>
+        <label>Steam ID: <input type="text" name="steamId" id="playerSteamId"></label>
+        <label>Photo URL: <input type="text" name="photo" id="playerPhoto"></label>
+        <label>Team:
+          <select id="playerTeamId" name="teamId">
+            <option value="">--None--</option>
+            <% teams.forEach(function(team){ %>
+              <option value="<%= team.id %>"><%= team.name %></option>
+            <% }); %>
+          </select>
+        </label>
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Открытие/закрытие модалок
+    function showTeamModal(editMode = false) {
+      $("#teamModalTitle").text(editMode ? "Edit Team" : "Create Team");
+      $("#teamModalBackdrop").css("display","flex");
+    }
+    function hideTeamModal() {
+      $("#teamModalBackdrop").hide();
+      $("#teamForm")[0].reset();
+      $("#teamId").val("");
+    }
+    function showPlayerModal(editMode = false) {
+      $("#playerModalTitle").text(editMode ? "Edit Player" : "Create Player");
+      $("#playerModalBackdrop").css("display","flex");
+    }
+    function hidePlayerModal() {
+      $("#playerModalBackdrop").hide();
+      $("#playerForm")[0].reset();
+      $("#playerId").val("");
+    }
+
+    // При загрузке
+    $(document).ready(function(){
+      // Кнопка "Create Team"
+      $("#btn-show-team-modal").click(function(){
+        showTeamModal(false);
+      });
+      // Кнопка "Create Player"
+      $("#btn-show-player-modal").click(function(){
+        showPlayerModal(false);
+      });
+      // Закрытие модалок
+      $("#closeTeamModal").click(function(){ hideTeamModal(); });
+      $("#closePlayerModal").click(function(){ hidePlayerModal(); });
+
+      // Загрузка логотипа команды (запись в #teamLogo)
+      $("#uploadTeamLogoBtn").click(function(){
+        const fileInput = $("#teamLogoFile")[0];
+        if (!fileInput.files.length) {
+          alert("No file selected");
+          return;
+        }
+        const formData = new FormData();
+        formData.append('logoFile', fileInput.files[0]);
+        $.ajax({
+          url: '/api/teams/uploadLogo',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+            $("#teamLogo").val(response.path); 
+          },
+          error: function() {
+            alert("Error uploading file");
+          }
+        });
+      });
+
+      // Загрузка фото игрока (запись в #playerPhoto)
+      $("#uploadPlayerPhotoBtn").click(function(){
+        const fileInput = $("#playerPhotoFile")[0];
+        if (!fileInput.files.length) {
+          alert("No file selected");
+          return;
+        }
+        const formData = new FormData();
+        formData.append('photoFile', fileInput.files[0]);
+        $.ajax({
+          url: '/api/players/uploadPhoto',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+            $("#playerPhoto").val(response.path);
+          },
+          error: function() {
+            alert("Error uploading photo");
+          }
+        });
+      });
+
+      // Сабмит формы команды
+      $("#teamForm").submit(function(e){
+        e.preventDefault();
+        const id = $("#teamId").val();
+        const name = $("#teamName").val();
+        const logo = $("#teamLogo").val();
+        if(id){
+          // Update existing
+          $.ajax({
+            url: "/api/teams/" + id,
+            type: "PUT",
+            data: { name, logo },
+            success: function(){
+              hideTeamModal();
+              location.reload(); // перезагружаем для обновления карточек
+            }
+          });
+        } else {
+          // Create new
+          $.post("/api/teams", { name, logo }, function(){
+            hideTeamModal();
+            location.reload();
+          });
         }
       });
-      
-      // Обработчик редактирования игрока
-      $(document).on("click", ".editPlayer", function(){
-        var playerId = $(this).closest("tr").data("id");
-        alert("Edit player with ID: " + playerId);
-        // Здесь можно добавить AJAX-запрос или модальное окно для редактирования игрока
+
+      // Сабмит формы игрока
+      $("#playerForm").submit(function(e){
+        e.preventDefault();
+        const id = $("#playerId").val();
+        const name = $("#playerName").val();
+        const steamId = $("#playerSteamId").val();
+        const photo = $("#playerPhoto").val();
+        const teamId = $("#playerTeamId").val();
+        if(id){
+          // Update
+          $.ajax({
+            url: "/api/players/" + id,
+            type: "PUT",
+            data: { name, steamId, photo, teamId },
+            success: function(){
+              hidePlayerModal();
+              location.reload();
+            }
+          });
+        } else {
+          // Create
+          $.post("/api/players", { name, steamId, photo, teamId }, function(){
+            hidePlayerModal();
+            location.reload();
+          });
+        }
       });
-      
-      // Обработчик удаления игрока
+
+      // Редактирование команды (при клике Edit)
+      $(document).on("click", ".editTeam", function(){
+        const card = $(this).closest(".team-card");
+        const teamId = card.data("id");
+        $.get("/api/teams", function(data){
+          const team = data.find(t => t.id == teamId);
+          if(team){
+            $("#teamId").val(team.id);
+            $("#teamName").val(team.name);
+            $("#teamLogo").val(team.logo);
+            showTeamModal(true);
+          }
+        });
+      });
+
+      // Удаление команды
+      $(document).on("click", ".deleteTeam", function(){
+        const card = $(this).closest(".team-card");
+        const teamId = card.data("id");
+        if(confirm("Delete team " + teamId + "?")){
+          $.ajax({
+            url: "/api/teams/" + teamId,
+            type: "DELETE",
+            success: function(){
+              location.reload();
+            }
+          });
+        }
+      });
+
+      // Редактирование игрока
+      $(document).on("click", ".editPlayer", function(){
+        const row = $(this).closest("tr");
+        const playerId = row.data("id");
+        $.get("/api/players", function(data){
+          const player = data.find(p => p.id == playerId);
+          if(player){
+            $("#playerId").val(player.id);
+            $("#playerName").val(player.name);
+            $("#playerSteamId").val(player.steamId);
+            $("#playerPhoto").val(player.photo);
+            $("#playerTeamId").val(player.teamId);
+            showPlayerModal(true);
+          }
+        });
+      });
+
+      // Удаление игрока
       $(document).on("click", ".deletePlayer", function(){
-        var playerId = $(this).closest("tr").data("id");
+        const row = $(this).closest("tr");
+        const playerId = row.data("id");
         if(confirm("Delete player " + playerId + "?")){
-          // AJAX DELETE-запрос сюда
-          alert("Player " + playerId + " deleted (simulate)");
+          $.ajax({
+            url: "/api/players/" + playerId,
+            type: "DELETE",
+            success: function(){
+              location.reload();
+            }
+          });
         }
       });
     });
