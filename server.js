@@ -99,7 +99,7 @@ const uploadPlayers = multer({ storage: storagePlayers });
 // ------------------------------
 // Предопределённые пути для Side_logo и winType_logo
 // ------------------------------
-const baseUrl = process.env.BASE_URL || 'C:\\projects\\vMix_score\\public';
+const baseUrl = process.env.BASE_URL || 'https://waywayway-production.up.railway.app';
 const sideLogos = {
   "CT": `${baseUrl}/side_logos/ct.png`,
   "T":  `${baseUrl}/side_logos/t.png`
