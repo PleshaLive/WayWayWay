@@ -99,7 +99,7 @@ const uploadPlayers = multer({ storage: storagePlayers });
 // ------------------------------
 // Предопределённые пути для Side_logo и winType_logo
 // ------------------------------
-const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
+const baseUrl = process.env.BASE_URL || 'C:\\projects\\vMix_score\\public';
 const sideLogos = {
   "CT": `${baseUrl}/side_logos/ct.png`,
   "T":  `${baseUrl}/side_logos/t.png`
@@ -116,8 +116,7 @@ const winTypeLogos = {
 const defaultSideLogo = `${baseUrl}/side_logos/none.png`;
 const defaultWinTypeLogo = `${baseUrl}/winType_logos/none.png`;
 const defaultImage = `${baseUrl}/None.png`; // для команд, если не найден логотип
-const defaultPlayerImage = `${baseUrl}/NoneP.png`; // для игрока, если фото не задано
-
+const defaultPlayerImage = path.join(baseUrl, 'NoneP.png');
 // ------------------------------
 // 1) Обновлённая функция для определения кол-ва сыгранных раундов
 // ------------------------------
@@ -570,8 +569,10 @@ app.get('/score', (req, res) => {
       const assists = player.match_stats ? player.match_stats.assists : 0;
       const deaths = player.match_stats ? player.match_stats.deaths : 0;
       const adr = getAverageDamage(steamId);
-      const photoFull = player.photo ? `${baseUrl}${player.photo}` : defaultPlayerImage;
-      
+      const photoFull = player.photo 
+      ? path.join(baseUrl, player.photo.replace(/^\//, ''))
+      : defaultPlayerImage;
+    
       const playerData = {
         steamId,
         name: player.name,
