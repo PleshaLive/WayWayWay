@@ -5,81 +5,113 @@
   <title>Admin Panel - Manage Teams & Players</title>
   <!-- Подключаем jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
+  <!-- Подключаем шрифт Blender Pro -->
+  <link href="https://fonts.googleapis.com/css2?family=Blender+Pro:wght@500&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
+    /* Общие стили и анимированный градиентный фон */
     body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #121212;
-      color: #e0e0e0;
       margin: 0;
       padding: 0;
+      background: linear-gradient(-45deg, #1E1E1E, #2C243B, #1E1E1E, #2C243B);
+      background-size: 600% 600%;
+      animation: gradientBG 20s ease infinite;
+      font-family: 'Blender Pro', Arial, sans-serif;
+      color: #e0e0e0;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
     .container {
-      max-width: 1200px;
+      max-width: 1440px;
       margin: 20px auto;
       padding: 20px;
     }
-    h1, h2 {
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #ffffff;
+    }
+    
+    /* Сетка карточек команд */
+    .teams-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .team-card {
+      background: #2C243B;
+      border: 2px solid #503BA9;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      width: 300px;
+      padding: 20px;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+    .team-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+    }
+    .team-card h2 {
+      font-size: 1.5rem;
+      margin: 0 0 15px;
       text-align: center;
       color: #ffffff;
     }
-    .section {
-      background-color: #1e1e1e;
-      padding: 20px;
-      margin-bottom: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    form { margin-bottom: 20px; }
-    form label {
+    .team-logo {
       display: block;
-      margin: 10px 0 5px;
-      font-weight: 500;
+      margin: 0 auto 15px;
+      max-height: 100px;
     }
-    form input[type="text"],
-    form input[type="number"],
-    form input[type="file"],
-    form select {
-      width: 100%;
-      padding: 8px;
-      background-color: #2e2e2e;
-      border: 1px solid #444;
-      border-radius: 4px;
-      color: #e0e0e0;
+    .team-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
     }
-    form button {
-      padding: 10px 20px;
-      margin-top: 10px;
+    .team-actions button {
+      padding: 5px 10px;
       border: none;
       border-radius: 4px;
       background-color: #007acc;
       color: #fff;
       cursor: pointer;
-      font-weight: 500;
+      font-size: 0.85em;
       transition: background-color 0.3s ease;
     }
-    form button:hover {
+    .team-actions button:hover {
       background-color: #005fa3;
     }
-    table {
+    
+    /* Стили для списка игроков внутри команды */
+    .players-list {
+      margin-top: 10px;
+    }
+    .players-list table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
       background-color: #1e1e1e;
     }
-    table th, table td {
+    .players-list th, .players-list td {
       border: 1px solid #333;
-      padding: 10px;
+      padding: 8px;
       text-align: left;
       vertical-align: middle;
+      font-size: 0.9rem;
+      color: #e0e0e0;
     }
-    table th {
+    .players-list th {
       background-color: #2e2e2e;
+      text-transform: uppercase;
     }
-    table tr:nth-child(even) {
-      background-color: #181818;
+    .players-list img {
+      max-height: 40px;
+      vertical-align: middle;
     }
+    
+    /* Кнопки small-btn для игроков */
     .small-btn {
       padding: 5px 10px;
       margin-right: 5px;
@@ -94,340 +126,95 @@
     .small-btn:hover {
       background-color: #005fa3;
     }
-    img { max-height: 40px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Admin Panel</h1>
     
-    <!-- Управление командами -->
-    <div class="section" id="teamsSection">
-      <h2>Manage Teams</h2>
-      <!-- Форма для загрузки логотипа команды -->
-      <div style="margin-bottom: 10px;">
-        <label>Logo File:
-          <input type="file" id="teamLogoFile" name="logoFile" accept="image/*">
-        </label>
-        <button type="button" id="uploadTeamLogoBtn" class="small-btn">Upload Logo</button>
-      </div>
-      <form id="teamForm">
-        <input type="hidden" name="id" id="teamId">
-        <label>Name: <input type="text" name="name" id="teamName" required></label>
-        <label>Logo URL: <input type="text" name="logo" id="teamLogo"></label>
-        <button type="submit">Save Team</button>
-        <button type="button" id="resetTeamForm">Reset</button>
-      </form>
-      <table id="teamsTable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Logo</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% teams.forEach(function(team){ %>
-            <tr data-id="<%= team.id %>">
-              <td><%= team.id %></td>
-              <td><%= team.name %></td>
-              <td>
-                <% if(team.logo){ %>
-                  <img src="<%= team.logo %>" alt="Logo">
-                <% } %>
-              </td>
-              <td>
-                <button class="editTeam small-btn">Edit</button>
-                <button class="deleteTeam small-btn">Delete</button>
-              </td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    </div>
-    
-    <!-- Управление игроками -->
-    <div class="section" id="playersSection">
-      <h2>Manage Players</h2>
-      <!-- Форма для загрузки фотографии игрока -->
-      <div style="margin-bottom: 10px;">
-        <label>Photo File:
-          <input type="file" id="playerPhotoFile" name="photoFile" accept="image/*">
-        </label>
-        <button type="button" id="uploadPlayerPhotoBtn" class="small-btn">Upload Photo</button>
-      </div>
-      <form id="playerForm">
-        <input type="hidden" name="id" id="playerId">
-        <label>Name: <input type="text" name="name" id="playerName" required></label>
-        <label>Steam ID: <input type="text" name="steamId" id="playerSteamId"></label>
-        <label>Photo URL: <input type="text" name="photo" id="playerPhoto"></label>
-        <label>Team:
-          <select id="playerTeamId" name="teamId">
-            <option value="">--None--</option>
-            <% teams.forEach(function(team){ %>
-              <option value="<%= team.id %>"><%= team.name %></option>
-            <% }); %>
-          </select>
-        </label>
-        <button type="submit">Save Player</button>
-        <button type="button" id="resetPlayerForm">Reset</button>
-      </form>
-      <table id="playersTable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Steam ID</th>
-            <th>Photo</th>
-            <th>Team</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% players.forEach(function(player){ %>
-            <tr data-id="<%= player.id %>">
-              <td><%= player.id %></td>
-              <td><%= player.name %></td>
-              <td><%= player.steamId %></td>
-              <td>
-                <% if(player.photo){ %>
-                  <img src="<%= player.photo %>" alt="Photo">
-                <% } %>
-              </td>
-              <td>
-                <% 
-                  var teamObj = teams.find(t => t.id === player.teamId);
-                  if(teamObj){ %>
-                    <img src="<%= teamObj.logo %>" alt="Logo" style="max-height:30px; vertical-align:middle;"> <%= teamObj.name %>
-                <% } else { %>
-                    -
-                <% } %>
-              </td>
-              <td>
-                <button class="editPlayer small-btn">Edit</button>
-                <button class="deletePlayer small-btn">Delete</button>
-              </td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    </div>
-    
-  </div>
-
-  <script>
-    $(document).ready(function(){
-      function refreshTeams(){
-        $.get("/api/teams", function(data){
-          let tbody = "";
-          data.forEach(team => {
-            tbody += `<tr data-id="${team.id}">
-                        <td>${team.id}</td>
-                        <td>${team.name}</td>
-                        <td>${team.logo ? `<img src="${team.logo}" alt="Logo">` : ''}</td>
-                        <td>
-                          <button class="editTeam small-btn">Edit</button>
-                          <button class="deleteTeam small-btn">Delete</button>
-                        </td>
-                      </tr>`;
-          });
-          $("#teamsTable tbody").html(tbody);
-          let options = `<option value="">--None--</option>`;
-          data.forEach(team => {
-            options += `<option value="${team.id}">${team.name}</option>`;
-          });
-          $("#playerTeamId").html(options);
-        });
-      }
-  
-      function refreshPlayers(){
-        $.get("/api/players", function(data){
-          let tbody = "";
-          data.forEach(player => {
-            tbody += `<tr data-id="${player.id}">
-                        <td>${player.id}</td>
-                        <td>${player.name}</td>
-                        <td>${player.steamId}</td>
-                        <td>${player.photo ? `<img src="${player.photo}" alt="Photo">` : ''}</td>`;
-            tbody += `<td>`;
-            let teamObj = teams.find(t => t.id === player.teamId);
-            if(teamObj){
-              tbody += `<img src="${teamObj.logo}" alt="Logo" style="max-height:30px; vertical-align:middle;"> ${teamObj.name}`;
-            } else {
-              tbody += `-`;
-            }
-            tbody += `</td>`;
-            tbody += `<td>
+    <!-- Карточки команд, выводимые в сетке -->
+    <div class="teams-grid">
+      <% teams.forEach(function(team) { 
+           var teamPlayers = players.filter(function(player) { 
+             return player.teamId == team.id;
+           });
+      %>
+        <div class="team-card" data-id="<%= team.id %>">
+          <h2><%= team.name %></h2>
+          <% if(team.logo){ %>
+            <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo">
+          <% } else { %>
+            <p style="text-align:center; color:#aaa;">No Logo</p>
+          <% } %>
+          <div class="team-actions">
+            <button class="editTeam small-btn">Edit</button>
+            <button class="deleteTeam small-btn">Delete</button>
+          </div>
+          <div class="players-list">
+            <% if(teamPlayers.length > 0){ %>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Weapon Type</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% teamPlayers.forEach(function(player){ %>
+                    <tr data-id="<%= player.id %>">
+                      <td><%= player.weapontype ? player.weapontype : '-' %></td>
+                      <td><%= player.name %></td>
+                      <td>
                         <button class="editPlayer small-btn">Edit</button>
                         <button class="deletePlayer small-btn">Delete</button>
                       </td>
-                    </tr>`;
-          });
-          $("#playersTable tbody").html(tbody);
-        });
-      }
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            <% } else { %>
+              <p style="text-align:center; color:#aaa;">No players</p>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
   
-      // Загрузка логотипа команды
-      $("#uploadTeamLogoBtn").click(function(){
-        const fileInput = $("#teamLogoFile")[0];
-        if (!fileInput.files.length) {
-          alert("No file selected");
-          return;
-        }
-        const formData = new FormData();
-        formData.append('logoFile', fileInput.files[0]);
-        $.ajax({
-          url: '/api/teams/uploadLogo',
-          type: 'POST',
-          data: formData,
-          contentType: false,
-          processData: false,
-          success: function(response) {
-            $("#teamLogo").val(response.path);
-          },
-          error: function() {
-            alert("Error uploading file");
-          }
-        });
-      });
-  
-      // Загрузка фото игрока
-      $("#uploadPlayerPhotoBtn").click(function(){
-        const fileInput = $("#playerPhotoFile")[0];
-        if (!fileInput.files.length) {
-          alert("No file selected");
-          return;
-        }
-        const formData = new FormData();
-        formData.append('photoFile', fileInput.files[0]);
-        $.ajax({
-          url: '/api/players/uploadPhoto',
-          type: 'POST',
-          data: formData,
-          contentType: false,
-          processData: false,
-          success: function(response) {
-            $("#playerPhoto").val(response.path);
-          },
-          error: function() {
-            alert("Error uploading photo");
-          }
-        });
-      });
-  
-      $("#teamForm").submit(function(e){
-        e.preventDefault();
-        const id = $("#teamId").val();
-        const name = $("#teamName").val();
-        const logo = $("#teamLogo").val();
-        if(id){
-          $.ajax({
-            url: "/api/teams/" + id,
-            type: "PUT",
-            data: { name, logo },
-            success: function(){
-              refreshTeams();
-              $("#teamForm")[0].reset();
-            }
-          });
-        } else {
-          $.post("/api/teams", { name, logo }, function(){
-            refreshTeams();
-            $("#teamForm")[0].reset();
-          });
-        }
-      });
-  
+  <script>
+    $(document).ready(function(){
+      // Обработчик редактирования команды
       $(document).on("click", ".editTeam", function(){
-        const row = $(this).closest("tr");
-        const id = row.data("id");
-        $.get("/api/teams", function(data){
-          const team = data.find(t => t.id == id);
-          if(team){
-            $("#teamId").val(team.id);
-            $("#teamName").val(team.name);
-            $("#teamLogo").val(team.logo);
-          }
-        });
+        var teamId = $(this).closest(".team-card").data("id");
+        alert("Edit team with ID: " + teamId);
+        // Здесь можно добавить AJAX-запрос или открыть модальное окно для редактирования
       });
-  
+      
+      // Обработчик удаления команды
       $(document).on("click", ".deleteTeam", function(){
-        if(confirm("Delete team?")){
-          const id = $(this).closest("tr").data("id");
-          $.ajax({
-            url: "/api/teams/" + id,
-            type: "DELETE",
-            success: function(){
-              refreshTeams();
-              refreshPlayers();
-            }
-          });
+        var teamId = $(this).closest(".team-card").data("id");
+        if(confirm("Delete team " + teamId + "?")){
+          // AJAX DELETE-запрос сюда
+          alert("Team " + teamId + " deleted (simulate)");
         }
       });
-  
-      $("#playerForm").submit(function(e){
-        e.preventDefault();
-        const id = $("#playerId").val();
-        const name = $("#playerName").val();
-        const steamId = $("#playerSteamId").val();
-        const photo = $("#playerPhoto").val();
-        const teamId = $("#playerTeamId").val();
-        if(id){
-          $.ajax({
-            url: "/api/players/" + id,
-            type: "PUT",
-            data: { name, steamId, photo, teamId },
-            success: function(){
-              refreshPlayers();
-              $("#playerForm")[0].reset();
-            }
-          });
-        } else {
-          $.post("/api/players", { name, steamId, photo, teamId }, function(){
-            refreshPlayers();
-            $("#playerForm")[0].reset();
-          });
-        }
-      });
-  
+      
+      // Обработчик редактирования игрока
       $(document).on("click", ".editPlayer", function(){
-        const row = $(this).closest("tr");
-        const id = row.data("id");
-        $.get("/api/players", function(data){
-          const player = data.find(p => p.id == id);
-          if(player){
-            $("#playerId").val(player.id);
-            $("#playerName").val(player.name);
-            $("#playerSteamId").val(player.steamId);
-            $("#playerPhoto").val(player.photo);
-            $("#playerTeamId").val(player.teamId);
-          }
-        });
+        var playerId = $(this).closest("tr").data("id");
+        alert("Edit player with ID: " + playerId);
+        // Здесь можно добавить AJAX-запрос или модальное окно для редактирования игрока
       });
-  
+      
+      // Обработчик удаления игрока
       $(document).on("click", ".deletePlayer", function(){
-        if(confirm("Delete player?")){
-          const id = $(this).closest("tr").data("id");
-          $.ajax({
-            url: "/api/players/" + id,
-            type: "DELETE",
-            success: function(){
-              refreshPlayers();
-            }
-          });
+        var playerId = $(this).closest("tr").data("id");
+        if(confirm("Delete player " + playerId + "?")){
+          // AJAX DELETE-запрос сюда
+          alert("Player " + playerId + " deleted (simulate)");
         }
       });
-  
-      $("#resetTeamForm").click(function(){
-        $("#teamForm")[0].reset();
-      });
-      $("#resetPlayerForm").click(function(){
-        $("#playerForm")[0].reset();
-      });
-  
-      refreshTeams();
-      refreshPlayers();
     });
   </script>
 </body>
