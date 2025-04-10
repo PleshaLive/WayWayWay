@@ -1,0 +1,1240 @@
+{
+  "teams": [
+    {
+      "id": "1741167069740",
+      "name": "9iNE",
+      "logo": "/logos/1741216671560-9INE.png",
+      "score": 0
+    },
+    {
+      "id": "1741167466408",
+      "name": "GTZ",
+      "logo": "/logos/1741553854843-GTZ.ESPORTS.png",
+      "score": 0
+    },
+    {
+      "id": "1741168676933",
+      "name": "TNL",
+      "logo": "/logos/1744296596920-TNL.png",
+      "score": 0
+    },
+    {
+      "id": "1741169196086",
+      "name": "SkyFury",
+      "logo": "/logos/1744209187862-SkyFury.png",
+      "score": 0
+    },
+    {
+      "id": "1741686771770",
+      "name": "GUN5",
+      "logo": "/logos/1741686770162-GUN5.png",
+      "score": 0
+    },
+    {
+      "id": "1741686782051",
+      "name": "Aurora",
+      "logo": "/logos/1741686851236-Aurora.png",
+      "score": 0
+    },
+    {
+      "id": "1741686867446",
+      "name": "Sashi",
+      "logo": "/logos/1741686865983-Sashi Esport.png",
+      "score": 0
+    },
+    {
+      "id": "1741686877630",
+      "name": "Alliance",
+      "logo": "/logos/1741686876767-Alliance.png",
+      "score": 0
+    },
+    {
+      "id": "1741686886864",
+      "name": "ALASKA",
+      "logo": "/logos/1741686886125-ALASKA.png",
+      "score": 0
+    },
+    {
+      "id": "1741686907133",
+      "name": "Monte",
+      "logo": "/logos/1741686906029-Monte.png",
+      "score": 0
+    },
+    {
+      "id": "1741686922092",
+      "name": "Zero Tenacity",
+      "logo": "/logos/1741686934645-Zero Tenacity.png",
+      "score": 0
+    },
+    {
+      "id": "1741723524749",
+      "name": "RUSH B",
+      "logo": "/logos/1741723523670-RUSH B.png",
+      "score": 0
+    },
+    {
+      "id": "1741744617807",
+      "name": "Fire Flux",
+      "logo": "/logos/1741744617164-Fire Flux.png",
+      "score": 0
+    },
+    {
+      "id": "1741816438639",
+      "name": "WildLotus",
+      "logo": "/logos/1741816437495-Wild Lotus.png",
+      "score": 0
+    },
+    {
+      "id": "1741833056251",
+      "name": "ECSTATIC",
+      "logo": "/logos/1741833053175-ECSTATIC.png",
+      "score": 0
+    },
+    {
+      "id": "1741842995229",
+      "name": "Chimera",
+      "logo": "/logos/1741842994524-Chimera.png",
+      "score": 0
+    },
+    {
+      "id": "1741843023650",
+      "name": "FAVBET Team",
+      "logo": "/logos/1741843022649-FAVBET.png",
+      "score": 0
+    },
+    {
+      "id": "1741901301610",
+      "name": "OG",
+      "logo": "/logos/1741901301007-OG.png",
+      "score": 0
+    },
+    {
+      "id": "1741901326769",
+      "name": "Apogee",
+      "logo": "/logos/1741901326055-Apogee.png",
+      "score": 0
+    },
+    {
+      "id": "1742925193043",
+      "name": "Passion UA",
+      "logo": "/logos/1742925192172-Passion UA.png",
+      "score": 0
+    },
+    {
+      "id": "1742992319651",
+      "name": "Nexus",
+      "logo": "/logos/1742992319258-Nexus.png",
+      "score": 0
+    },
+    {
+      "id": "1743008208545",
+      "name": "fnatic",
+      "logo": "/logos/1743008208203-Fnatic.png",
+      "score": 0
+    },
+    {
+      "id": "1743020192913",
+      "name": "Partizan",
+      "logo": "/logos/1743020192042-Partizan Esports.png",
+      "score": 0
+    },
+    {
+      "id": "1743065211372",
+      "name": "ECLOT",
+      "logo": "/logos/1743065210313-Dynamo Eclot.png",
+      "score": 0
+    },
+    {
+      "id": "1743066069733",
+      "name": "METIZPORT",
+      "logo": "/logos/1743066069411-Metizport.png",
+      "score": 0
+    },
+    {
+      "id": "1744209007356",
+      "name": "9Pandas",
+      "logo": "/logos/1744209006391-9Pandas.png",
+      "score": 0
+    },
+    {
+      "id": "1744209022008",
+      "name": "CYBERSHOKE",
+      "logo": "/logos/1744209021394-CYBERSHOKE.png",
+      "score": 0
+    },
+    {
+      "id": "1744209033764",
+      "name": "Iberian Soul",
+      "logo": "/logos/1744209032876-Iberian Soul.png",
+      "score": 0
+    },
+    {
+      "id": "1744209041711",
+      "name": "JANO",
+      "logo": "/logos/1744209040351-JANO.png",
+      "score": 0
+    },
+    {
+      "id": "1744211594870",
+      "name": "SINNERS",
+      "logo": "/logos/1744211594196-SINNERS.png",
+      "score": 0
+    },
+    {
+      "id": "1744295990190",
+      "name": "Novaq",
+      "logo": "/logos/1744295989462-1744209074741-Novaq.png",
+      "score": 0
+    },
+    {
+      "id": "1744296013746",
+      "name": "NAVI Junior",
+      "logo": "/logos/1744296012816-1744209058473-NAVI Junior.png",
+      "score": 0
+    },
+    {
+      "id": "1744296205095",
+      "name": "ENCE",
+      "logo": "/logos/1744296204562-ENCE.png",
+      "score": 0
+    },
+    {
+      "id": "1744296497861",
+      "name": "PARIVISION",
+      "logo": "/logos/1744296497166-1744209136982-PARIVISION.png",
+      "score": 0
+    },
+    {
+      "id": "1744296521251",
+      "name": "Sangal",
+      "logo": "/logos/1744296520421-1744209170831-Sangal.png",
+      "score": 0
+    }
+  ],
+  "players": [
+    {
+      "id": "1741167781246",
+      "name": "refrezh",
+      "steamId": "76561198064864198",
+      "photo": "/players/1741566664250-none.png",
+      "teamId": "1741167069740",
+      "match_stats": {}
+    },
+    {
+      "id": "1741169115306",
+      "name": "MaKa",
+      "steamId": "76561199076189612",
+      "photo": "/players/1741566707722-none.png",
+      "teamId": "1741169196086",
+      "match_stats": {}
+    },
+    {
+      "id": "1741170905343",
+      "name": "dziu",
+      "steamId": "76561199100725838",
+      "photo": "/players/1741566715805-none.png",
+      "teamId": "1741169196086",
+      "match_stats": {}
+    },
+    {
+      "id": "1741733630178",
+      "name": "Girafffe",
+      "steamId": "76561198298496976",
+      "photo": "/players/1741733629328-Girafffe.png",
+      "teamId": "1741686886864",
+      "match_stats": {}
+    },
+    {
+      "id": "1741733780496",
+      "name": "Vacancy",
+      "steamId": "76561198190928622",
+      "photo": "/players/1741735077339-Vacancy.png",
+      "teamId": "1741686886864",
+      "match_stats": {}
+    },
+    {
+      "id": "1741733815568",
+      "name": "Tree60",
+      "steamId": "76561198165543185",
+      "photo": "/players/1741733813075-Tree60.png",
+      "teamId": "1741686886864",
+      "match_stats": {}
+    },
+    {
+      "id": "1741735065978",
+      "name": "arTisT",
+      "steamId": "76561198088906330",
+      "photo": "/players/1741735063410-artist.png",
+      "teamId": "1741686886864",
+      "match_stats": {}
+    },
+    {
+      "id": "1741735127681",
+      "name": "Extinct",
+      "steamId": "76561198096708443",
+      "photo": "/players/1741735124528-extinct.png",
+      "teamId": "1741686886864",
+      "match_stats": {}
+    },
+    {
+      "id": "1741735305564",
+      "name": "leen",
+      "steamId": "76561199026065461",
+      "photo": "/players/1741738513948-leen.png",
+      "teamId": "1741686907133",
+      "match_stats": {}
+    },
+    {
+      "id": "1741735320260",
+      "name": "ryu",
+      "steamId": "76561198168401372",
+      "photo": "/players/1741740339583-hltv gizmy.png",
+      "teamId": "1741686907133",
+      "match_stats": {}
+    },
+    {
+      "id": "1741737007716",
+      "name": "DemQQ",
+      "steamId": "76561198126171426",
+      "photo": "/players/1741740440949-hltv demqq.png",
+      "teamId": "1741686907133",
+      "match_stats": {}
+    },
+    {
+      "id": "1741737020785",
+      "name": "hades",
+      "steamId": "76561198050922008",
+      "photo": "/players/1741740452845-hltv hades.png",
+      "teamId": "1741686907133",
+      "match_stats": {}
+    },
+    {
+      "id": "1741737034283",
+      "name": "Gizmy",
+      "steamId": "76561198344226986",
+      "photo": "/players/1741740465609-hltv gizmy.png",
+      "teamId": "1741686907133",
+      "match_stats": {}
+    },
+    {
+      "id": "1741744283973",
+      "name": "mantuu",
+      "steamId": "76561198016432560",
+      "photo": "/players/1741744280530-mantuu.png",
+      "teamId": "1741167069740",
+      "match_stats": {}
+    },
+    {
+      "id": "1741744308291",
+      "name": "bobeksde",
+      "steamId": "76561198060916227",
+      "photo": "/players/1741744307221-bobeksde.png",
+      "teamId": "1741167069740",
+      "match_stats": {}
+    },
+    {
+      "id": "1741744340007",
+      "name": "raalz",
+      "steamId": "76561197996060155",
+      "photo": "/players/1741744330187-raalz.png",
+      "teamId": "1741167069740",
+      "match_stats": {}
+    },
+    {
+      "id": "1741744359444",
+      "name": "kraghen",
+      "steamId": "76561198047198945",
+      "photo": "/players/1741744357123-kraghen.png",
+      "teamId": "1741167069740",
+      "match_stats": {}
+    },
+    {
+      "id": "1741744383727",
+      "name": "faveN",
+      "steamId": "76561198118196092",
+      "photo": "/players/1741744383119-faven.png",
+      "teamId": "1741167069740",
+      "match_stats": {}
+    },
+    {
+      "id": "1741744623283",
+      "name": "ScrunK",
+      "steamId": "76561197974106188",
+      "photo": "/players/1741745962725-Scrunk.png",
+      "teamId": "1741744617807",
+      "match_stats": {}
+    },
+    {
+      "id": "1741745587596",
+      "name": "paz",
+      "steamId": "76561198028790343",
+      "photo": "/players/1741746194653-Paz.png",
+      "teamId": "1741744617807",
+      "match_stats": {}
+    },
+    {
+      "id": "1741745597573",
+      "name": "S3NSEY",
+      "steamId": "76561198064010365",
+      "photo": "/players/1741746204761-s3nsey.png",
+      "teamId": "1741744617807",
+      "match_stats": {}
+    },
+    {
+      "id": "1741745634504",
+      "name": "Banjo",
+      "steamId": "76561198276486363",
+      "photo": "/players/1741752945414-Banjo.png",
+      "teamId": "1741744617807",
+      "match_stats": {}
+    },
+    {
+      "id": "1741745651695",
+      "name": "soulfly",
+      "steamId": "76561198327068178",
+      "photo": "/players/1741746229523-Soulfly.png",
+      "teamId": "1741744617807",
+      "match_stats": {}
+    },
+    {
+      "id": "1741816845782",
+      "name": "smooya",
+      "steamId": "76561198171689321",
+      "photo": "/players/1741816842800-smooya.png",
+      "teamId": "1741816438639",
+      "match_stats": {}
+    },
+    {
+      "id": "1741816889645",
+      "name": "birdfromsky",
+      "steamId": "76561197964604204",
+      "photo": "/players/1741816886991-birdfromsky.png",
+      "teamId": "1741816438639",
+      "match_stats": {}
+    },
+    {
+      "id": "1741816907471",
+      "name": "REDS7AR",
+      "steamId": "76561198048720735",
+      "photo": "/players/1741816906673-REDSTAR.png",
+      "teamId": "1741816438639",
+      "match_stats": {}
+    },
+    {
+      "id": "1741816926189",
+      "name": "Keoz",
+      "steamId": "76561198098344244",
+      "photo": "/players/1741816924207-Keoz.png",
+      "teamId": "1741816438639",
+      "match_stats": {}
+    },
+    {
+      "id": "1741816969101",
+      "name": "Vegi",
+      "steamId": "76561198050635151",
+      "photo": "/players/1741816968380-Vegi.png",
+      "teamId": "1741816438639",
+      "match_stats": {}
+    },
+    {
+      "id": "1741833102629",
+      "name": "Kristou",
+      "steamId": "76561198107540058",
+      "photo": "/players/1741833197725-Kristou.png",
+      "teamId": "1741833056251",
+      "match_stats": {}
+    },
+    {
+      "id": "1741833111211",
+      "name": "Anlelele",
+      "steamId": "76561198129799489",
+      "photo": "/players/1741833207685-Anlelele.png",
+      "teamId": "1741833056251",
+      "match_stats": {}
+    },
+    {
+      "id": "1741833120080",
+      "name": "nut nut",
+      "steamId": "76561198155303242",
+      "photo": "/players/1741833215396-nut nut.png",
+      "teamId": "1741833056251",
+      "match_stats": {}
+    },
+    {
+      "id": "1741833129130",
+      "name": "sirah",
+      "steamId": "76561198308941038",
+      "photo": "/players/1741833235909-sirah.png",
+      "teamId": "1741833056251",
+      "match_stats": {}
+    },
+    {
+      "id": "1741833137896",
+      "name": "TMB",
+      "steamId": "76561198084607254",
+      "photo": "/players/1741833244879-TMB.png",
+      "teamId": "1741833056251",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843168196",
+      "name": "VILBy",
+      "steamId": "76561198235154776",
+      "photo": "/players/1741843161635-VILBy.png",
+      "teamId": "1741842995229",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843184143",
+      "name": "bluewhite",
+      "steamId": "76561198976881234",
+      "photo": "/players/1741843180704-bluewhite.png",
+      "teamId": "1741842995229",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843200826",
+      "name": "m1QUSE",
+      "steamId": "76561198832142602",
+      "photo": "/players/1741843198169-m1QUSE.png",
+      "teamId": "1741842995229",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843213275",
+      "name": "sh1nejezz",
+      "steamId": "76561198396570413",
+      "photo": "/players/1741843312094-sh1nejezz.png",
+      "teamId": "1741842995229",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843234773",
+      "name": "z3nder",
+      "steamId": "76561199011385849",
+      "photo": "/players/1741843234071-z3nder.png",
+      "teamId": "1741842995229",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843377193",
+      "name": "bondik",
+      "steamId": "76561198007184371",
+      "photo": "/players/1741843375286-bondik.png",
+      "teamId": "1741843023650",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843394733",
+      "name": "Smash",
+      "steamId": "76561198174293313",
+      "photo": "/players/1741843390136-smash.png",
+      "teamId": "1741843023650",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843410531",
+      "name": "j3kie",
+      "steamId": "76561198327980204",
+      "photo": "/players/1741843408704-j3kie.png",
+      "teamId": "1741843023650",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843425605",
+      "name": "t3ns1on ",
+      "steamId": "76561198819279246",
+      "photo": "/players/1741843419614-t3ns1on.png",
+      "teamId": "1741843023650",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843441060",
+      "name": "Marix",
+      "steamId": "76561198176422667",
+      "photo": "/players/1741843440196-Marix.png",
+      "teamId": "1741843023650",
+      "match_stats": {}
+    },
+    {
+      "id": "1741843463760",
+      "name": "guthriee",
+      "steamId": "76561198875321148",
+      "photo": "/players/1741843462748-guthriee.png",
+      "teamId": "1741843023650",
+      "match_stats": {}
+    },
+    {
+      "id": "1741901190425",
+      "name": "kinqie",
+      "steamId": "76561198002372151",
+      "photo": "/players/1741901189223-kinqie.png",
+      "teamId": "1741723524749",
+      "match_stats": {}
+    },
+    {
+      "id": "1741901202685",
+      "name": "KIRO",
+      "steamId": "76561198145768818",
+      "photo": "/players/1741901200209-kiro.png",
+      "teamId": "1741723524749",
+      "match_stats": {}
+    },
+    {
+      "id": "1741901214564",
+      "name": "executor",
+      "steamId": "76561199095171343",
+      "photo": "/players/1741901212383-executor.png",
+      "teamId": "1741723524749",
+      "match_stats": {}
+    },
+    {
+      "id": "1741901226486",
+      "name": "tex1y",
+      "steamId": "76561199173322766",
+      "photo": "/players/1741901224532-tex1y.png",
+      "teamId": "1741723524749",
+      "match_stats": {}
+    },
+    {
+      "id": "1741901240055",
+      "name": "z1Nny",
+      "steamId": "76561198237043662",
+      "photo": "/players/1741901237883-z1Nny.png",
+      "teamId": "1741723524749",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918209796",
+      "name": "twist",
+      "steamId": "76561197980244859",
+      "photo": "/players/1741918374304-twist.png",
+      "teamId": "1741686877630",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918234026",
+      "name": "PlesseN",
+      "steamId": "76561198017982577",
+      "photo": "/players/1741918390589-PlesseN.png",
+      "teamId": "1741686877630",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918259703",
+      "name": "avid",
+      "steamId": "76561198202417343",
+      "photo": "/players/1741918258775-avid.png",
+      "teamId": "1741686877630",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918277393",
+      "name": "upE",
+      "steamId": "76561198045056482",
+      "photo": "/players/1741918276290-avid.png",
+      "teamId": "1741686877630",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918302747",
+      "name": "eraa",
+      "steamId": "76561198374154451",
+      "photo": "/players/1741918301858-avid.png",
+      "teamId": "1741686877630",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918477880",
+      "name": "Lucky",
+      "steamId": "76561198110563159",
+      "photo": "/players/1741918476357-Lucky.png",
+      "teamId": "1741686867446",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918489955",
+      "name": "IceBerg",
+      "steamId": "76561197991000831",
+      "photo": "/players/1741918487509-IceBerg.png",
+      "teamId": "1741686867446",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918501084",
+      "name": "Cabbi",
+      "steamId": "76561198190930470",
+      "photo": "/players/1741918499867-IceBerg.png",
+      "teamId": "1741686867446",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918525690",
+      "name": "Zyphon",
+      "steamId": "76561198158377244",
+      "photo": "/players/1741918524575-Zyphon.png",
+      "teamId": "1741686867446",
+      "match_stats": {}
+    },
+    {
+      "id": "1741918558072",
+      "name": "niko",
+      "steamId": "76561197989736583",
+      "photo": "/players/1741918557019-niko.png",
+      "teamId": "1741686867446",
+      "match_stats": {}
+    },
+    {
+      "id": "1742080412697",
+      "name": "xiELO",
+      "steamId": "76561198141272052",
+      "photo": "/players/1742080409941-xiELO.png",
+      "teamId": "1741686771770",
+      "match_stats": {}
+    },
+    {
+      "id": "1742080426535",
+      "name": "fineshine",
+      "steamId": "76561198138327415",
+      "photo": "/players/1742080425883-Finishine.png",
+      "teamId": "1741686771770",
+      "match_stats": {}
+    },
+    {
+      "id": "1742080441287",
+      "name": "SELLTER",
+      "steamId": "76561198119088041",
+      "photo": "/players/1742080440435-Sellter.png",
+      "teamId": "1741686771770",
+      "match_stats": {}
+    },
+    {
+      "id": "1742080455603",
+      "name": "Lack1",
+      "steamId": "76561198146202997",
+      "photo": "/players/1742080452643-Lacki.png",
+      "teamId": "1741686771770",
+      "match_stats": {}
+    },
+    {
+      "id": "1742080472872",
+      "name": "Sdaim",
+      "steamId": "76561198829202374",
+      "photo": "/players/1742080472133-Sdaim.png",
+      "teamId": "1741686771770",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061195741",
+      "name": "clax",
+      "steamId": "76561198129084615",
+      "photo": "/players/1742061194802-clax.png",
+      "teamId": "1741686782051",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061247022",
+      "name": "Patsi",
+      "steamId": "76561198288540801",
+      "photo": "/players/1742061244742-clax-1.png",
+      "teamId": "1741686782051",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061263732",
+      "name": "Norwi",
+      "steamId": "76561198154904607",
+      "photo": "/players/1742061260756-Norwi.png",
+      "teamId": "1741686782051",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061282965",
+      "name": "gr1ks",
+      "steamId": "76561198370176682",
+      "photo": "/players/1742061280471-Norwi-1.png",
+      "teamId": "1741686782051",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061295621",
+      "name": "KENSi",
+      "steamId": "76561198400646282",
+      "photo": "/players/1742061293040-KENSi.png",
+      "teamId": "1741686782051",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061384470",
+      "name": "aVN",
+      "steamId": "76561198191567453",
+      "photo": "/players/1742061383065-AVN.png",
+      "teamId": "1741686922092",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061403453",
+      "name": "Cjoffo",
+      "steamId": "76561198283118254",
+      "photo": "/players/1742061402323-Cjoffo.png",
+      "teamId": "1741686922092",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061425575",
+      "name": "nEMANHA",
+      "steamId": "76561197982341849",
+      "photo": "/players/1742061424782-nEMANHA.png",
+      "teamId": "1741686922092",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061466181",
+      "name": "simke",
+      "steamId": "76561198335534043",
+      "photo": "/players/1742061465441-nEMANHA-1.png",
+      "teamId": "1741686922092",
+      "match_stats": {}
+    },
+    {
+      "id": "1742061484302",
+      "name": "brutmonster",
+      "steamId": "76561198258996278",
+      "photo": "/players/1742061481641-brutmonster.png",
+      "teamId": "1741686922092",
+      "match_stats": {}
+    },
+    {
+      "id": "1742229337029",
+      "name": "Chr1zN",
+      "steamId": "76561198292598811",
+      "photo": "/players/1742229336061-CHR1ZN.png",
+      "teamId": "1741901301610",
+      "match_stats": {}
+    },
+    {
+      "id": "1742229352179",
+      "name": "F1KU",
+      "steamId": "76561198252434500",
+      "photo": "/players/1742229351381-F1KU.png",
+      "teamId": "1741901301610",
+      "match_stats": {}
+    },
+    {
+      "id": "1742229367088",
+      "name": "spooke",
+      "steamId": "76561198079183361",
+      "photo": "/players/1742229364743-Spooke.png",
+      "teamId": "1741901301610",
+      "match_stats": {}
+    },
+    {
+      "id": "1742229377787",
+      "name": "Buzz",
+      "steamId": "76561198248953762",
+      "photo": "/players/1742229377006-Spooke.png",
+      "teamId": "1741901301610",
+      "match_stats": {}
+    },
+    {
+      "id": "1742229395707",
+      "name": "nicoodoz",
+      "steamId": "76561198073117127",
+      "photo": "/players/1742229394876-nicoodoz.png",
+      "teamId": "1741901301610",
+      "match_stats": {}
+    },
+    {
+      "id": "1742379673431",
+      "name": "jcobbb",
+      "steamId": "76561198178737429",
+      "photo": "/players/1742379672103-jcobbb.png",
+      "teamId": "1741901326769",
+      "match_stats": {}
+    },
+    {
+      "id": "1742379688520",
+      "name": "hypex",
+      "steamId": "76561198254686734",
+      "photo": "/players/1742379687725-hypex.png",
+      "teamId": "1741901326769",
+      "match_stats": {}
+    },
+    {
+      "id": "1742379709620",
+      "name": "Prism",
+      "steamId": "76561198077677671",
+      "photo": "/players/1742379703351-prism.png",
+      "teamId": "1741901326769",
+      "match_stats": {}
+    },
+    {
+      "id": "1742379734178",
+      "name": "hfah",
+      "steamId": "76561198308155775",
+      "photo": "/players/1742379732025-hfah.png",
+      "teamId": "1741901326769",
+      "match_stats": {}
+    },
+    {
+      "id": "1742379755042",
+      "name": "Demho",
+      "steamId": "76561198107012488",
+      "photo": "/players/1742379751932-demho.png",
+      "teamId": "1741901326769",
+      "match_stats": {}
+    },
+    {
+      "id": "1742389533178",
+      "name": "Rezst",
+      "steamId": "76561198138332241",
+      "photo": "/players/1742389532015-Rezst.png",
+      "teamId": "1741686886864",
+      "match_stats": {}
+    },
+    {
+      "id": "1742389548497",
+      "name": "shyyne ",
+      "steamId": "76561198027020808",
+      "photo": "/players/1742389543905-shyyne.png",
+      "teamId": "1741686886864",
+      "match_stats": {}
+    },
+    {
+      "id": "1742398464377",
+      "name": "pixel",
+      "steamId": "76561198003198143",
+      "photo": "/players/1742398460843-pixel.png",
+      "teamId": "1741842995229",
+      "match_stats": {}
+    },
+    {
+      "id": "1742912376187",
+      "name": "tory",
+      "steamId": "76561198047829655",
+      "photo": "/players/1742912375256-tory.png",
+      "teamId": null,
+      "match_stats": {}
+    },
+    {
+      "id": "1742912415011",
+      "name": "zAAz",
+      "steamId": "76561197990140855",
+      "photo": "/players/1742912412110-zAAz.png",
+      "teamId": null,
+      "match_stats": {}
+    },
+    {
+      "id": "1742912433311",
+      "name": "twenty3",
+      "steamId": "76561198809859276",
+      "photo": "/players/1742912430961-twenty3.png",
+      "teamId": null,
+      "match_stats": {}
+    },
+    {
+      "id": "1742912450340",
+      "name": "ANa",
+      "steamId": "76561198116899423",
+      "photo": "/players/1742912496344-ANa.png",
+      "teamId": null,
+      "match_stats": {}
+    },
+    {
+      "id": "1742912559402",
+      "name": "Kat",
+      "steamId": "76561198371036559",
+      "photo": "/players/1742912557336-kat.png",
+      "teamId": null,
+      "match_stats": {}
+    },
+    {
+      "id": "1742927878228",
+      "name": "Topa",
+      "steamId": "76561198134742883",
+      "photo": "/players/1742927875094-Topa.png",
+      "teamId": "1742925193043",
+      "match_stats": {}
+    },
+    {
+      "id": "1742927891124",
+      "name": "s-chilla",
+      "steamId": "76561198964042711",
+      "photo": "/players/1742927888609-s-chilla.png",
+      "teamId": "1742925193043",
+      "match_stats": {}
+    },
+    {
+      "id": "1742927907699",
+      "name": "jackasmo",
+      "steamId": "76561198446445284",
+      "photo": "/players/1742927903685-jackasmo.png",
+      "teamId": "1742925193043",
+      "match_stats": {}
+    },
+    {
+      "id": "1742927935361",
+      "name": "Kvem",
+      "steamId": "76561198845436666",
+      "photo": "/players/1742927930916-Kvem.png",
+      "teamId": "1742925193043",
+      "match_stats": {}
+    },
+    {
+      "id": "1742927951743",
+      "name": "zeRRoFIX",
+      "steamId": "76561199121088563",
+      "photo": "/players/1742927948966-zeRRoFIX.png",
+      "teamId": "1742925193043",
+      "match_stats": {}
+    },
+    {
+      "id": "1742980488525",
+      "name": "rafaxF ",
+      "steamId": "76561198095207206",
+      "photo": "/players/1742980484282-rafaxF.png",
+      "teamId": "1741167466408",
+      "match_stats": {}
+    },
+    {
+      "id": "1742980507369",
+      "name": "linko",
+      "steamId": "76561198147062836",
+      "photo": "/players/1742980505501-linko.png",
+      "teamId": "1741167466408",
+      "match_stats": {}
+    },
+    {
+      "id": "1742980522420",
+      "name": "snapyiwnl",
+      "steamId": "76561198228964552",
+      "photo": "/players/1742980521960-snapyiwnl.png",
+      "teamId": "1741167466408",
+      "match_stats": {}
+    },
+    {
+      "id": "1742980543357",
+      "name": "NOPEEJ",
+      "steamId": "76561198160794709",
+      "photo": "/players/1742980539305-NOPEEJ.png",
+      "teamId": "1741167466408",
+      "match_stats": {}
+    },
+    {
+      "id": "1742980577896",
+      "name": "Sprayy",
+      "steamId": "76561198187451023",
+      "photo": "/players/1742980566397-Sprayy.png",
+      "teamId": "1741167466408",
+      "match_stats": {}
+    },
+    {
+      "id": "1742980601252",
+      "name": "Jayy",
+      "steamId": "76561198994799202",
+      "photo": "/players/1742980599039-jayy2s.png",
+      "teamId": "1741167466408",
+      "match_stats": {}
+    },
+    {
+      "id": "1742994835952",
+      "name": "BTN",
+      "steamId": "76561197981355847",
+      "photo": "/players/1742994831997-BTN.png",
+      "teamId": "1742992319651",
+      "match_stats": {}
+    },
+    {
+      "id": "1742994851623",
+      "name": "ragga",
+      "steamId": "76561198070199303",
+      "photo": "/players/1742994847506-ragga.png",
+      "teamId": "1742992319651",
+      "match_stats": {}
+    },
+    {
+      "id": "1742994866467",
+      "name": "s0und",
+      "steamId": "76561198156197967",
+      "photo": "/players/1742994863998-s0und.png",
+      "teamId": "1742992319651",
+      "match_stats": {}
+    },
+    {
+      "id": "1742994878442",
+      "name": "xellow",
+      "steamId": "76561198052354821",
+      "photo": "/players/1742994876164-xellow.png",
+      "teamId": "1742992319651",
+      "match_stats": {}
+    },
+    {
+      "id": "1742994895771",
+      "name": "ADRON",
+      "steamId": "76561198258044780",
+      "photo": "/players/1742994894831-ADRON.png",
+      "teamId": "1742992319651",
+      "match_stats": {}
+    },
+    {
+      "id": "1743010015667",
+      "name": "KRiMZ",
+      "steamId": "76561198031651584",
+      "photo": "/players/1743010014925-krimz.png",
+      "teamId": "1743008208545",
+      "match_stats": {}
+    },
+    {
+      "id": "1743010027671",
+      "name": "Fear",
+      "steamId": "76561198132026180",
+      "photo": "/players/1743010025120-fear.png",
+      "teamId": "1743008208545",
+      "match_stats": {}
+    },
+    {
+      "id": "1743010052922",
+      "name": "MATYS",
+      "steamId": "76561199046478501",
+      "photo": "/players/1743010051560-MATYS.png",
+      "teamId": "1743008208545",
+      "match_stats": {}
+    },
+    {
+      "id": "1743010068215",
+      "name": "blameF",
+      "steamId": "76561198028458803",
+      "photo": "/players/1743010066813-blameF.png",
+      "teamId": "1743008208545",
+      "match_stats": {}
+    },
+    {
+      "id": "1743010083408",
+      "name": "jambo",
+      "steamId": "76561198800253526",
+      "photo": "/players/1743166427258-1743163682473-jambo.png",
+      "teamId": "1743008208545",
+      "match_stats": {}
+    },
+    {
+      "id": "1743026009379",
+      "name": "emi",
+      "steamId": "76561198003614432",
+      "photo": "/players/1743026005480-emi.png",
+      "teamId": "1743020192913",
+      "match_stats": {}
+    },
+    {
+      "id": "1743026023007",
+      "name": "c0llins",
+      "steamId": "76561198039524450",
+      "photo": "/players/1743026020448-c0llins.png",
+      "teamId": "1743020192913",
+      "match_stats": {}
+    },
+    {
+      "id": "1743026037928",
+      "name": "VLDN",
+      "steamId": "76561198099198308",
+      "photo": "/players/1743026035426-VLDN.png",
+      "teamId": "1743020192913",
+      "match_stats": {}
+    },
+    {
+      "id": "1743026054755",
+      "name": "Dragon",
+      "steamId": "76561198120215734",
+      "photo": "/players/1743026053923-Dragon.png",
+      "teamId": "1743020192913",
+      "match_stats": {}
+    },
+    {
+      "id": "1743026068613",
+      "name": "Kind0",
+      "steamId": "76561198062283345",
+      "photo": "/players/1743026067614-Kind0.png",
+      "teamId": "1743020192913",
+      "match_stats": {}
+    },
+    {
+      "id": "1743068398448",
+      "name": "hampus",
+      "steamId": "76561198086945950",
+      "photo": "/players/1743068392265-hampus.png",
+      "teamId": "1743066069733",
+      "match_stats": {}
+    },
+    {
+      "id": "1743068420159",
+      "name": "L00m1",
+      "steamId": "76561198890491804",
+      "photo": "/players/1743068419422-L00m1.png",
+      "teamId": "1743066069733",
+      "match_stats": {}
+    },
+    {
+      "id": "1743068442632",
+      "name": "Plopski",
+      "steamId": "76561198135878798",
+      "photo": "/players/1743068441733-Plopski.png",
+      "teamId": "1743066069733",
+      "match_stats": {}
+    },
+    {
+      "id": "1743068456684",
+      "name": "isak",
+      "steamId": "76561198071910365",
+      "photo": "/players/1743068454757-isak.png",
+      "teamId": "1743066069733",
+      "match_stats": {}
+    },
+    {
+      "id": "1743068475267",
+      "name": "adamb",
+      "steamId": "76561198851067539",
+      "photo": "/players/1743068472734-adamb.png",
+      "teamId": "1743066069733",
+      "match_stats": {}
+    },
+    {
+      "id": "1743099822197",
+      "name": "M1key",
+      "steamId": "76561198182168605",
+      "photo": "/players/1743099819827-M1key.png",
+      "teamId": "1743065211372",
+      "match_stats": {}
+    },
+    {
+      "id": "1743099839365",
+      "name": "The eLiVe",
+      "steamId": "76561198071291375",
+      "photo": "/players/1743099838407-The eLiVe.png",
+      "teamId": "1743065211372",
+      "match_stats": {}
+    },
+    {
+      "id": "1743099854178",
+      "name": "Dytor",
+      "steamId": "76561198201554338",
+      "photo": "/players/1743099850629-Dytor.png",
+      "teamId": "1743065211372",
+      "match_stats": {}
+    },
+    {
+      "id": "1743099867037",
+      "name": "forsyy",
+      "steamId": "76561198084163512",
+      "photo": "/players/1743099863960-forsyy.png",
+      "teamId": "1743065211372",
+      "match_stats": {}
+    },
+    {
+      "id": "1743099878644",
+      "name": "nbqq",
+      "steamId": "76561198065294895",
+      "photo": "/players/1743099876710-nbqq.png",
+      "teamId": "1743065211372",
+      "match_stats": {}
+    }
+  ]
+}

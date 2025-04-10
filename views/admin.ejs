@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Manage Teams & Players</title>
+  <!-- Подключаем jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #ffffff;
+    }
+    .section {
+      background-color: #1e1e1e;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    form { margin-bottom: 20px; }
+    form label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 500;
+    }
+    form input[type="text"],
+    form input[type="number"],
+    form input[type="file"],
+    form select {
+      width: 100%;
+      padding: 8px;
+      background-color: #2e2e2e;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #e0e0e0;
+    }
+    form button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007acc;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    form button:hover {
+      background-color: #005fa3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #1e1e1e;
+    }
+    table th, table td {
+      border: 1px solid #333;
+      padding: 10px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    table th {
+      background-color: #2e2e2e;
+    }
+    table tr:nth-child(even) {
+      background-color: #181818;
+    }
+    .small-btn {
+      padding: 5px 10px;
+      margin-right: 5px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007acc;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85em;
+      transition: background-color 0.3s ease;
+    }
+    .small-btn:hover {
+      background-color: #005fa3;
+    }
+    img { max-height: 40px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Panel</h1>
+    
+    <!-- Управление командами -->
+    <div class="section" id="teamsSection">
+      <h2>Manage Teams</h2>
+      <!-- Форма для загрузки логотипа команды -->
+      <div style="margin-bottom: 10px;">
+        <label>Logo File:
+          <input type="file" id="teamLogoFile" name="logoFile" accept="image/*">
+        </label>
+        <button type="button" id="uploadTeamLogoBtn" class="small-btn">Upload Logo</button>
+      </div>
+      <form id="teamForm">
+        <input type="hidden" name="id" id="teamId">
+        <label>Name: <input type="text" name="name" id="teamName" required></label>
+        <label>Logo URL: <input type="text" name="logo" id="teamLogo"></label>
+        <button type="submit">Save Team</button>
+        <button type="button" id="resetTeamForm">Reset</button>
+      </form>
+      <table id="teamsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Logo</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% teams.forEach(function(team){ %>
+            <tr data-id="<%= team.id %>">
+              <td><%= team.id %></td>
+              <td><%= team.name %></td>
+              <td>
+                <% if(team.logo){ %>
+                  <img src="<%= team.logo %>" alt="Logo">
+                <% } %>
+              </td>
+              <td>
+                <button class="editTeam small-btn">Edit</button>
+                <button class="deleteTeam small-btn">Delete</button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Управление игроками -->
+    <div class="section" id="playersSection">
+      <h2>Manage Players</h2>
+      <!-- Форма для загрузки фотографии игрока -->
+      <div style="margin-bottom: 10px;">
+        <label>Photo File:
+          <input type="file" id="playerPhotoFile" name="photoFile" accept="image/*">
+        </label>
+        <button type="button" id="uploadPlayerPhotoBtn" class="small-btn">Upload Photo</button>
+      </div>
+      <form id="playerForm">
+        <input type="hidden" name="id" id="playerId">
+        <label>Name: <input type="text" name="name" id="playerName" required></label>
+        <label>Steam ID: <input type="text" name="steamId" id="playerSteamId"></label>
+        <label>Photo URL: <input type="text" name="photo" id="playerPhoto"></label>
+        <label>Team:
+          <select id="playerTeamId" name="teamId">
+            <option value="">--None--</option>
+            <% teams.forEach(function(team){ %>
+              <option value="<%= team.id %>"><%= team.name %></option>
+            <% }); %>
+          </select>
+        </label>
+        <button type="submit">Save Player</button>
+        <button type="button" id="resetPlayerForm">Reset</button>
+      </form>
+      <table id="playersTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Steam ID</th>
+            <th>Photo</th>
+            <th>Team</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% players.forEach(function(player){ %>
+            <tr data-id="<%= player.id %>">
+              <td><%= player.id %></td>
+              <td><%= player.name %></td>
+              <td><%= player.steamId %></td>
+              <td>
+                <% if(player.photo){ %>
+                  <img src="<%= player.photo %>" alt="Photo">
+                <% } %>
+              </td>
+              <td>
+                <% 
+                  var teamObj = teams.find(t => t.id === player.teamId);
+                  if(teamObj){ %>
+                    <img src="<%= teamObj.logo %>" alt="Logo" style="max-height:30px; vertical-align:middle;"> <%= teamObj.name %>
+                <% } else { %>
+                    -
+                <% } %>
+              </td>
+              <td>
+                <button class="editPlayer small-btn">Edit</button>
+                <button class="deletePlayer small-btn">Delete</button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+
+  <script>
+    $(document).ready(function(){
+      function refreshTeams(){
+        $.get("/api/teams", function(data){
+          let tbody = "";
+          data.forEach(team => {
+            tbody += `<tr data-id="${team.id}">
+                        <td>${team.id}</td>
+                        <td>${team.name}</td>
+                        <td>${team.logo ? `<img src="${team.logo}" alt="Logo">` : ''}</td>
+                        <td>
+                          <button class="editTeam small-btn">Edit</button>
+                          <button class="deleteTeam small-btn">Delete</button>
+                        </td>
+                      </tr>`;
+          });
+          $("#teamsTable tbody").html(tbody);
+          let options = `<option value="">--None--</option>`;
+          data.forEach(team => {
+            options += `<option value="${team.id}">${team.name}</option>`;
+          });
+          $("#playerTeamId").html(options);
+        });
+      }
+  
+      function refreshPlayers(){
+        $.get("/api/players", function(data){
+          let tbody = "";
+          data.forEach(player => {
+            tbody += `<tr data-id="${player.id}">
+                        <td>${player.id}</td>
+                        <td>${player.name}</td>
+                        <td>${player.steamId}</td>
+                        <td>${player.photo ? `<img src="${player.photo}" alt="Photo">` : ''}</td>`;
+            tbody += `<td>`;
+            let teamObj = teams.find(t => t.id === player.teamId);
+            if(teamObj){
+              tbody += `<img src="${teamObj.logo}" alt="Logo" style="max-height:30px; vertical-align:middle;"> ${teamObj.name}`;
+            } else {
+              tbody += `-`;
+            }
+            tbody += `</td>`;
+            tbody += `<td>
+                        <button class="editPlayer small-btn">Edit</button>
+                        <button class="deletePlayer small-btn">Delete</button>
+                      </td>
+                    </tr>`;
+          });
+          $("#playersTable tbody").html(tbody);
+        });
+      }
+  
+      // Загрузка логотипа команды
+      $("#uploadTeamLogoBtn").click(function(){
+        const fileInput = $("#teamLogoFile")[0];
+        if (!fileInput.files.length) {
+          alert("No file selected");
+          return;
+        }
+        const formData = new FormData();
+        formData.append('logoFile', fileInput.files[0]);
+        $.ajax({
+          url: '/api/teams/uploadLogo',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+            $("#teamLogo").val(response.path);
+          },
+          error: function() {
+            alert("Error uploading file");
+          }
+        });
+      });
+  
+      // Загрузка фото игрока
+      $("#uploadPlayerPhotoBtn").click(function(){
+        const fileInput = $("#playerPhotoFile")[0];
+        if (!fileInput.files.length) {
+          alert("No file selected");
+          return;
+        }
+        const formData = new FormData();
+        formData.append('photoFile', fileInput.files[0]);
+        $.ajax({
+          url: '/api/players/uploadPhoto',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+            $("#playerPhoto").val(response.path);
+          },
+          error: function() {
+            alert("Error uploading photo");
+          }
+        });
+      });
+  
+      $("#teamForm").submit(function(e){
+        e.preventDefault();
+        const id = $("#teamId").val();
+        const name = $("#teamName").val();
+        const logo = $("#teamLogo").val();
+        if(id){
+          $.ajax({
+            url: "/api/teams/" + id,
+            type: "PUT",
+            data: { name, logo },
+            success: function(){
+              refreshTeams();
+              $("#teamForm")[0].reset();
+            }
+          });
+        } else {
+          $.post("/api/teams", { name, logo }, function(){
+            refreshTeams();
+            $("#teamForm")[0].reset();
+          });
+        }
+      });
+  
+      $(document).on("click", ".editTeam", function(){
+        const row = $(this).closest("tr");
+        const id = row.data("id");
+        $.get("/api/teams", function(data){
+          const team = data.find(t => t.id == id);
+          if(team){
+            $("#teamId").val(team.id);
+            $("#teamName").val(team.name);
+            $("#teamLogo").val(team.logo);
+          }
+        });
+      });
+  
+      $(document).on("click", ".deleteTeam", function(){
+        if(confirm("Delete team?")){
+          const id = $(this).closest("tr").data("id");
+          $.ajax({
+            url: "/api/teams/" + id,
+            type: "DELETE",
+            success: function(){
+              refreshTeams();
+              refreshPlayers();
+            }
+          });
+        }
+      });
+  
+      $("#playerForm").submit(function(e){
+        e.preventDefault();
+        const id = $("#playerId").val();
+        const name = $("#playerName").val();
+        const steamId = $("#playerSteamId").val();
+        const photo = $("#playerPhoto").val();
+        const teamId = $("#playerTeamId").val();
+        if(id){
+          $.ajax({
+            url: "/api/players/" + id,
+            type: "PUT",
+            data: { name, steamId, photo, teamId },
+            success: function(){
+              refreshPlayers();
+              $("#playerForm")[0].reset();
+            }
+          });
+        } else {
+          $.post("/api/players", { name, steamId, photo, teamId }, function(){
+            refreshPlayers();
+            $("#playerForm")[0].reset();
+          });
+        }
+      });
+  
+      $(document).on("click", ".editPlayer", function(){
+        const row = $(this).closest("tr");
+        const id = row.data("id");
+        $.get("/api/players", function(data){
+          const player = data.find(p => p.id == id);
+          if(player){
+            $("#playerId").val(player.id);
+            $("#playerName").val(player.name);
+            $("#playerSteamId").val(player.steamId);
+            $("#playerPhoto").val(player.photo);
+            $("#playerTeamId").val(player.teamId);
+          }
+        });
+      });
+  
+      $(document).on("click", ".deletePlayer", function(){
+        if(confirm("Delete player?")){
+          const id = $(this).closest("tr").data("id");
+          $.ajax({
+            url: "/api/players/" + id,
+            type: "DELETE",
+            success: function(){
+              refreshPlayers();
+            }
+          });
+        }
+      });
+  
+      $("#resetTeamForm").click(function(){
+        $("#teamForm")[0].reset();
+      });
+      $("#resetPlayerForm").click(function(){
+        $("#playerForm")[0].reset();
+      });
+  
+      refreshTeams();
+      refreshPlayers();
+    });
+  </script>
+</body>
+</html>
