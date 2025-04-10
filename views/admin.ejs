@@ -7,10 +7,11 @@
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
-  <!-- Шрифт Blender Pro и анимированный градиентный фон -->
+  <!-- Подключаем шрифт Blender Pro и делаем общий градиентный фон -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Blender+Pro:wght@500&display=swap');
 
+    /* Анимированный градиентный фон */
     body {
       margin: 0;
       padding: 0;
@@ -25,6 +26,7 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
     .container {
       max-width: 1440px;
       margin: 0 auto;
@@ -35,7 +37,7 @@
       margin-bottom: 30px;
     }
 
-    /* Кнопки наверху */
+    /* Кнопки наверху (Create Team/Player) */
     .top-buttons {
       text-align: center;
       margin-bottom: 20px;
@@ -43,16 +45,18 @@
     .top-buttons .btn {
       padding: 10px 20px;
       border: none;
-      border-radius: 4px;
-      background-color: #007acc;
-      color: #fff;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #57492E, #6A593F);
+      color: #FFFFFF;
       cursor: pointer;
       font-weight: 500;
       margin: 0 5px;
-      transition: background-color 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 12px rgba(87,73,46,0.6);
     }
     .top-buttons .btn:hover {
-      background-color: #005fa3;
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 20px rgba(87,73,46,0.7);
     }
 
     /* Сетка карточек команд: 4 в ряд */
@@ -94,18 +98,20 @@
     .team-actions button {
       padding: 6px 12px;
       border: none;
-      border-radius: 4px;
-      background-color: #007acc;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #57492E, #6A593F);
       color: #fff;
       cursor: pointer;
       font-size: 0.85em;
-      transition: background-color 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 12px rgba(87,73,46,0.6);
     }
     .team-actions button:hover {
-      background-color: #005fa3;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(87,73,46,0.7);
     }
 
-    /* Таблица игроков в карточке */
+    /* Список игроков */
     .players-table {
       width: 100%;
       border-collapse: separate;
@@ -113,10 +119,10 @@
       margin-top: 10px;
     }
     .players-table thead {
-      display: none; /* скрываем шапку, если хотите оставить – уберите это */
+      display: none;
     }
     .players-table tr {
-      background-color: #3B2C5F; /* темный фиолет, сочетающийся с #2C243B */
+      background-color: #3B2C5F; 
       border-radius: 8px;
     }
     .players-table td {
@@ -135,7 +141,7 @@
     .player-actions {
       text-align: right;
     }
-    .player-actions .small-btn {
+    .player-actions button {
       margin: 0 4px;
     }
 
@@ -156,17 +162,24 @@
       z-index: 9999;
     }
     .modal {
-      background: #1e1e1e;
+      background: #2C243B;
       border: 2px solid #503BA9;
       border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
       padding: 20px;
       width: 400px;
       position: relative;
+      animation: fadeInModal 0.3s ease forwards;
+    }
+    @keyframes fadeInModal {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
     .modal h2 {
       margin-top: 0;
       margin-bottom: 15px;
       text-align: center;
+      font-size: 1.3rem;
     }
     .close-modal {
       position: absolute;
@@ -181,30 +194,61 @@
       display: block;
       margin: 10px 0 5px;
       font-weight: 500;
+      font-size: 0.95rem;
+      color: #bbb;
     }
+    /* Стили для инпутов в модалке */
     .modal input[type="text"],
     .modal input[type="file"],
     .modal select {
       width: 100%;
       padding: 8px;
-      background-color: #2e2e2e;
-      border: 1px solid #444;
-      border-radius: 4px;
-      color: #e0e0e0;
+      background-color: #1f1a2b;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: #bdbdbd;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 10px;
     }
-    .modal button {
-      padding: 10px 20px;
+    .modal input[type="text"]:focus,
+    .modal input[type="file"]:focus,
+    .modal select:focus {
+      border-color: #503BA9;
+      box-shadow: 0 0 8px rgba(80,59,169,0.6);
+      outline: none;
+      background: #272040;
+    }
+    /* Стили для type="file" */
+    .modal input[type="file"]::-webkit-file-upload-button {
+      background: linear-gradient(135deg, #57492E, #6A593F);
+      color: #fff;
       border: none;
       border-radius: 4px;
-      background-color: #007acc;
-      color: #fff;
+      padding: 6px 12px;
+      margin-right: 8px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(87,73,46,0.5);
+    }
+    .modal input[type="file"]::-webkit-file-upload-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(87,73,46,0.7);
+    }
+
+    .modal button {
+      display: inline-block;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #57492E, #6A593F);
+      color: #FFFFFF;
       cursor: pointer;
       font-weight: 500;
-      transition: background-color 0.3s ease;
-      margin-top: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 12px rgba(87,73,46,0.6);
     }
     .modal button:hover {
-      background-color: #005fa3;
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 20px rgba(87,73,46,0.7);
     }
   </style>
 </head>
@@ -218,10 +262,10 @@
       <button id="btn-show-player-modal" class="btn">Create Player</button>
     </div>
 
-    <!-- Сетка карточек команд -->
+    <!-- Сетка карточек команд (4 в ряд) -->
     <div id="teamsGrid" class="teams-grid">
       <% 
-        // Выводим карточки команд, 4 в ряд
+        // Выводим карточки команд
         // teams: [{id, name, logo}, ...]
         // players: [{id, name, photo, steamId, teamId}, ...]
       %>
@@ -240,7 +284,7 @@
             <button class="deleteTeam">Delete</button>
           </div>
           
-          <!-- «Таблица» игроков, но стилизована под список -->
+          <!-- «Таблица» игроков (стилизована под плитку) -->
           <% if(teamPlayers.length > 0){ %>
             <table class="players-table">
               <tbody>
@@ -357,7 +401,7 @@
       $("#closeTeamModal").click(function(){ hideTeamModal(); });
       $("#closePlayerModal").click(function(){ hidePlayerModal(); });
 
-      // Загрузка логотипа команды (запись в #teamLogo)
+      // Загрузка логотипа команды
       $("#uploadTeamLogoBtn").click(function(){
         const fileInput = $("#teamLogoFile")[0];
         if (!fileInput.files.length) {
@@ -381,7 +425,7 @@
         });
       });
 
-      // Загрузка фото игрока (запись в #playerPhoto)
+      // Загрузка фото игрока
       $("#uploadPlayerPhotoBtn").click(function(){
         const fileInput = $("#playerPhotoFile")[0];
         if (!fileInput.files.length) {
