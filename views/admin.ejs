@@ -74,7 +74,7 @@
   font-size: 0.85rem;
   border: none;
   border-radius: 6px;
-  background: linear-gradient(135deg, #CC935F, #EBC99C);
+  background: linear-gradient(135deg, #584b3e, #eeeeee);
   color: #1E1E1E;
   cursor: pointer;
   font-weight: 500;
@@ -149,16 +149,44 @@
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
 }
-    .player-photo img {
-      max-height: 50px;
-      border-radius: 6px;
-    }
-    .player-name {
-      font-weight: 500;
-    }
-    .player-actions {
-      text-align: right;
-    }
+    
+
+/* Контейнер для списка игроков */
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;            /* Расстояние между блоками игроков */
+  margin-top: 10px;
+}
+
+/* Строка игрока как карточка */
+.player-row {
+  display: flex;
+  align-items: center;
+  background-color: #3B2C5F;  /* Темный фон для строки */
+  border-radius: 12px;        /* Скругление углов */
+  padding: 10px;
+}
+.player-photo {
+  flex: 0 0 auto;
+  margin-right: 12px;
+}
+.player-photo img {
+  max-height: 50px;
+  border-radius: 6px;
+}
+.player-name {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Блок с действиями (кнопки) */
+.player-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+}
     .player-actions button {
       margin: 0 4px;
     }
@@ -302,37 +330,31 @@
             <button class="deleteTeam">Delete</button>
           </div>
           
-          <!-- «Таблица» игроков (стилизована под плитку) -->
-          <% if(teamPlayers.length > 0){ %>
-            <table class="players-table">
-              <tbody>
-                <% teamPlayers.forEach(player => { %>
-                  <tr data-id="<%= player.id %>">
-                    <td class="player-photo">
-                      <% if(player.photo){ %>
-                        <img src="<%= player.photo %>" alt="<%= player.name %>">
-                      <% } else { %>
-                        -
-                      <% } %>
-                    </td>
-                    <td class="player-name">
-                      <%= player.name %>
-                    </td>
-                    <td class="player-actions">
-                      <button class="editPlayer small-btn">Edit</button>
-                      <button class="deletePlayer small-btn">Delete</button>
-                    </td>
-                  </tr>
-                <% }); %>
-              </tbody>
-            </table>
+<!-- «Список» игроков (стилизован под плитку) -->
+<% if(teamPlayers.length > 0){ %>
+  <div class="players-list">
+    <% teamPlayers.forEach(player => { %>
+      <div class="player-row" data-id="<%= player.id %>">
+        <div class="player-photo">
+          <% if(player.photo){ %>
+            <img src="<%= player.photo %>" alt="<%= player.name %>">
           <% } else { %>
-            <p class="no-players">no players</p>
+            <span>-</span>
           <% } %>
         </div>
-      <% }); %>
-    </div>
+        <div class="player-name">
+          <%= player.name %>
+        </div>
+        <div class="player-actions">
+          <button class="editPlayer small-btn">Edit</button>
+          <button class="deletePlayer small-btn">Delete</button>
+        </div>
+      </div>
+    <% }); %>
   </div>
+<% } else { %>
+  <p class="no-players">no players</p>
+<% } %>
 
   <!-- Модальное окно для создания/редактирования команды -->
   <div id="teamModalBackdrop" class="modal-backdrop">
