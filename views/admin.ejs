@@ -67,23 +67,26 @@
       gap: 20px;
       margin-top: 20px;
     }
+
     .small-btn {
   display: inline-block;
-  padding: 8px 16px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
   border: none;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #57492E, #6A593F);
-  color: #FFFFFF;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #CC935F, #EBC99C);
+  color: #1E1E1E;
   cursor: pointer;
   font-weight: 500;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 12px rgba(87,73,46,0.6);
-  margin-right: 5px;
+  box-shadow: 0 3px 8px rgba(204,147,95,0.4);
+  margin: 0 4px;
 }
 .small-btn:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 8px 20px rgba(87,73,46,0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(204,147,95,0.5);
 }
+
 
     .team-card {
       background: #2C243B;
@@ -132,24 +135,20 @@
 
     /* Список игроков */
     .players-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 8px; /* расстояние между строками */
-      margin-top: 10px;
-    }
-    .players-table thead {
-      display: none;
-    }
-    .players-table tr {
-      background-color: #3B2C5F; 
-      border-radius: 8px;
-    }
-    .players-table td {
-      border: none;
-      padding: 10px;
-      font-size: 0.95rem;
-      color: #e0e0e0;
-    }
+  border-collapse: separate;
+  border-spacing: 0 8px; /* отступы между строками */
+}
+.players-table tbody tr {
+  background-color: #3B2C5F;
+}
+.players-table tbody tr td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.players-table tbody tr td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
     .player-photo img {
       max-height: 50px;
       border-radius: 6px;
