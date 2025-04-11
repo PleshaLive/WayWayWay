@@ -96,6 +96,16 @@ const storagePlayers = multer.diskStorage({
 });
 const uploadPlayers = multer({ storage: storagePlayers });
 
+function fixUrl(url) {
+  if ((url.startsWith("http:/") && !url.startsWith("http://")) ||
+      (url.startsWith("https:/") && !url.startsWith("https://"))) {
+    // Заменяем первую встреченную подстроку "http:/" или "https:/" на корректное "http://" или "https://"
+    return url.replace(/^https?:\//, match => match + '/');
+  }
+  return url;
+}
+
+
 // ------------------------------
 // Предопределённые пути для Side_logo и winType_logo
 // ------------------------------
@@ -563,14 +573,14 @@ app.get('/score', (req, res) => {
       }
     }
 
-    // ФОРМИРОВАНИЕ КОРРЕКТНОГО URL ДЛЯ ФОТО:
+    // Формирование корректного URL для фото
     let photoFull = defaultPlayerImage;
     if (player.photo) {
-      // Если в player.photo уже содержится "http", считаем, что это полный URL
       if (player.photo.startsWith("http")) {
-        photoFull = player.photo;
+        // Если URL начинается с "http", применяем исправление
+        photoFull = fixUrl(player.photo);
       } else {
-        // Если нет ведущего слэша, добавляем его
+        // Если это относительный путь - добавляем baseUrl с ведущим слэшем
         const normalizedPhoto = player.photo.startsWith('/') ? player.photo : '/' + player.photo;
         photoFull = `${baseUrl}${normalizedPhoto}`;
       }
