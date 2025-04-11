@@ -563,6 +563,9 @@ app.get('/score', (req, res) => {
       }
     }
     
+    const normalizedPhoto = player.photo.startsWith('/') ? player.photo : '/' + player.photo;
+    const photoFull = player.photo ? `${baseUrl}${normalizedPhoto}` : defaultPlayerImage;
+
     const team = player.team;
     if (team === "CT" || team === "T") {
       const kills = player.match_stats ? player.match_stats.kills : 0;
@@ -570,7 +573,7 @@ app.get('/score', (req, res) => {
       const deaths = player.match_stats ? player.match_stats.deaths : 0;
       const adr = getAverageDamage(steamId);
       const photoFull = player.photo 
-      ? path.join(baseUrl, player.photo.replace(/^\//, ''))
+      ? `${baseUrl}${player.photo}` 
       : defaultPlayerImage;
     
       const playerData = {
@@ -791,6 +794,7 @@ app.get('/mvp', (req, res) => {
   
   res.json(mvp ? [mvp] : []);
 });
+
 
 // ------------------------------
 // Endpoint /observer – возвращает данные наблюдаемого игрока с логотипом команды вместо фото игрока
