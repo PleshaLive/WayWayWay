@@ -125,7 +125,7 @@ const winTypeLogos = {
 // Дефолтные изображения для случаев, когда логотип не найден
 const defaultSideLogo = `${baseUrl}/side_logos/None.png`;
 const defaultWinTypeLogo = `${baseUrl}/winType_logos/None.png`;
-const defaultImage = `${baseUrl}/None.png`; // для команд, если не найден логотип
+const defaultImage = `${baseUrl}/winType_logos/None.png`; // для команд, если не найден логотип
 const defaultPlayerImage = `${baseUrl}/NoneP.png`;
 // ------------------------------
 // 1) Обновлённая функция для определения кол-ва сыгранных раундов
