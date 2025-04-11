@@ -563,13 +563,18 @@ app.get('/score', (req, res) => {
       }
     }
 
-    // Логика нормализации фото
-    const normalizedPhoto = (player.photo || '').startsWith('/')
-      ? player.photo
-      : '/' + player.photo;
-    const photoFull = player.photo
-      ? `${baseUrl}${normalizedPhoto}`
-      : defaultPlayerImage;
+    // ФОРМИРОВАНИЕ КОРРЕКТНОГО URL ДЛЯ ФОТО:
+    let photoFull = defaultPlayerImage;
+    if (player.photo) {
+      // Если в player.photo уже содержится "http", считаем, что это полный URL
+      if (player.photo.startsWith("http")) {
+        photoFull = player.photo;
+      } else {
+        // Если нет ведущего слэша, добавляем его
+        const normalizedPhoto = player.photo.startsWith('/') ? player.photo : '/' + player.photo;
+        photoFull = `${baseUrl}${normalizedPhoto}`;
+      }
+    }
 
     const team = player.team;
     if (team === "CT" || team === "T") {
@@ -600,10 +605,10 @@ app.get('/score', (req, res) => {
   ctPlayers.sort((a, b) => b.kills - a.kills);
   tPlayers.sort((a, b) => b.kills - a.kills);
 
-  const teamCT = scoreboard.map && scoreboard.map.team_ct
+  const teamCT = (scoreboard.map && scoreboard.map.team_ct)
     ? scoreboard.map.team_ct
     : { name: "CT", score: 0, timeouts_remaining: 0 };
-  const teamT  = scoreboard.map && scoreboard.map.team_t
+  const teamT = (scoreboard.map && scoreboard.map.team_t)
     ? scoreboard.map.team_t
     : { name: "T", timeouts_remaining: 0, score: 0 };
 
@@ -627,6 +632,7 @@ app.get('/score', (req, res) => {
 
   res.json({ mapInfo, players: playersArr });
 });
+
 
 
 app.get('/teams', (req, res) => {
