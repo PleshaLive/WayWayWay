@@ -550,7 +550,7 @@ app.get('/scoreboard', (req, res) => {
 app.get('/score', (req, res) => {
   let ctPlayers = [];
   let tPlayers = [];
-  
+
   for (const steamId in scoreboard.players) {
     let player = { ...scoreboard.players[steamId] };
     const regPlayer = players.find(p => p.steamId?.toLowerCase() === steamId.toLowerCase());
@@ -562,9 +562,14 @@ app.get('/score', (req, res) => {
         player.photo = regPlayer.photo;
       }
     }
-    
-    const normalizedPhoto = player.photo.startsWith('/') ? player.photo : '/' + player.photo;
-    const photoFull = player.photo ? `${baseUrl}${normalizedPhoto}` : defaultPlayerImage;
+
+    // Логика нормализации фото
+    const normalizedPhoto = (player.photo || '').startsWith('/')
+      ? player.photo
+      : '/' + player.photo;
+    const photoFull = player.photo
+      ? `${baseUrl}${normalizedPhoto}`
+      : defaultPlayerImage;
 
     const team = player.team;
     if (team === "CT" || team === "T") {
@@ -572,10 +577,7 @@ app.get('/score', (req, res) => {
       const assists = player.match_stats ? player.match_stats.assists : 0;
       const deaths = player.match_stats ? player.match_stats.deaths : 0;
       const adr = getAverageDamage(steamId);
-      const photoFull = player.photo 
-      ? `${baseUrl}${player.photo}` 
-      : defaultPlayerImage;
-    
+
       const playerData = {
         steamId,
         name: player.name,
@@ -594,17 +596,17 @@ app.get('/score', (req, res) => {
       }
     }
   }
-  
+
   ctPlayers.sort((a, b) => b.kills - a.kills);
   tPlayers.sort((a, b) => b.kills - a.kills);
-  
+
   const teamCT = scoreboard.map && scoreboard.map.team_ct
     ? scoreboard.map.team_ct
     : { name: "CT", score: 0, timeouts_remaining: 0 };
   const teamT  = scoreboard.map && scoreboard.map.team_t
     ? scoreboard.map.team_t
     : { name: "T", timeouts_remaining: 0, score: 0 };
-  
+
   const mapInfo = {
     CT: {
       teamName: teamCT.name,
@@ -617,14 +619,15 @@ app.get('/score', (req, res) => {
       timeoutsRemaining: teamT.timeouts_remaining
     }
   };
-  
+
   const playersArr = [
     ...ctPlayers.map(p => ({ ...p, teamName: teamCT.name })),
     ...tPlayers.map(p => ({ ...p, teamName: teamT.name }))
   ];
-  
+
   res.json({ mapInfo, players: playersArr });
 });
+
 
 app.get('/teams', (req, res) => {
   const teamCTFromGSI = (scoreboard.map && scoreboard.map.team_ct)
