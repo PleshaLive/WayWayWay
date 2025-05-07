@@ -116,6 +116,9 @@
         box-shadow: var(--shadow-md);
         transition: var(--transition-base);
         position: relative;
+         /* Добавляем flex для управления высотой контента */
+        display: flex;
+        flex-direction: column;
     }
     .card-style:hover {
         transform: translateY(-3px);
@@ -135,31 +138,29 @@
         color: var(--color-primary-light);
         text-shadow: var(--text-shadow-primary);
         font-weight: var(--font-weight-bold);
-        /* text-align: center; убираем, т.к. есть кнопка справа */
     }
     .page-title-container {
         display: flex;
-        justify-content: space-between; /* Заголовок слева, кнопка справа */
+        justify-content: space-between;
         align-items: center;
         margin-bottom: var(--spacing-xl);
         padding-bottom: var(--spacing-md);
         border-bottom: 1px solid var(--color-divider);
-        flex-wrap: wrap; /* Разрешаем перенос на маленьких экранах */
-        gap: var(--spacing-md); /* Отступ между элементами при переносе */
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
     }
     .page-title-container h1 {
-        margin-bottom: 0; /* Убираем отступ у h1 внутри контейнера */
+        margin-bottom: 0;
         font-size: 1.8rem;
     }
     .page-title-container h1 i {
         margin-right: var(--spacing-sm);
         color: var(--color-primary-base);
     }
-    /* Стили для кнопки-ссылки в заголовке */
     .page-title-container .app-button {
         font-size: 0.9rem;
         padding: var(--spacing-sm) var(--spacing-md);
-        white-space: nowrap; /* Предотвращаем перенос текста на кнопке */
+        white-space: nowrap;
     }
 
     h2 {
@@ -298,120 +299,50 @@
         margin-top: var(--spacing-xs);
         margin-bottom: var(--spacing-xs);
     }
-     /* Ссылки, стилизованные под кнопки */
-    a.app-button {
-        text-decoration: none;
-    }
+    a.app-button { text-decoration: none; }
+    .app-button i, button i { margin-right: var(--spacing-sm); font-size: 0.95em; }
+    .app-button::before, button::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(255, 255, 255, 0.2); border-radius: 50%; transform: translate(-50%, -50%); transition: width 0.4s ease, height 0.4s ease; z-index: -1; opacity: 0; }
+    .app-button:hover::before, button:hover::before { width: 250%; height: 250%; opacity: 1; }
+    .app-button.primary, button.primary { background-color: var(--color-primary-base); border-color: var(--color-primary-base); color: var(--color-text-on-primary); }
+    .app-button.primary:hover, button.primary:hover { background-color: var(--color-primary-light); border-color: var(--color-primary-light); box-shadow: var(--glow-primary), 0 0 15px rgba(var(--rgb-primary),0.3) inset; transform: translateY(-2px) scale(1.02); }
+    .app-button.primary:active, button.primary:active { transform: translateY(0px) scale(1); background-color: var(--color-primary-dark); box-shadow: var(--shadow-inset); }
+    .app-button.tertiary, button.tertiary { background-color: transparent; border-color: var(--color-secondary-light); color: var(--color-secondary-light); box-shadow: 0 2px 5px rgba(var(--rgb-secondary),0.2); }
+    .app-button.tertiary:hover, button.tertiary:hover { background-color: var(--color-secondary-base); color: var(--color-text-on-accent); border-color: var(--color-secondary-base); box-shadow: var(--glow-secondary), 0 0 15px rgba(var(--rgb-secondary),0.3) inset; }
+    .app-button.small, button.small { padding: var(--spacing-xs) var(--spacing-sm); font-size: 0.8rem; min-width: auto; letter-spacing: 0.02em; }
+    .app-button.small i, button.small i { margin-right: var(--spacing-xs); font-size: 0.9em; }
+    .app-button.danger, button.danger { background-color: transparent; border-color: var(--color-error); color: var(--color-error); box-shadow: 0 2px 5px rgba(var(--rgb-error),0.2); }
+    .app-button.danger:hover, button.danger:hover { background-color: var(--color-error); color: var(--color-text-on-accent); border-color: var(--color-error-dark); box-shadow: var(--glow-error), 0 0 15px rgba(var(--rgb-error),0.3) inset; }
 
-    .app-button i, button i {
-        margin-right: var(--spacing-sm);
-        font-size: 0.95em;
-    }
-    .app-button::before, button::before {
-        content: '';
-        position: absolute;
-        top: 50%; left: 50%;
-        width: 0; height: 0;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.4s ease, height 0.4s ease;
-        z-index: -1;
-        opacity: 0;
-    }
-    .app-button:hover::before, button:hover::before {
-        width: 250%; height: 250%;
-        opacity: 1;
-    }
-    .app-button.primary, button.primary {
-        background-color: var(--color-primary-base);
-        border-color: var(--color-primary-base);
-        color: var(--color-text-on-primary);
-    }
-    .app-button.primary:hover, button.primary:hover {
-        background-color: var(--color-primary-light);
-        border-color: var(--color-primary-light);
-        box-shadow: var(--glow-primary), 0 0 15px rgba(var(--rgb-primary),0.3) inset;
-        transform: translateY(-2px) scale(1.02);
-    }
-    .app-button.primary:active, button.primary:active {
-        transform: translateY(0px) scale(1);
-        background-color: var(--color-primary-dark);
-        box-shadow: var(--shadow-inset);
-    }
+    .top-buttons { text-align: center; margin-bottom: var(--spacing-lg); display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; }
 
-    .app-button.tertiary, button.tertiary {
-        background-color: transparent;
-        border-color: var(--color-secondary-light);
-        color: var(--color-secondary-light);
-        box-shadow: 0 2px 5px rgba(var(--rgb-secondary),0.2);
-    }
-    .app-button.tertiary:hover, button.tertiary:hover {
-        background-color: var(--color-secondary-base);
-        color: var(--color-text-on-accent);
-        border-color: var(--color-secondary-base);
-        box-shadow: var(--glow-secondary), 0 0 15px rgba(var(--rgb-secondary),0.3) inset;
-    }
-
-    .app-button.small, button.small {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: 0.8rem;
-        min-width: auto;
-        letter-spacing: 0.02em;
-    }
-    .app-button.small i, button.small i {
-        margin-right: var(--spacing-xs);
-        font-size: 0.9em;
-    }
-
-    .app-button.danger, button.danger {
-        background-color: transparent;
-        border-color: var(--color-error);
-        color: var(--color-error);
-        box-shadow: 0 2px 5px rgba(var(--rgb-error),0.2);
-    }
-     .app-button.danger:hover, button.danger:hover {
-        background-color: var(--color-error);
-        color: var(--color-text-on-accent);
-        border-color: var(--color-error-dark);
-        box-shadow: var(--glow-error), 0 0 15px rgba(var(--rgb-error),0.3) inset;
-    }
-
-    .top-buttons {
-        text-align: center;
-        margin-bottom: var(--spacing-lg);
-        display: flex;
-        justify-content: center;
-        gap: var(--spacing-md);
-        flex-wrap: wrap;
-    }
-
-    /* === Стили для 8 колонок === */
+    /* === Стили для сетки команд (макс. 6 колонок) === */
     .admin-teams-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr); /* Мобильные */
         gap: var(--spacing-md);
         margin-top: var(--spacing-lg);
     }
-    @media (min-width: 768px) {
+    @media (min-width: 768px) { /* Планшеты */
       .admin-teams-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr); /* 3 колонки */
         gap: var(--spacing-md);
       }
     }
-    @media (min-width: 1200px) {
+    @media (min-width: 992px) { /* Небольшие десктопы */
+        .admin-teams-grid {
+            grid-template-columns: repeat(4, 1fr); /* 4 колонки */
+            gap: var(--spacing-md);
+        }
+    }
+    @media (min-width: 1400px) { /* Средние и большие десктопы */
       .admin-teams-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: var(--spacing-sm);
+        grid-template-columns: repeat(6, 1fr); /* Максимум 6 колонок */
+        gap: var(--spacing-sm); /* Можно чуть уменьшить отступ */
        }
     }
-    @media (min-width: 1600px) {
-      .admin-teams-grid {
-        grid-template-columns: repeat(8, 1fr);
-        gap: var(--spacing-sm);
-      }
-    }
-    /* Уменьшаем размеры карточки и ее содержимого для 8 колонок */
+    /* === Конец стилей для сетки === */
+
+    /* Уменьшаем размеры карточки и ее содержимого (оставляем компактные стили) */
     .team-card {
         padding: var(--spacing-sm);
     }
@@ -425,159 +356,95 @@
     .team-logo {
         max-height: 60px;
         margin-bottom: var(--spacing-sm);
-        object-fit: contain; /* Добавлено */
+        object-fit: contain;
     }
-     .team-card .no-logo-text { /* Стили для текста No Logo */
-        text-align:center;
-        color: var(--color-text-muted);
-        margin-bottom: var(--spacing-sm);
-        font-style: italic;
-        font-size: 0.9rem; /* Уменьшил немного */
+     .team-card .no-logo-text {
+        text-align:center; color: var(--color-text-muted);
+        margin-bottom: var(--spacing-sm); font-style: italic; font-size: 0.9rem;
     }
     .team-actions {
-        gap: var(--spacing-sm);
-        margin-bottom: var(--spacing-sm);
+        gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);
+        /* Важно: этот блок теперь не должен растягивать flex-контейнер карточки */
+        flex-shrink: 0;
     }
-    .team-actions .app-button.small {
-        font-size: 0.75rem;
-        padding: var(--spacing-xs);
-    }
-    /* Опционально: скрыть текст на кнопках команды, оставив иконки */
-    /*
-    .team-actions .app-button.small .fa-edit,
-    .team-actions .app-button.small .fa-trash-alt { margin-right: 0; }
-    .team-actions .app-button.small span.button-text { display: none; }
-    */
+    .team-actions .app-button.small { font-size: 0.75rem; padding: var(--spacing-xs); }
 
-    .players-list {
-        margin-top: var(--spacing-sm);
+     /* === Стили для прокручиваемого списка игроков === */
+    .team-card .player-list-wrapper {
+        max-height: 190px; /* Максимальная высота блока игроков */
+        overflow-y: auto;
+        margin-top: auto; /* Прижимаем этот блок к низу карточки, если есть место */
         padding-top: var(--spacing-sm);
+        border-top: 1px solid var(--color-divider);
+        padding-right: var(--spacing-xs); /* Отступ для скроллбара */
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: var(--color-primary-base) var(--color-surface-secondary); /* Firefox */
     }
-     .player-row {
+    .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: var(--border-radius-sm); }
+    .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-base); border-radius: var(--border-radius-sm); border: 1px solid var(--color-surface-secondary); }
+    .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
+    .team-card .players-list { margin-top: 0; padding-top: 0; border-top: none; padding-bottom: var(--spacing-xs); }
+     .player-row:last-child { margin-bottom: 0; }
+    .team-card .player-list-wrapper .no-players {
+        padding: var(--spacing-md) 0; text-align: center;
+        color: var(--color-text-muted); font-style: italic; font-size: 0.85rem;
+    }
+     /* === Конец стилей для прокрутки === */
+
+    .player-row {
         padding: var(--spacing-xs) var(--spacing-sm);
+        display: flex; /* Убедимся что flex включен */
+        align-items: center; /* Выравнивание по центру */
+        background-color: var(--color-surface-secondary); /* Добавим фон для строк */
+        border-radius: var(--border-radius-md); /* Скругление строк */
+        margin-bottom: var(--spacing-sm); /* Отступ между строками */
+        border: 1px solid var(--color-border);
+        transition: var(--transition-fast);
+    }
+     .player-row:hover {
+        border-color: var(--color-primary-light);
+        background-color: rgba(var(--rgb-primary), 0.05);
     }
     .player-photo img, .player-photo .no-photo-placeholder {
-        max-height: 35px;
-        width: 35px; height: 35px;
-        font-size: 1rem;
-        margin-right: var(--spacing-sm);
+        max-height: 35px; width: 35px; height: 35px; font-size: 1rem; margin-right: var(--spacing-sm);
+        border-radius: var(--border-radius-round); /* Круглые фото */
+        border: 1px solid var(--color-border-light); /* Тонкая рамка */
+        flex-shrink: 0; /* Фото не должно сжиматься */
     }
      .player-photo .no-photo-placeholder {
-        width: 35px; height: 35px;
-        background-color: var(--color-surface-tertiary);
-        border-radius: var(--border-radius-round);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--color-text-muted);
-        font-size: 1rem; /* Уменьшили */
-        border: 1px solid var(--color-border-light); /* Тоньше рамка */
+        background-color: var(--color-surface-tertiary); display: flex;
+        align-items: center; justify-content: center; color: var(--color-text-muted);
     }
     .player-name {
-        font-size: 0.85rem;
+        font-size: 0.85rem; flex-grow: 1; /* Имя занимает доступное место */
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; /* Обрезка длинных имен */
+        color: var(--color-text-primary); /* Цвет имени */
+        font-weight: var(--font-weight-medium);
     }
-     .player-actions .app-button.small i {
-        margin-right: 0; /* Убираем отступ для иконки */
+    .player-actions {
+         gap: var(--spacing-sm); /* Отступ между кнопками */
+         display: flex; /* Для выравнивания кнопок */
+         flex-shrink: 0; /* Кнопки не должны сжиматься */
     }
-    .player-actions .app-button.small {
-        min-width: auto;
-        padding: var(--spacing-xs);
-        line-height: 1;
-    }
-    /* Опционально: скрыть текст на кнопках игрока */
-    /*
-     .player-actions .app-button.small span.button-text { display: none; }
-    */
-    .no-players {
-        text-align: center;
-        color: var(--color-text-muted);
-        margin-top: var(--spacing-sm); /* Поменьше отступ */
-        font-style: italic;
-        font-size: 0.85rem; /* Поменьше шрифт */
-        padding: var(--spacing-sm) 0;
-    }
-    /* === Конец стилей для 8 колонок === */
+     .player-actions .app-button.small i { margin-right: 0; }
+     .player-actions .app-button.small { min-width: auto; padding: var(--spacing-xs); line-height: 1; }
 
+    .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(var(--rgb-primary), 0.1); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: var(--spacing-md); overflow-y: auto; }
+    .modal { width: 500px; max-width: 95vw; position: relative; animation: fadeInModal 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; max-height: 90vh; display: flex; flex-direction: column; }
+    .modal-content { overflow-y: auto; padding-right: var(--spacing-xs); flex-grow: 1; }
+    @keyframes fadeInModal { 0% { transform: scale(0.9) translateY(20px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+    .close-modal { position: absolute; top: var(--spacing-md); right: var(--spacing-md); background: transparent; border: none; color: var(--color-text-muted); font-size: 1.8rem; line-height: 1; cursor: pointer; padding: var(--spacing-xs); transition: var(--transition-fast); z-index: 10; }
+    .close-modal:hover { color: var(--color-error); transform: scale(1.1); }
+    .modal form { margin-top: var(--spacing-md); }
+    .modal .form-actions { margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-divider); }
+    .modal #uploadTeamLogoBtn, .modal #uploadPlayerPhotoBtn { width: 100%; margin-bottom: var(--spacing-sm); }
 
-    .modal-backdrop {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(var(--rgb-primary), 0.1);
-        backdrop-filter: blur(8px);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        padding: var(--spacing-md);
-        overflow-y: auto;
-    }
-    .modal {
-        width: 500px;
-        max-width: 95vw;
-        position: relative;
-        animation: fadeInModal 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-    }
-    .modal-content {
-        overflow-y: auto;
-        padding-right: var(--spacing-xs);
-        flex-grow: 1;
-    }
-
-    @keyframes fadeInModal {
-        0% { transform: scale(0.9) translateY(20px); opacity: 0; }
-        100% { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    .close-modal {
-        position: absolute;
-        top: var(--spacing-md);
-        right: var(--spacing-md);
-        background: transparent;
-        border: none;
-        color: var(--color-text-muted);
-        font-size: 1.8rem;
-        line-height: 1;
-        cursor: pointer;
-        padding: var(--spacing-xs);
-        transition: var(--transition-fast);
-        z-index: 10;
-    }
-    .close-modal:hover {
-        color: var(--color-error);
-        transform: scale(1.1);
-    }
-
-    .modal form {
-        margin-top: var(--spacing-md);
-    }
-    .modal .form-actions {
-        margin-top: var(--spacing-lg);
-        display: flex;
-        justify-content: flex-end;
-        gap: var(--spacing-md);
-        padding-top: var(--spacing-md);
-        border-top: 1px solid var(--color-divider);
-    }
-    .modal #uploadTeamLogoBtn, .modal #uploadPlayerPhotoBtn {
-        width: 100%;
-        margin-bottom: var(--spacing-sm);
-    }
-
-    /* Адаптивность */
     @media (max-width: 768px) {
         h1 { font-size: 1.6rem; }
         .modal { width: 90vw; }
-        .player-row { flex-direction: column; align-items: flex-start; gap: var(--spacing-sm); }
-        .player-photo { margin-right: 0; margin-bottom: var(--spacing-xs); }
-        .player-actions { width: 100%; justify-content: flex-start; margin-top: var(--spacing-sm); }
-        .player-actions .app-button.small { flex-grow: 1; }
-        /* Заголовок и кнопка могут перенестись */
         .page-title-container { justify-content: center; text-align: center; }
     }
-
     @media (max-width: 480px) {
         .container { padding: var(--spacing-md); }
         .top-buttons { flex-direction: column; gap: var(--spacing-sm); }
@@ -588,23 +455,14 @@
         .modal .form-actions .app-button { width: 100%; }
         .page-title-container h1 { font-size: 1.5rem; }
         .modal .modal-title-text { font-size: 1.3rem; }
+        .player-row { /* На мобильных можно сделать фото над именем */
+            /* flex-direction: column; align-items: flex-start; */ /* Раскомментируйте если нужно */
+        }
     }
-    .styled-scrollbar::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    .styled-scrollbar::-webkit-scrollbar-track {
-        background: var(--color-surface-secondary);
-        border-radius: var(--border-radius-sm);
-    }
-    .styled-scrollbar::-webkit-scrollbar-thumb {
-        background: var(--color-primary-base);
-        border-radius: var(--border-radius-sm);
-        border: 1px solid var(--color-surface-secondary);
-    }
-    .styled-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: var(--color-primary-light);
-    }
+    .styled-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+    .styled-scrollbar::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: var(--border-radius-sm); }
+    .styled-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-base); border-radius: var(--border-radius-sm); border: 1px solid var(--color-surface-secondary); }
+    .styled-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
   </style>
 </head>
 <body>
@@ -612,7 +470,8 @@
     <div class="page-title-container">
         <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
         <a href="https://galaxytimer-production.up.railway.app/" target="_blank" class="app-button tertiary" title="Open Galaxy Timer in new tab">
-            <i class="fas fa-stopwatch"></i> Galaxy Timer </a>
+            <i class="fas fa-stopwatch"></i> Galaxy Timer
+        </a>
     </div>
 
     <div class="top-buttons">
@@ -626,7 +485,8 @@
         <div class="team-card card-style" data-id="<%= team.id %>">
           <h2><%= team.name %></h2>
           <% if(team.logo){ %>
-            <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo" loading="lazy"> <% } else { %>
+            <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo" loading="lazy">
+          <% } else { %>
             <p class="no-logo-text">No Logo</p>
           <% } %>
           <div class="team-actions">
@@ -634,29 +494,31 @@
             <button class="deleteTeam app-button small danger"><i class="fas fa-trash-alt"></i> Delete</button>
           </div>
 
-          <% if(teamPlayers.length > 0){ %>
-            <div class="players-list">
-              <% teamPlayers.forEach(player => { %>
-                <div class="player-row" data-id="<%= player.id %>">
-                  <div class="player-photo">
-                    <% if(player.photo){ %>
-                      <img src="<%= player.photo %>" alt="<%= player.name %>" loading="lazy"> <% } else { %>
-                      <div class="no-photo-placeholder"><i class="fas fa-user"></i></div>
-                    <% } %>
+          <div class="player-list-wrapper styled-scrollbar">
+            <% if(teamPlayers.length > 0){ %>
+              <div class="players-list">
+                <% teamPlayers.forEach(player => { %>
+                  <div class="player-row" data-id="<%= player.id %>">
+                    <div class="player-photo">
+                      <% if(player.photo){ %>
+                        <img src="<%= player.photo %>" alt="<%= player.name %>" loading="lazy">
+                      <% } else { %>
+                        <div class="no-photo-placeholder"><i class="fas fa-user"></i></div>
+                      <% } %>
+                    </div>
+                    <div class="player-name"><%= player.name %></div>
+                    <div class="player-actions">
+                      <button class="editPlayer app-button small tertiary" title="Edit Player"><i class="fas fa-user-edit"></i></button>
+                      <button class="deletePlayer app-button small danger" title="Delete Player"><i class="fas fa-user-minus"></i></button>
+                    </div>
                   </div>
-                  <div class="player-name"><%= player.name %></div>
-                  <div class="player-actions">
-                    <button class="editPlayer app-button small tertiary" title="Edit Player"><i class="fas fa-user-edit"></i></button>
-                    <button class="deletePlayer app-button small danger" title="Delete Player"><i class="fas fa-user-minus"></i></button>
-                  </div>
-                </div>
-              <% }); %>
-            </div>
-          <% } else { %>
-            <p class="no-players">No players in this team.</p>
-          <% } %>
-        </div>
-      <% }); %>
+                <% }); %>
+              </div>
+            <% } else { %>
+              <p class="no-players">No players in this team.</p>
+            <% } %>
+          </div>
+          </div> <% }); %>
        <% if(teams.length === 0) { %>
            <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the 'Create Team' button above.</p>
        <% } %>
@@ -719,164 +581,27 @@
   </div>
 
   <script>
-    function showTeamModal(editMode = false, teamData = null) {
-      $("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');
-      $("#teamForm")[0].reset();
-      $("#teamId").val("");
-      $("#teamLogoFile").val('');
-      if (editMode && teamData) {
-        $("#teamId").val(teamData.id);
-        $("#teamName").val(teamData.name);
-        $("#teamLogo").val(teamData.logo);
-      }
-      $("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);
-    }
-    function hideTeamModal() {
-      $("#teamModalBackdrop").fadeOut(200, function() {
-        $(this).hide();
-        $("#teamForm")[0].reset();
-        $("#teamId").val("");
-        $("#teamLogoFile").val('');
-      });
-    }
-    function showPlayerModal(editMode = false, playerData = null) {
-      $("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');
-      $("#playerForm")[0].reset();
-      $("#playerId").val("");
-      $("#playerPhotoFile").val('');
-      if (editMode && playerData) {
-        $("#playerId").val(playerData.id);
-        $("#playerName").val(playerData.name);
-        $("#playerSteamId").val(playerData.steamId);
-        $("#playerPhoto").val(playerData.photo);
-        $("#playerTeamId").val(playerData.teamId); // Предварительный выбор команды
-      }
-      $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);
-    }
-    function hidePlayerModal() {
-      $("#playerModalBackdrop").fadeOut(200, function() {
-        $(this).hide();
-        $("#playerForm")[0].reset();
-        $("#playerId").val("");
-        $("#playerPhotoFile").val('');
-      });
-    }
+    // Функции модальных окон (без изменений)
+    function showTeamModal(editMode = false, teamData = null) {$("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');if (editMode && teamData) {$("#teamId").val(teamData.id);$("#teamName").val(teamData.name);$("#teamLogo").val(teamData.logo);}$("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);}
+    function hideTeamModal() {$("#teamModalBackdrop").fadeOut(200, function() {$(this).hide();$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');});}
+    function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val('');if (editMode && playerData) {$("#playerId").val(playerData.id);$("#playerName").val(playerData.name);$("#playerSteamId").val(playerData.steamId);$("#playerPhoto").val(playerData.photo);$("#playerTeamId").val(playerData.teamId);}$("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
+    function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val('');});}
 
     $(document).ready(function(){
-      $("#btn-show-team-modal").click(function(){
-        showTeamModal(false);
-      });
-      $("#btn-show-player-modal").click(function(){
-        $.get("/api/teams", function(teams) {
-            const teamSelect = $("#playerTeamId");
-            const currentTeamId = teamSelect.val();
-            teamSelect.empty();
-            teamSelect.append('<option value="">-- No Team --</option>');
-            teams.forEach(function(team) {
-                teamSelect.append(`<option value="${team.id}">${team.name}</option>`);
-            });
-            if(currentTeamId) teamSelect.val(currentTeamId);
-            showPlayerModal(false);
-        }).fail(function() {
-            alert("Could not load teams for player modal.");
-            showPlayerModal(false);
-        });
-      });
+      // Обработчики кнопок и событий (без изменений)
+      $("#btn-show-team-modal").click(function(){ showTeamModal(false); });
+      $("#btn-show-player-modal").click(function(){ $.get("/api/teams", function(teams) {const teamSelect = $("#playerTeamId");const currentTeamId = teamSelect.val();teamSelect.empty();teamSelect.append('<option value="">-- No Team --</option>');teams.forEach(function(team) {teamSelect.append(`<option value="${team.id}">${team.name}</option>`);});if(currentTeamId) teamSelect.val(currentTeamId);showPlayerModal(false); }).fail(function() {alert("Could not load teams for player modal.");showPlayerModal(false); }); });
       $("#closeTeamModal").click(function(){ hideTeamModal(); });
       $("#closePlayerModal").click(function(){ hidePlayerModal(); });
-
-      $(".modal-backdrop").click(function(event) {
-        if ($(event.target).is(".modal-backdrop")) {
-          if ($("#teamModalBackdrop").is(":visible")) {
-            hideTeamModal();
-          }
-          if ($("#playerModalBackdrop").is(":visible")) {
-            hidePlayerModal();
-          }
-        }
-      });
-
-      $("#uploadTeamLogoBtn").click(function(){
-        const fileInput = $("#teamLogoFile")[0];
-        if (!fileInput.files.length) { alert("Please select a logo file first."); return; }
-        const formData = new FormData(); formData.append('logoFile', fileInput.files[0]);
-        $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false,
-          success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); },
-          error: function() { alert("Error uploading logo. Please try again or enter URL manually."); }
-        });
-      });
-
-      $("#uploadPlayerPhotoBtn").click(function(){
-        const fileInput = $("#playerPhotoFile")[0];
-        if (!fileInput.files.length) { alert("Please select a photo file first."); return; }
-        const formData = new FormData(); formData.append('photoFile', fileInput.files[0]);
-        $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false,
-          success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); },
-          error: function() { alert("Error uploading photo. Please try again or enter URL manually."); }
-        });
-      });
-
-      $("#teamForm").submit(function(e){
-        e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val();
-        const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST";
-        $.ajax({ url: url, type: type, data: { name, logo },
-          success: function(){ hideTeamModal(); location.reload(); },
-          error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
-        });
-      });
-
-      $("#playerForm").submit(function(e){
-        e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null;
-        const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST";
-        $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId },
-          success: function(){ hidePlayerModal(); location.reload(); },
-          error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
-        });
-      });
-
-      $(document).on("click", ".editTeam", function(){
-        const teamId = $(this).closest(".team-card").data("id");
-        $.get("/api/teams/" + teamId, function(team){
-          if(team){ showTeamModal(true, team); } else { alert("Team data not found."); }
-        }).fail(function(){ alert("Could not fetch team data for editing."); });
-      });
-
-      $(document).on("click", ".deleteTeam", function(){
-        const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id");
-        if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){
-          $.ajax({ url: "/api/teams/" + teamId, type: "DELETE",
-            success: function(){ location.reload(); },
-            error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
-          });
-        }
-      });
-
-      $(document).on("click", ".editPlayer", function(){
-        const playerId = $(this).closest(".player-row").data("id");
-        $.get("/api/teams", function(teams) { // Сначала грузим команды
-            const teamSelect = $("#playerTeamId"); teamSelect.empty(); teamSelect.append('<option value="">-- No Team --</option>');
-            teams.forEach(function(team) { teamSelect.append(`<option value="${team.id}">${team.name}</option>`); });
-            // Потом грузим игрока
-            $.get("/api/players/" + playerId, function(player){
-                if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); }
-            }).fail(function(){ alert("Could not fetch player data for editing."); });
-        }).fail(function() { // Если команды не загрузились
-            alert("Could not load teams. Player's team might not be correctly pre-selected.");
-            // Все равно пытаемся загрузить игрока
-            $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }})
-              .fail(function(){ alert("Could not fetch player data for editing."); }); // Добавляем fail и сюда
-        });
-      });
-
-      $(document).on("click", ".deletePlayer", function(){
-        const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id");
-        if(confirm("Are you sure you want to delete player '" + playerName + "'?")){
-          $.ajax({ url: "/api/players/" + playerId, type: "DELETE",
-            success: function(){ location.reload(); },
-            error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
-          });
-        }
-      });
+      $(".modal-backdrop").click(function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
+      $("#uploadTeamLogoBtn").click(function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
+      $("#uploadPlayerPhotoBtn").click(function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
+      $("#teamForm").submit(function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, logo }, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+      $("#playerForm").submit(function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+      $(document).on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
+      $(document).on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+      $(document).on("click", ".editPlayer", function(){ const playerId = $(this).closest(".player-row").data("id"); $.get("/api/teams", function(teams) { const teamSelect = $("#playerTeamId"); teamSelect.empty(); teamSelect.append('<option value="">-- No Team --</option>'); teams.forEach(function(team) { teamSelect.append(`<option value="${team.id}">${team.name}</option>`); }); $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); } }).fail(function(){ alert("Could not fetch player data for editing."); }); }).fail(function() { alert("Could not load teams. Player's team might not be correctly pre-selected."); $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }}) .fail(function(){ alert("Could not fetch player data for editing."); }); }); });
+      $(document).on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
     });
   </script>
 </body>
