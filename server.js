@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
-const cors = require('cors'); // <--- Добавьте эту строку
+const cors = require('cors'); // <--- Убедитесь, что эта строка есть
 
 const app = express();
 const port = process.env.PORT || 2727;
@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 // Включите CORS для всех маршрутов
-app.use(cors()); // <--- Добавьте эту строку
+app.use(cors()); // <--- Убедитесь, что эта строка есть
 
 // Статические файлы (логотипы, фото и т.д.)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -77,7 +77,12 @@ loadData();
 // ------------------------------
 const storageTeams = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'public/logos/');
+    // Убедимся, что папка существует
+    const dir = 'public/logos/';
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
     const uniqueName = Date.now() + '-' + file.originalname;
@@ -91,7 +96,12 @@ const uploadTeams = multer({ storage: storageTeams });
 // ------------------------------
 const storagePlayers = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'public/players/');
+    // Убедимся, что папка существует
+    const dir = 'public/players/';
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
     const uniqueName = Date.now() + '-' + file.originalname;
@@ -101,9 +111,9 @@ const storagePlayers = multer.diskStorage({
 const uploadPlayers = multer({ storage: storagePlayers });
 
 function fixUrl(url) {
+  if (!url) return url; // Если URL пустой, возвращаем как есть
   if ((url.startsWith("http:/") && !url.startsWith("http://")) ||
       (url.startsWith("https:/") && !url.startsWith("https://"))) {
-    // Заменяем первую встреченную подстроку "http:/" или "https:/" на корректное "http://" или "https://"
     return url.replace(/^https?:\//, match => match + '/');
   }
   return url;
@@ -113,7 +123,11 @@ function fixUrl(url) {
 // ------------------------------
 // Предопределённые пути для Side_logo и winType_logo
 // ------------------------------
-const baseUrl = process.env.BASE_URL || 'https://waywayway-production.up.railway.app';
+// Определение baseUrl должно быть динамическим или из переменных окружения
+const runningInRailway = !!process.env.RAILWAY_STATIC_URL;
+const defaultBaseUrl = runningInRailway ? `https://${process.env.RAILWAY_STATIC_URL}` : `http://localhost:${port}`;
+const baseUrl = process.env.BASE_URL || defaultBaseUrl;
+
 const sideLogos = {
   "CT": `${baseUrl}/side_logos/ct.png`,
   "T":  `${baseUrl}/side_logos/t.png`
@@ -234,7 +248,7 @@ function getObserverData() {
   }
   
   if (!observedData) {
-    let observerSlot = "0";
+    let observerSlot = scoreboard.player?.observer_slot ?? "0"; // Если scoreboard.player не определен, ищем слот 0
     for (const steamId in scoreboard.players) {
       const player = scoreboard.players[steamId];
       if (player.observer_slot !== undefined && String(player.observer_slot) === observerSlot) {
@@ -272,7 +286,7 @@ function getObserverData() {
       name: "",
       kills: 0,
       deaths: 0,
-      adr: 0,
+      adr: "0.0", // было 0, изменил на строку для консистентности с getAverageDamage
       team: "",
       photo: defaultImage,
       observer_slot: ""
@@ -301,14 +315,15 @@ wss.on('connection', (ws) => {
   console.log('WebSocket-соединение установлено');
   ws.send(JSON.stringify([getObserverData()]));
   
-  const intervalId = setInterval(() => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify([getObserverData()]));
-    }
-  }, 1000);
+  // Убираем интервал, обновление будет по GSI POST
+  // const intervalId = setInterval(() => {
+  //   if (ws.readyState === WebSocket.OPEN) {
+  //     ws.send(JSON.stringify([getObserverData()]));
+  //   }
+  // }, 1000);
   
   ws.on('close', () => {
-    clearInterval(intervalId);
+    // clearInterval(intervalId); // Соответственно, это тоже убираем
     console.log('WebSocket-соединение закрыто');
   });
 });
@@ -339,7 +354,7 @@ function createRoundInfo(roundNumber, winString) {
       winType = parts[1];
       
       // Для первых 12 раундов используем оригинальное распределение
-      if (roundNumber <= 12) {
+      if (roundNumber <= 12) { // Ваша оригинальная логика
         if (side === "CT") {
           teamName = (scoreboard.map.original_team_ct && scoreboard.map.original_team_ct.name)
             ? scoreboard.map.original_team_ct.name
@@ -406,62 +421,53 @@ app.post('/', (req, res) => {
     return res.status(400).json({ error: "Нет полученных данных в формате JSON" });
   }
   
-  // Если получаем данные о карте и round равен 1 – считаем, что предыдущий матч завершён.
-  if (data.map && data.map.round === 1) {
+  if (data.map && data.map.round === 1) { // Было data.map.round === 1, оставляем как есть
     const finalStats = computeFinalADR();
     console.log("Матч завершён. Итоговый ADR:", finalStats);
-    // Сброс данных для нового матча/карты
     scoreboard.players = {};
     roundsHistory = [];
     roundsAlive = [];
-    scoreboard.map = {};
+    // scoreboard.map = {}; // Это может быть слишком рано, если еще нужны original_team_ct/t
   }
   
   if (data.map) {
-    // Если текущая карта отсутствует или её имя отличается от нового, считаем, что началась новая карта
     if (!scoreboard.map.name || scoreboard.map.name !== data.map.name) {
       console.log("Новая карта:", data.map.name, "— выполняется сброс данных");
-      if (scoreboard.map.name) {
+      if (scoreboard.map.name) { // Если предыдущая карта была
         const finalStats = computeFinalADR();
         console.log("Итоговый ADR завершённого матча:", finalStats);
       }
-      scoreboard.players = {};
+      scoreboard.players = {}; // Сбрасываем игроков при смене карты
       roundsHistory = [];
       roundsAlive = [];
-      scoreboard.map = {};
+      // scoreboard.map = {}; // Сбрасываем карту
+      // При новом матче оригинальное распределение совпадает с текущим
+      scoreboard.map = { // Устанавливаем новую карту и оригинальные команды
+        ...data.map,
+        original_team_ct: data.map.team_ct ? {...data.map.team_ct} : null, // Копируем объекты
+        original_team_t: data.map.team_t ? {...data.map.team_t} : null
+      };
+    } else {
+      // Просто обновляем текущие данные карты, не трогая original_team_ct/t
+      scoreboard.map = {
+        ...scoreboard.map, // Сохраняем original_team_ct/t и другие старые данные
+        ...data.map      // Обновляем остальное
+      };
     }
-    
-    // При новом матче оригинальное распределение совпадает с текущим
-    scoreboard.map = {
-      ...data.map,
-      original_team_ct: data.map.team_ct,
-      original_team_t: data.map.team_t
-    };
   }
   
-  // Обновляем данные игроков
   if (data.allplayers) {
     for (const steamId in data.allplayers) {
       const newPlayerData = data.allplayers[steamId];
       if (!scoreboard.players[steamId]) {
-        scoreboard.players[steamId] = {
-          accumulatedDmg: 0,
-          previousRoundDmg: 0
-        };
+        scoreboard.players[steamId] = { accumulatedDmg: 0, previousRoundDmg: 0 };
       }
-      scoreboard.players[steamId] = {
-        ...scoreboard.players[steamId],
-        ...newPlayerData
-      };
-      if (scoreboard.players[steamId].accumulatedDmg === undefined) {
-        scoreboard.players[steamId].accumulatedDmg = 0;
-      }
-      if (scoreboard.players[steamId].previousRoundDmg === undefined) {
-        scoreboard.players[steamId].previousRoundDmg = 0;
-      }
+      scoreboard.players[steamId] = { ...scoreboard.players[steamId], ...newPlayerData };
+      
+      // Ваша оригинальная логика ADR:
       const roundDmgNow = newPlayerData?.state?.round_totaldmg || 0;
-      const roundDmgPrev = scoreboard.players[steamId].previousRoundDmg;
-      if (roundDmgNow < roundDmgPrev) {
+      const roundDmgPrev = scoreboard.players[steamId].previousRoundDmg || 0;
+      if (roundDmgNow < roundDmgPrev) { // Сброс, если новый урон меньше предыдущего (начало нового раунда)
         scoreboard.players[steamId].previousRoundDmg = 0;
       } else {
         const diff = roundDmgNow - roundDmgPrev;
@@ -473,23 +479,18 @@ app.post('/', (req, res) => {
     }
   }
   
-  if (data.player) {
+  if (data.player) { // Обработка данных наблюдаемого игрока, если они не в allplayers
     scoreboard.player = data.player;
     const pSteam = data.player.steamid;
     if (pSteam && (!data.allplayers || !data.allplayers[pSteam])) {
       if (!scoreboard.players[pSteam]) {
-        scoreboard.players[pSteam] = {
-          accumulatedDmg: 0,
-          previousRoundDmg: 0
-        };
+        scoreboard.players[pSteam] = { accumulatedDmg: 0, previousRoundDmg: 0 };
       }
-      scoreboard.players[pSteam] = {
-        ...scoreboard.players[pSteam],
-        ...data.player
-      };
+      scoreboard.players[pSteam] = { ...scoreboard.players[pSteam], ...data.player };
+      // Ваша оригинальная логика ADR для data.player:
       const roundDmgNow = data.player?.state?.round_totaldmg || 0;
-      const roundDmgPrev = scoreboard.players[pSteam].previousRoundDmg;
-      if (roundDmgNow < roundDmgPrev) {
+      const roundDmgPrev = scoreboard.players[pSteam].previousRoundDmg || 0;
+       if (roundDmgNow < roundDmgPrev) {
         scoreboard.players[pSteam].previousRoundDmg = 0;
       } else {
         const diff = roundDmgNow - roundDmgPrev;
@@ -501,10 +502,10 @@ app.post('/', (req, res) => {
     }
   }
   
-  console.log("Получены данные GSI:", JSON.stringify(data, null, 2));
+  console.log("Получены данные GSI (часть):", JSON.stringify(data, null, 2).substring(0, 300) + "...");
 
-  // Сохраняем информацию о раундах в roundsHistory
   if (scoreboard.map && scoreboard.map.round_wins) {
+    // Оставляем вашу логику для roundsHistory
     Object.keys(scoreboard.map.round_wins).forEach(roundKey => {
       const roundNumber = parseInt(roundKey, 10);
       if (!roundsHistory.find(r => r.roundNumber === roundNumber)) {
@@ -513,10 +514,11 @@ app.post('/', (req, res) => {
         roundsHistory.push(newRound);
       }
     });
+    roundsHistory.sort((a, b) => a.roundNumber - b.roundNumber);
   }
   
-  // Сохраняем информацию о выживших игроках в roundsAlive
   if (scoreboard.map && scoreboard.map.round_wins) {
+    // Оставляем вашу логику для roundsAlive
     Object.keys(scoreboard.map.round_wins).forEach(roundKey => {
       const roundNumber = parseInt(roundKey, 10);
       if (!roundsAlive.find(r => r.round === roundNumber)) {
@@ -524,42 +526,27 @@ app.post('/', (req, res) => {
         let aliveT = 0;
         for (const steamId in scoreboard.players) {
           const player = scoreboard.players[steamId];
-          // Предполагаем, что player.team содержит "CT" или "T", а player.state.health > 0 означает, что игрок жив
-          if (player.team === "CT" && player.state && player.state.health > 0) {
-            aliveCT++;
-          }
-          if (player.team === "T" && player.state && player.state.health > 0) {
-            aliveT++;
-          }
+          if (player.team === "CT" && player.state && player.state.health > 0) aliveCT++;
+          if (player.team === "T" && player.state && player.state.health > 0) aliveT++;
         }
         roundsAlive.push({
-          round: roundNumber,
-          CT: aliveCT,
-          T: aliveT,
-          images: {
-            CT: `alive/ct${aliveCT}.png`,
-            T: `alive/t${aliveT}.png`
-          }
+          round: roundNumber, CT: aliveCT, T: aliveT,
+          images: { CT: `alive/ct${aliveCT}.png`, T: `alive/t${aliveT}.png` }
         });
       }
     });
+    roundsAlive.sort((a, b) => a.round - b.round);
   }
   
   broadcastObserverUpdate();
-  
   res.status(200).json({ message: "Данные получены" });
 });
 
 // ------------------------------
-// Прочие endpoints (REST API) для получения данных, CRUD и т.д.
+// Прочие endpoints (REST API)
 // ------------------------------
-app.get('/gsi', (req, res) => {
-  res.json(scoreboard);
-});
-
-app.get('/scoreboard', (req, res) => {
-  res.json(scoreboard);
-});
+app.get('/gsi', (req, res) => res.json(scoreboard));
+app.get('/scoreboard', (req, res) => res.json(scoreboard));
 
 app.get('/score', (req, res) => {
   let ctPlayers = [];
@@ -569,265 +556,168 @@ app.get('/score', (req, res) => {
     let player = { ...scoreboard.players[steamId] };
     const regPlayer = players.find(p => p.steamId?.toLowerCase() === steamId.toLowerCase());
     if (regPlayer) {
-      if (regPlayer.name) {
-        player.name = regPlayer.name;
-      }
-      if (!player.photo && regPlayer.photo) {
-        player.photo = regPlayer.photo;
-      }
+      if (regPlayer.name) player.name = regPlayer.name;
+      if (!player.photo && regPlayer.photo) player.photo = regPlayer.photo;
     }
 
-    // Формирование корректного URL для фото
     let photoFull = defaultPlayerImage;
     if (player.photo) {
-      if (player.photo.startsWith("http")) {
-        // Если URL начинается с "http", применяем исправление
-        photoFull = fixUrl(player.photo);
-      } else {
-        // Если это относительный путь - добавляем baseUrl с ведущим слэшем
-        const normalizedPhoto = player.photo.startsWith('/') ? player.photo : '/' + player.photo;
-        photoFull = `${baseUrl}${normalizedPhoto}`;
-      }
+      photoFull = player.photo.startsWith("http") ? fixUrl(player.photo) : `${baseUrl}${player.photo.startsWith('/') ? '' : '/'}${player.photo}`;
     }
 
     const team = player.team;
     if (team === "CT" || team === "T") {
-      const kills = player.match_stats ? player.match_stats.kills : 0;
-      const assists = player.match_stats ? player.match_stats.assists : 0;
-      const deaths = player.match_stats ? player.match_stats.deaths : 0;
-      const adr = getAverageDamage(steamId);
-
       const playerData = {
-        steamId,
-        name: player.name,
-        kills,
-        assists,
-        deaths,
-        adr,
-        team,
-        photo: photoFull
+        steamId, name: player.name,
+        kills: player.match_stats?.kills || 0,
+        assists: player.match_stats?.assists || 0,
+        deaths: player.match_stats?.deaths || 0,
+        adr: getAverageDamage(steamId),
+        team, photo: photoFull
       };
-
-      if (team === "CT") {
-        ctPlayers.push(playerData);
-      } else {
-        tPlayers.push(playerData);
-      }
+      if (team === "CT") ctPlayers.push(playerData);
+      else tPlayers.push(playerData);
     }
   }
 
   ctPlayers.sort((a, b) => b.kills - a.kills);
   tPlayers.sort((a, b) => b.kills - a.kills);
 
-  const teamCT = (scoreboard.map && scoreboard.map.team_ct)
-    ? scoreboard.map.team_ct
-    : { name: "CT", score: 0, timeouts_remaining: 0 };
-  const teamT = (scoreboard.map && scoreboard.map.team_t)
-    ? scoreboard.map.team_t
-    : { name: "T", timeouts_remaining: 0, score: 0 };
-
-  const mapInfo = {
-    CT: {
-      teamName: teamCT.name,
-      score: teamCT.score,
-      timeoutsRemaining: teamCT.timeouts_remaining
-    },
-    T: {
-      teamName: teamT.name,
-      score: teamT.score,
-      timeoutsRemaining: teamT.timeouts_remaining
-    }
-  };
-
+  const teamCT = scoreboard.map?.team_ct || { name: "CT", score: 0, timeouts_remaining: 0 };
+  const teamT = scoreboard.map?.team_t || { name: "T", score: 0, timeouts_remaining: 0 };
+  const mapInfo = { CT: teamCT, T: teamT }; // Используем полные объекты
   const playersArr = [
-    ...ctPlayers.map(p => ({ ...p, teamName: teamCT.name })),
-    ...tPlayers.map(p => ({ ...p, teamName: teamT.name }))
+    ...ctPlayers.map(p => ({ ...p, teamName: teamCT.name })), // Добавляем teamName
+    ...tPlayers.map(p => ({ ...p, teamName: teamT.name }))  // Добавляем teamName
   ];
 
   res.json({ mapInfo, players: playersArr });
 });
 
 
-
 app.get('/teams', (req, res) => {
-  const teamCTFromGSI = (scoreboard.map && scoreboard.map.team_ct)
-    ? scoreboard.map.team_ct
-    : { name: "CT", score: 0, timeouts_remaining: 0 };
-  const teamTFromGSI  = (scoreboard.map && scoreboard.map.team_t)
-    ? scoreboard.map.team_t
-    : { name: "T", timeouts_remaining: 0, score: 0 };
+  const teamCTFromGSI = scoreboard.map?.team_ct || { name: "CT", score: 0, timeouts_remaining: 0 };
+  const teamTFromGSI  = scoreboard.map?.team_t || { name: "T", score: 0, timeouts_remaining: 0 };
 
   const registeredTeamCT = teams.find(t => t.name.toLowerCase() === teamCTFromGSI.name.toLowerCase());
   const registeredTeamT  = teams.find(t => t.name.toLowerCase() === teamTFromGSI.name.toLowerCase());
 
-  let mapName = (scoreboard.map && scoreboard.map.name) ? scoreboard.map.name : "Unknown";
-  mapName = mapName.replace(/^de_/, '');
-
+  let mapName = scoreboard.map?.name?.replace(/^de_/, '') || "Unknown";
   const mapUrl = `${baseUrl}/map/${mapName}.png`;
 
   let teamsData = [
     { 
-      team: "CT", 
-      teamName: registeredTeamCT ? registeredTeamCT.name : teamCTFromGSI.name, 
-      score: teamCTFromGSI.score, 
-      timeoutsRemaining: teamCTFromGSI.timeouts_remaining,
-      logo: (registeredTeamCT && registeredTeamCT.logo) ? `${baseUrl}${registeredTeamCT.logo}` : null,
+      team: "CT", teamName: registeredTeamCT?.name || teamCTFromGSI.name, 
+      score: teamCTFromGSI.score, timeoutsRemaining: teamCTFromGSI.timeouts_remaining,
+      logo: registeredTeamCT?.logo ? `${baseUrl}${registeredTeamCT.logo}` : defaultImage,
       mapName: mapName
     },
     { 
-      team: "T",  
-      teamName: registeredTeamT ? registeredTeamT.name : teamTFromGSI.name, 
-      score: teamTFromGSI.score,
-      timeoutsRemaining: teamTFromGSI.timeouts_remaining,
-      logo: (registeredTeamT && registeredTeamT.logo) ? `${baseUrl}${registeredTeamT.logo}` : null,
+      team: "T", teamName: registeredTeamT?.name || teamTFromGSI.name, 
+      score: teamTFromGSI.score, timeoutsRemaining: teamTFromGSI.timeouts_remaining,
+      logo: registeredTeamT?.logo ? `${baseUrl}${registeredTeamT.logo}` : defaultImage,
       mapName: mapName
     }
   ];
-
-  teamsData.push({ map: mapUrl });
-
-  res.json({ teams: teamsData });
+  // teamsData.push({ map: mapUrl }); // Ваша оригинальная закомментированная строка
+  res.json({ teams: teamsData, currentMapImage: mapUrl }); // Добавил currentMapImage отдельно
 });
 
 app.get('/rounds', (req, res) => {
-  const totalRounds = 24;
+  const totalRounds = 24; // Ваше оригинальное значение
   let roundsData = [];
   for (let i = 1; i <= totalRounds; i++) {
     let roundInfo = roundsHistory.find(r => r.roundNumber === i);
     if (!roundInfo) {
       roundInfo = {
-        roundNumber: i,
-        Team: "",
-        Side: "",
-        winType: "",
-        team_logo: defaultImage,
-        Side_logo: defaultSideLogo,
-        winType_logo: defaultWinTypeLogo
+        roundNumber: i, Team: "", Side: "", winType: "",
+        team_logo: defaultImage, Side_logo: defaultSideLogo, winType_logo: defaultWinTypeLogo
       };
     }
     roundsData.push(roundInfo);
   }
-  
-  const mapName = (scoreboard.map && scoreboard.map.name) ? scoreboard.map.name : "Unknown";
-  
-  res.json({
-    mapName: mapName,
-    rounds: roundsData
-  });
+  res.json({ mapName: scoreboard.map?.name || "Unknown", rounds: roundsData });
 });
 
 app.get('/mvp', (req, res) => {
   let mvp = null;
   let mvpScore = -1;
-  
   const roundsPlayed = getRoundCount();
 
   for (const steamId in scoreboard.players) {
-    let player = { ...scoreboard.players[steamId] };
-    const regPlayer = players.find(p => p.steamId?.toLowerCase() === steamId.toLowerCase());
-    if (regPlayer) {
-      if (regPlayer.name) {
-        player.name = regPlayer.name;
-      }
-      if (!player.photo && regPlayer.photo) {
-        player.photo = regPlayer.photo;
-      }
-    }
-    
+    let player = { ...scoreboard.players[steamId] }; // Данные из GSI
+    const regPlayer = players.find(p => p.steamId?.toLowerCase() === steamId.toLowerCase()); // Данные из вашей админки
+
+    const name = regPlayer?.name || player.name; // Приоритет имени из админки
+    const photoFromReg = regPlayer?.photo; // Фото из админки
+
     const team = player.team;
     if (team === "CT" || team === "T") {
-      const kills = player.match_stats ? player.match_stats.kills : 0;
-      const assists = player.match_stats ? player.match_stats.assists : 0;
-      const deaths = player.match_stats ? player.match_stats.deaths : 0;
+      const kills = player.match_stats?.kills || 0;
+      const assists = player.match_stats?.assists || 0;
       const adrNum = parseFloat(getAverageDamage(steamId));
       
-      const kdRatio = deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2);
-      const kpr = roundsPlayed > 0 ? (kills / roundsPlayed).toFixed(2) : "0.00";
-      const kda = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : (kills + assists).toFixed(2);
-      const plusMinus = kills - deaths;
-      const totalDMG = scoreboard.players[steamId].accumulatedDmg;
-      const kast = player.match_stats && player.match_stats.kast !== undefined ? player.match_stats.kast : "N/A";
-      const dpr = adrNum.toFixed(2);
-
-      const headshots = player.match_stats && player.match_stats.headshots ? player.match_stats.headshots : 0;
-      const hsPercent = kills > 0 ? ((headshots / kills) * 100).toFixed(2) : "0.00";
+      const scoreValue = kills + assists + adrNum; // Ваша оригинальная формула MVP
       
-      const shotsFired = player.match_stats && player.match_stats.shots ? player.match_stats.shots : 0;
-      const hits = player.match_stats && player.match_stats.hits ? player.match_stats.hits : 0;
-      const accuracy = shotsFired > 0 ? ((hits / shotsFired) * 100).toFixed(2) : "N/A";
-      
-      const scoreValue = kills + assists + adrNum; 
-      
-      if (scoreValue > mvpScore) {
+      if (scoreValue > mvpScore && roundsPlayed > 0) { // MVP только если были сыграны раунды
         mvpScore = scoreValue;
-        const photoFull = player.photo ? `${baseUrl}${player.photo}` : defaultPlayerImage;
+        const photoFull = photoFromReg ? `${baseUrl}${photoFromReg.startsWith('/') ? '' : '/'}${photoFromReg}` : defaultPlayerImage;
         
-        let team_logo = null;
+        let team_logo = defaultImage; // Используем defaultImage по умолчанию
         let team_name = "";
+
+        // Логика определения имени команды и логотипа из вашего оригинального кода
         if (regPlayer && regPlayer.teamId) {
           const teamObj = teams.find(t => t.id === regPlayer.teamId);
           if (teamObj) {
-            team_logo = teamObj.logo ? `${baseUrl}${teamObj.logo}` : null;
+            team_logo = teamObj.logo ? `${baseUrl}${teamObj.logo}` : defaultImage;
             team_name = teamObj.name;
           }
         }
-        if (!team_logo || !team_name) {
+        if (!team_name) { // Если по teamId не нашли или regPlayer нет
           let actualTeamName = team;
-          if (team === "CT" && scoreboard.map.team_ct && scoreboard.map.team_ct.name) {
+          if (team === "CT" && scoreboard.map?.team_ct?.name) {
             actualTeamName = scoreboard.map.team_ct.name;
-          } else if (team === "T" && scoreboard.map.team_t && scoreboard.map.team_t.name) {
+          } else if (team === "T" && scoreboard.map?.team_t?.name) {
             actualTeamName = scoreboard.map.team_t.name;
           }
-          const regTeam = teams.find(t => t.name.toLowerCase() === actualTeamName.toLowerCase());
-          if (regTeam) {
-            team_logo = regTeam.logo ? `${baseUrl}${regTeam.logo}` : null;
-            team_name = regTeam.name;
+          const regTeamByName = teams.find(t => t.name.toLowerCase() === actualTeamName.toLowerCase());
+          if (regTeamByName) {
+            team_logo = regTeamByName.logo ? `${baseUrl}${regTeamByName.logo}` : defaultImage;
+            team_name = regTeamByName.name;
           } else {
-            team_name = actualTeamName;
+            team_name = actualTeamName; // Если и по имени не нашли, берем "CT" или "T"
           }
         }
-        team_logo = team_logo || defaultImage;
         
         mvp = { 
-          steamId, 
-          name: player.name, 
-          team: team, 
-          team_name: team_name, 
-          kills, 
-          assists,
-          deaths,      
-          adr: adrNum, 
-          mvpScore: scoreValue, 
-          photo: photoFull,
-          team_logo: team_logo,
-          kdRatio: parseFloat(kdRatio),
-          kpr: parseFloat(kpr),
-          kda: parseFloat(kda),
-          plusMinus: plusMinus,
-          totalDMG: totalDMG,
-          kast: kast,
-          dpr: parseFloat(dpr),
-          hsPercent: parseFloat(hsPercent),
-          headshots: headshots,
-          accuracy: accuracy
+          steamId, name, team, team_name, kills, assists, 
+          deaths: player.match_stats?.deaths || 0, adr: adrNum, 
+          mvpScore, // было mvpScore: scoreValue, изменил на mvpScore для консистентности
+          photo: photoFull, team_logo,
+          // Ваша оригинальная статистика
+          kdRatio: parseFloat(player.match_stats?.deaths > 0 ? (kills / player.match_stats.deaths).toFixed(2) : kills.toFixed(2)),
+          kpr: parseFloat(roundsPlayed > 0 ? (kills / roundsPlayed).toFixed(2) : "0.00"),
+          kda: parseFloat(player.match_stats?.deaths > 0 ? ((kills + assists) / player.match_stats.deaths).toFixed(2) : (kills + assists).toFixed(2)),
+          plusMinus: kills - (player.match_stats?.deaths || 0),
+          totalDMG: player.accumulatedDmg || 0, // Используем accumulatedDmg
+          kast: player.match_stats?.kast ?? "N/A", // Используем ?? для N/A
+          dpr: parseFloat(adrNum.toFixed(2)), // Это то же, что и adr, но с toFixed
+          hsPercent: parseFloat(kills > 0 && player.match_stats?.headshots ? ((player.match_stats.headshots / kills) * 100).toFixed(2) : "0.00"),
+          headshots: player.match_stats?.headshots || 0,
+          accuracy: player.match_stats?.shots > 0 && player.match_stats?.hits ? ((player.match_stats.hits / player.match_stats.shots) * 100).toFixed(2) : "N/A"
         };
       }
     }
   }
-  
-  res.json(mvp ? [mvp] : []);
+  res.json(mvp ? [mvp] : []); // Возвращаем массив
 });
 
 
-// ------------------------------
-// Endpoint /observer – возвращает данные наблюдаемого игрока с логотипом команды вместо фото игрока
-// ------------------------------
 app.get('/observer', (req, res) => {
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
-
-  // Используем обновленную функцию getObserverData, которая возвращает логотип команды
   const observedData = getObserverData();
   res.json([observedData]);
 });
@@ -836,34 +726,29 @@ app.get('/admin', (req, res) => {
   res.render('admin', { teams, players });
 });
 
-// Теперь этот эндпоинт будет доступен для кросс-доменных запросов
-app.get('/api/teams', (req, res) => {
-  res.json(teams);
-});
+// API для команд
+app.get('/api/teams', (req, res) => res.json(teams));
 
 app.post('/api/teams', (req, res) => {
-  const { name, logo, score } = req.body;
-  const newTeam = {
-    id: Date.now().toString(),
-    name,
-    logo,
-    score: score || 0
-  };
+  const { name, logo, score } = req.body; // Оставил score, как в вашем оригинале
+  if (!name) return res.status(400).json({error: "Team name is required"});
+  const newTeam = { id: Date.now().toString(), name, logo: logo || null, score: score || 0 }; // score || 0
   teams.push(newTeam);
   saveData();
-  res.json(newTeam);
+  res.status(201).json(newTeam); // Статус 201 для создания
 });
 
 app.put('/api/teams/:id', (req, res) => {
   const { id } = req.params;
-  const { name, logo, score } = req.body;
-  const team = teams.find(t => t.id === id);
-  if (!team) return res.status(404).json({ error: "Team not found" });
-  team.name = name;
-  team.logo = logo;
-  team.score = score || 0;
+  const { name, logo, score } = req.body; // Оставил score
+  const teamIndex = teams.findIndex(t => t.id === id); // Используем findIndex для обновления
+  if (teamIndex === -1) return res.status(404).json({ error: "Team not found" });
+  
+  teams[teamIndex].name = name !== undefined ? name : teams[teamIndex].name;
+  teams[teamIndex].logo = logo !== undefined ? logo : teams[teamIndex].logo;
+  teams[teamIndex].score = score !== undefined ? (score || 0) : teams[teamIndex].score; // score || 0
   saveData();
-  res.json(team);
+  res.json(teams[teamIndex]);
 });
 
 app.delete('/api/teams/:id', (req, res) => {
@@ -873,7 +758,7 @@ app.delete('/api/teams/:id', (req, res) => {
   if (teams.length < originalLength) {
     players = players.map(p => p.teamId === id ? { ...p, teamId: null } : p);
     saveData();
-    res.json({ message: "Team deleted" });
+    res.status(200).json({ message: "Team deleted" }); // Статус 200
   } else {
     res.status(404).json({ error: "Team not found" });
   }
@@ -885,37 +770,47 @@ app.post('/api/teams/uploadLogo', uploadTeams.single('logoFile'), (req, res) => 
   res.json({ path: filePath });
 });
 
-app.get('/api/players', (req, res) => {
-  res.json(players);
+// API для игроков
+app.get('/api/players', (req, res) => res.json(players));
+
+// === ДОБАВЛЕННЫЙ МАРШРУТ ДЛЯ ПОЛУЧЕНИЯ ОДНОГО ИГРОКА ===
+app.get('/api/players/:id', (req, res) => {
+  const { id } = req.params;
+  const player = players.find(p => p.id === id);
+  if (player) {
+    res.json(player);
+  } else {
+    res.status(404).json({ error: "Player not found with ID: " + id });
+  }
 });
+// === КОНЕЦ ДОБАВЛЕННОГО МАРШРУТА ===
 
 app.post('/api/players', (req, res) => {
-  const { name, steamId, photo, teamId, match_stats } = req.body;
+  const { name, steamId, photo, teamId, match_stats } = req.body; // Оставил match_stats
+  if (!name) return res.status(400).json({error: "Player name is required"});
   const newPlayer = { 
-    id: Date.now().toString(),
-    name,
-    steamId,
-    photo,
-    teamId: teamId || null,
-    match_stats: match_stats || {}
+    id: Date.now().toString(), name, steamId: steamId || null, 
+    photo: photo || null, teamId: teamId || null, 
+    match_stats: match_stats || {} // Инициализируем, как в вашем оригинале
   };
   players.push(newPlayer);
   saveData();
-  res.json(newPlayer);
+  res.status(201).json(newPlayer); // Статус 201
 });
 
 app.put('/api/players/:id', (req, res) => {
   const { id } = req.params;
-  const { name, steamId, photo, teamId, match_stats } = req.body;
-  const player = players.find(p => p.id === id);
-  if (!player) return res.status(404).json({ error: "Player not found" });
-  player.name = name;
-  player.steamId = steamId;
-  player.photo = photo;
-  player.teamId = teamId || null;
-  player.match_stats = match_stats || {};
+  const { name, steamId, photo, teamId, match_stats } = req.body; // Оставил match_stats
+  const playerIndex = players.findIndex(p => p.id === id); // Используем findIndex
+  if (playerIndex === -1) return res.status(404).json({ error: "Player not found" });
+  
+  players[playerIndex].name = name !== undefined ? name : players[playerIndex].name;
+  players[playerIndex].steamId = steamId !== undefined ? (steamId || null) : players[playerIndex].steamId;
+  players[playerIndex].photo = photo !== undefined ? (photo || null) : players[playerIndex].photo;
+  players[playerIndex].teamId = teamId !== undefined ? (teamId || null) : players[playerIndex].teamId;
+  players[playerIndex].match_stats = match_stats !== undefined ? (match_stats || {}) : players[playerIndex].match_stats;
   saveData();
-  res.json(player);
+  res.json(players[playerIndex]);
 });
 
 app.delete('/api/players/:id', (req, res) => {
@@ -924,7 +819,7 @@ app.delete('/api/players/:id', (req, res) => {
   players = players.filter(p => p.id !== id);
   if (players.length < originalLength) {
     saveData();
-    res.json({ message: "Player deleted" });
+    res.status(200).json({ message: "Player deleted" }); // Статус 200
   } else {
     res.status(404).json({ error: "Player not found" });
   }
@@ -936,14 +831,11 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
   res.json({ path: filePath });
 });
 
-// Новый endpoint /alive для данных о выживших игроках по раундам
-app.get('/alive', (req, res) => {
-  res.json(roundsAlive);
-});
+app.get('/alive', (req, res) => res.json(roundsAlive));
 
 // ------------------------------
 // Запуск сервера (Express + WebSocket)
 // ------------------------------
 server.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on ${baseUrl}`);
+  console.log(`Server is running on ${baseUrl} (HTTP and WebSocket on port ${port})`);
 });
