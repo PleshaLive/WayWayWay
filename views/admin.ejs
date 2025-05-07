@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Panel - Manage Teams & Players</title>
-  
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
   <style>
-    /* Содержимое вашего style.css, адаптированное и интегрированное */
     :root {
         --font-family-base: 'Inter', sans-serif;
         --font-weight-light: 300;
@@ -21,57 +20,57 @@
         --font-weight-semibold: 600;
         --font-weight-bold: 700;
 
-        --color-background: #0a0f18; 
-        --color-surface: #101622;    
-        --color-surface-secondary: #181f2c; 
-        --color-surface-tertiary: #070a10; 
+        --color-background: #0a0f18;
+        --color-surface: #101622;
+        --color-surface-secondary: #181f2c;
+        --color-surface-tertiary: #070a10;
         --color-border: #2a3140;
         --color-border-light: #3c4455;
         --color-divider: #222836;
 
-        --color-text-primary: #e0e7ff; 
+        --color-text-primary: #e0e7ff;
         --color-text-secondary: #a0aec0;
         --color-text-muted: #718096;
         --color-text-placeholder: #5a667a;
 
-        --color-primary-base: #4f46e5; 
+        --color-primary-base: #4f46e5;
         --color-primary-light: #6366f1;
         --color-primary-dark: #4338ca;
         --rgb-primary: 79, 70, 229;
         --glow-primary: 0 0 15px rgba(var(--rgb-primary), 0.7), 0 0 30px rgba(var(--rgb-primary), 0.5);
         --text-shadow-primary: 0 0 10px rgba(var(--rgb-primary), 0.8);
 
-        --color-secondary-base: #0ea5e9; 
+        --color-secondary-base: #0ea5e9;
         --color-secondary-light: #38bdf8;
         --color-secondary-dark: #0284c7;
         --rgb-secondary: 14, 165, 233;
         --glow-secondary: 0 0 15px rgba(var(--rgb-secondary), 0.7), 0 0 30px rgba(var(--rgb-secondary), 0.5);
         --text-shadow-secondary: 0 0 10px rgba(var(--rgb-secondary), 0.8);
-        
-        --color-success: #22c55e; 
+
+        --color-success: #22c55e;
         --color-success-dark: #16a34a;
         --rgb-success: 34, 197, 94;
         --glow-success: 0 0 12px rgba(var(--rgb-success), 0.7), 0 0 24px rgba(var(--rgb-success), 0.4);
 
-        --color-warning: #f59e0b; 
+        --color-warning: #f59e0b;
         --color-warning-dark: #d97706;
-        --color-warning-text: #1f2937; 
+        --color-warning-text: #1f2937;
         --rgb-warning: 245, 158, 11;
         --glow-warning: 0 0 12px rgba(var(--rgb-warning), 0.7), 0 0 24px rgba(var(--rgb-warning), 0.4);
 
-        --color-error: #ef4444; 
+        --color-error: #ef4444;
         --color-error-dark: #dc2626;
         --rgb-error: 239, 68, 68;
         --glow-error: 0 0 12px rgba(var(--rgb-error), 0.7), 0 0 24px rgba(var(--rgb-error), 0.4);
-        
-        --color-text-on-primary: #ffffff;
-        --color-text-on-accent: #ffffff; 
 
-        --spacing-xs: 0.25rem;  
-        --spacing-sm: 0.5rem;   
-        --spacing-md: 1rem;     
-        --spacing-lg: 1.5rem;   
-        --spacing-xl: 2rem;     
+        --color-text-on-primary: #ffffff;
+        --color-text-on-accent: #ffffff;
+
+        --spacing-xs: 0.25rem;
+        --spacing-sm: 0.5rem;
+        --spacing-md: 1rem;
+        --spacing-lg: 1.5rem;
+        --spacing-xl: 2rem;
 
         --border-radius-sm: 6px;
         --border-radius-md: 8px;
@@ -83,7 +82,7 @@
         --shadow-md: 0 5px 15px rgba(0,0,0,0.4);
         --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
         --shadow-inset: inset 0 2px 5px rgba(0,0,0,0.4);
-        
+
         --transition-base: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         --transition-fast: all 0.15s ease-out;
     }
@@ -94,18 +93,18 @@
         background-color: var(--color-background);
         color: var(--color-text-primary);
         font-family: var(--font-family-base);
-        font-size: 14px; 
-        line-height: 1.7; 
+        font-size: 14px;
+        line-height: 1.7;
         min-height: 100vh;
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
 
-    .container { 
-        max-width: 1920px; 
+    .container {
+        max-width: 1920px;
         margin: 0 auto;
-        padding: var(--spacing-lg) var(--spacing-xl); 
+        padding: var(--spacing-lg) var(--spacing-xl);
     }
 
     .card-style {
@@ -132,42 +131,45 @@
         color: var(--color-text-primary);
     }
     h1 {
-        font-size: 2rem; 
+        font-size: 2rem;
         color: var(--color-primary-light);
         text-shadow: var(--text-shadow-primary);
         font-weight: var(--font-weight-bold);
-        margin-bottom: var(--spacing-lg); 
-        text-align: center; 
+        /* text-align: center; убираем, т.к. есть кнопка справа */
     }
     .page-title-container {
         display: flex;
-        justify-content: center; 
+        justify-content: space-between; /* Заголовок слева, кнопка справа */
         align-items: center;
-        margin-bottom: var(--spacing-xl); 
+        margin-bottom: var(--spacing-xl);
         padding-bottom: var(--spacing-md);
         border-bottom: 1px solid var(--color-divider);
+        flex-wrap: wrap; /* Разрешаем перенос на маленьких экранах */
+        gap: var(--spacing-md); /* Отступ между элементами при переносе */
     }
-    .page-title-container h1 { 
-        margin-bottom: 0; 
-        font-size: 1.8rem; 
+    .page-title-container h1 {
+        margin-bottom: 0; /* Убираем отступ у h1 внутри контейнера */
+        font-size: 1.8rem;
     }
     .page-title-container h1 i {
         margin-right: var(--spacing-sm);
         color: var(--color-primary-base);
     }
+    /* Стили для кнопки-ссылки в заголовке */
+    .page-title-container .app-button {
+        font-size: 0.9rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+        white-space: nowrap; /* Предотвращаем перенос текста на кнопке */
+    }
 
-    h2 { 
-        font-size: 1.5rem; 
+    h2 {
+        font-size: 1.5rem;
         font-weight: var(--font-weight-medium);
-        color: var(--color-text-primary); 
-        margin-bottom: var(--spacing-md); 
+        color: var(--color-text-primary);
+        margin-bottom: var(--spacing-md);
     }
-    .team-card h2 { 
-        text-align: center;
-        font-size: 1.4rem; 
-    }
-    .modal .modal-title-text { 
-        font-size: 1.6rem; 
+    .modal .modal-title-text {
+        font-size: 1.6rem;
         color: var(--color-primary-light);
         text-shadow: var(--text-shadow-primary);
         text-align: center;
@@ -183,7 +185,7 @@
         color: var(--color-text-secondary);
         margin-bottom: var(--spacing-sm);
     }
-    
+
     label {
         display: block;
         font-size: 0.8rem;
@@ -192,7 +194,7 @@
         margin-bottom: var(--spacing-xs);
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        margin-top: var(--spacing-sm); 
+        margin-top: var(--spacing-sm);
     }
     label i {
         margin-right: var(--spacing-xs);
@@ -215,7 +217,7 @@
         width: 100%;
         font-family: var(--font-family-base);
         box-shadow: var(--shadow-inset);
-        margin-bottom: var(--spacing-sm); 
+        margin-bottom: var(--spacing-sm);
     }
     input[type="text"]:hover, input[type="file"]:hover, select:hover,
     .header-input:hover, .control-select:hover {
@@ -231,8 +233,8 @@
         color: var(--color-text-placeholder);
         opacity: 0.8;
     }
-    
-    .styled-select, select { 
+
+    .styled-select, select {
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -240,14 +242,14 @@
         background-repeat: no-repeat;
         background-position: right var(--spacing-md) center;
         background-size: 16px 12px;
-        padding-right: calc(var(--spacing-md) * 2 + 16px); 
+        padding-right: calc(var(--spacing-md) * 2 + 16px);
     }
     select option {
         background-color: var(--color-surface-secondary);
         color: var(--color-text-primary);
     }
     input[type="file"] {
-        padding-top: calc(var(--spacing-sm) - 1px); 
+        padding-top: calc(var(--spacing-sm) - 1px);
         padding-bottom: calc(var(--spacing-sm) - 1px);
     }
     input[type="file"]::-webkit-file-upload-button {
@@ -270,12 +272,12 @@
         transform: translateY(-1px);
     }
 
-    .app-button, button { 
+    .app-button, button {
         padding: calc(var(--spacing-sm) + 2px) var(--spacing-lg);
         font-size: 0.9rem;
         font-weight: var(--font-weight-semibold);
         border-radius: var(--border-radius-md);
-        border: 2px solid transparent; 
+        border: 2px solid transparent;
         background-color: var(--color-primary-base);
         color: var(--color-text-on-primary);
         cursor: pointer;
@@ -288,19 +290,24 @@
         box-shadow: 0 2px 5px rgba(var(--rgb-primary),0.2), 0 0 10px rgba(var(--rgb-primary),0.1) inset;
         position: relative;
         overflow: hidden;
-        z-index: 1; 
+        z-index: 1;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        vertical-align: middle; 
-        margin-top: var(--spacing-xs); 
-        margin-bottom: var(--spacing-xs); 
+        vertical-align: middle;
+        margin-top: var(--spacing-xs);
+        margin-bottom: var(--spacing-xs);
     }
+     /* Ссылки, стилизованные под кнопки */
+    a.app-button {
+        text-decoration: none;
+    }
+
     .app-button i, button i {
         margin-right: var(--spacing-sm);
         font-size: 0.95em;
     }
-    .app-button::before, button::before { 
+    .app-button::before, button::before {
         content: '';
         position: absolute;
         top: 50%; left: 50%;
@@ -316,7 +323,7 @@
         width: 250%; height: 250%;
         opacity: 1;
     }
-    .app-button.primary, button.primary { 
+    .app-button.primary, button.primary {
         background-color: var(--color-primary-base);
         border-color: var(--color-primary-base);
         color: var(--color-text-on-primary);
@@ -333,7 +340,7 @@
         box-shadow: var(--shadow-inset);
     }
 
-    .app-button.tertiary, button.tertiary { 
+    .app-button.tertiary, button.tertiary {
         background-color: transparent;
         border-color: var(--color-secondary-light);
         color: var(--color-secondary-light);
@@ -341,11 +348,11 @@
     }
     .app-button.tertiary:hover, button.tertiary:hover {
         background-color: var(--color-secondary-base);
-        color: var(--color-text-on-accent); 
+        color: var(--color-text-on-accent);
         border-color: var(--color-secondary-base);
         box-shadow: var(--glow-secondary), 0 0 15px rgba(var(--rgb-secondary),0.3) inset;
     }
-    
+
     .app-button.small, button.small {
         padding: var(--spacing-xs) var(--spacing-sm);
         font-size: 0.8rem;
@@ -356,7 +363,7 @@
         margin-right: var(--spacing-xs);
         font-size: 0.9em;
     }
-    
+
     .app-button.danger, button.danger {
         background-color: transparent;
         border-color: var(--color-error);
@@ -372,142 +379,150 @@
 
     .top-buttons {
         text-align: center;
-        margin-bottom: var(--spacing-lg); 
-        display: flex; 
+        margin-bottom: var(--spacing-lg);
+        display: flex;
         justify-content: center;
         gap: var(--spacing-md);
-        flex-wrap: wrap; 
-    }
-
-    .admin-teams-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-        gap: var(--spacing-lg); 
-        margin-top: var(--spacing-lg);
-    }
-    @media (min-width: 1700px) { 
-      .admin-teams-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-    @media (min-width: 1300px) and (max-width: 1699px) { 
-      .admin-teams-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-    @media (min-width: 880px) and (max-width: 1299px) { 
-      .admin-teams-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 879px) { 
-      .admin-teams-grid { grid-template-columns: 1fr; }
-    }
-
-    .team-card .team-logo {
-        display: block;
-        margin: 0 auto var(--spacing-md); 
-        max-height: 100px; 
-        border-radius: var(--border-radius-sm);
-        object-fit: contain; 
-    }
-    .team-card .no-logo-text { 
-        text-align:center;
-        color: var(--color-text-muted);
-        margin-bottom: var(--spacing-md);
-        font-style: italic;
-    }
-
-    .team-actions { 
-        display: flex;
-        justify-content: center;
-        gap: var(--spacing-md); 
-        margin-bottom: var(--spacing-md); 
         flex-wrap: wrap;
     }
-    
+
+    /* === Стили для 8 колонок === */
+    .admin-teams-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+    @media (min-width: 768px) {
+      .admin-teams-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-md);
+      }
+    }
+    @media (min-width: 1200px) {
+      .admin-teams-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: var(--spacing-sm);
+       }
+    }
+    @media (min-width: 1600px) {
+      .admin-teams-grid {
+        grid-template-columns: repeat(8, 1fr);
+        gap: var(--spacing-sm);
+      }
+    }
+    /* Уменьшаем размеры карточки и ее содержимого для 8 колонок */
+    .team-card {
+        padding: var(--spacing-sm);
+    }
+    .team-card h2 {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-sm);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .team-logo {
+        max-height: 60px;
+        margin-bottom: var(--spacing-sm);
+        object-fit: contain; /* Добавлено */
+    }
+     .team-card .no-logo-text { /* Стили для текста No Logo */
+        text-align:center;
+        color: var(--color-text-muted);
+        margin-bottom: var(--spacing-sm);
+        font-style: italic;
+        font-size: 0.9rem; /* Уменьшил немного */
+    }
+    .team-actions {
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-sm);
+    }
+    .team-actions .app-button.small {
+        font-size: 0.75rem;
+        padding: var(--spacing-xs);
+    }
+    /* Опционально: скрыть текст на кнопках команды, оставив иконки */
+    /*
+    .team-actions .app-button.small .fa-edit,
+    .team-actions .app-button.small .fa-trash-alt { margin-right: 0; }
+    .team-actions .app-button.small span.button-text { display: none; }
+    */
+
     .players-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-sm); 
-        margin-top: var(--spacing-md); 
-        border-top: 1px solid var(--color-divider); 
-        padding-top: var(--spacing-md);
+        margin-top: var(--spacing-sm);
+        padding-top: var(--spacing-sm);
     }
-    .player-row {
-        display: flex;
-        align-items: center;
-        background-color: var(--color-surface-secondary);
-        border-radius: var(--border-radius-md);
-        padding: var(--spacing-sm) var(--spacing-md); 
-        border: 1px solid var(--color-border);
-        transition: var(--transition-fast);
+     .player-row {
+        padding: var(--spacing-xs) var(--spacing-sm);
     }
-    .player-row:hover {
-        border-color: var(--color-primary-light);
-        background-color: rgba(var(--rgb-primary), 0.05);
+    .player-photo img, .player-photo .no-photo-placeholder {
+        max-height: 35px;
+        width: 35px; height: 35px;
+        font-size: 1rem;
+        margin-right: var(--spacing-sm);
     }
-    .player-photo {
-        flex: 0 0 auto;
-        margin-right: var(--spacing-md);
-    }
-    .player-photo img {
-        max-height: 50px; 
-        border-radius: var(--border-radius-round); 
-        border: 2px solid var(--color-border-light);
-    }
-    .player-photo .no-photo-placeholder { 
-        width: 50px;
-        height: 50px;
+     .player-photo .no-photo-placeholder {
+        width: 35px; height: 35px;
         background-color: var(--color-surface-tertiary);
         border-radius: var(--border-radius-round);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--color-text-muted);
-        font-size: 1.5rem; 
-        border: 2px solid var(--color-border-light);
+        font-size: 1rem; /* Уменьшили */
+        border: 1px solid var(--color-border-light); /* Тоньше рамка */
     }
     .player-name {
-        flex: 1;
-        font-size: 0.95rem;
-        font-weight: var(--font-weight-medium);
-        color: var(--color-text-primary);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        font-size: 0.85rem;
     }
-    .player-actions {
-        flex: 0 0 auto;
-        display: flex;
-        gap: var(--spacing-sm);
+     .player-actions .app-button.small i {
+        margin-right: 0; /* Убираем отступ для иконки */
     }
+    .player-actions .app-button.small {
+        min-width: auto;
+        padding: var(--spacing-xs);
+        line-height: 1;
+    }
+    /* Опционально: скрыть текст на кнопках игрока */
+    /*
+     .player-actions .app-button.small span.button-text { display: none; }
+    */
     .no-players {
         text-align: center;
         color: var(--color-text-muted);
-        margin-top: var(--spacing-md);
+        margin-top: var(--spacing-sm); /* Поменьше отступ */
         font-style: italic;
-        padding: var(--spacing-md) 0;
+        font-size: 0.85rem; /* Поменьше шрифт */
+        padding: var(--spacing-sm) 0;
     }
+    /* === Конец стилей для 8 колонок === */
+
 
     .modal-backdrop {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(var(--rgb-primary), 0.1); 
-        backdrop-filter: blur(8px); 
-        display: none; 
+        background: rgba(var(--rgb-primary), 0.1);
+        backdrop-filter: blur(8px);
+        display: none;
         justify-content: center;
         align-items: center;
         z-index: 9999;
-        padding: var(--spacing-md); 
-        overflow-y: auto; 
+        padding: var(--spacing-md);
+        overflow-y: auto;
     }
     .modal {
-        width: 500px; 
-        max-width: 95vw; 
+        width: 500px;
+        max-width: 95vw;
         position: relative;
         animation: fadeInModal 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-        max-height: 90vh; 
+        max-height: 90vh;
         display: flex;
         flex-direction: column;
     }
-    .modal-content { 
+    .modal-content {
         overflow-y: auto;
-        padding-right: var(--spacing-xs); 
+        padding-right: var(--spacing-xs);
         flex-grow: 1;
     }
 
@@ -515,49 +530,52 @@
         0% { transform: scale(0.9) translateY(20px); opacity: 0; }
         100% { transform: scale(1) translateY(0); opacity: 1; }
     }
-    
-    .close-modal { 
+
+    .close-modal {
         position: absolute;
-        top: var(--spacing-md); 
+        top: var(--spacing-md);
         right: var(--spacing-md);
         background: transparent;
         border: none;
         color: var(--color-text-muted);
-        font-size: 1.8rem; 
+        font-size: 1.8rem;
         line-height: 1;
         cursor: pointer;
         padding: var(--spacing-xs);
         transition: var(--transition-fast);
-        z-index: 10; 
+        z-index: 10;
     }
     .close-modal:hover {
         color: var(--color-error);
         transform: scale(1.1);
     }
-    
+
     .modal form {
         margin-top: var(--spacing-md);
     }
-    .modal .form-actions { 
+    .modal .form-actions {
         margin-top: var(--spacing-lg);
         display: flex;
-        justify-content: flex-end; 
+        justify-content: flex-end;
         gap: var(--spacing-md);
         padding-top: var(--spacing-md);
         border-top: 1px solid var(--color-divider);
     }
     .modal #uploadTeamLogoBtn, .modal #uploadPlayerPhotoBtn {
-        width: 100%; 
-        margin-bottom: var(--spacing-sm); 
+        width: 100%;
+        margin-bottom: var(--spacing-sm);
     }
 
+    /* Адаптивность */
     @media (max-width: 768px) {
         h1 { font-size: 1.6rem; }
         .modal { width: 90vw; }
         .player-row { flex-direction: column; align-items: flex-start; gap: var(--spacing-sm); }
         .player-photo { margin-right: 0; margin-bottom: var(--spacing-xs); }
         .player-actions { width: 100%; justify-content: flex-start; margin-top: var(--spacing-sm); }
-        .player-actions .app-button.small { flex-grow: 1; } 
+        .player-actions .app-button.small { flex-grow: 1; }
+        /* Заголовок и кнопка могут перенестись */
+        .page-title-container { justify-content: center; text-align: center; }
     }
 
     @media (max-width: 480px) {
@@ -593,8 +611,10 @@
   <div class="container">
     <div class="page-title-container">
         <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
+        <a href="https://galaxytimer-production.up.railway.app/" target="_blank" class="app-button tertiary" title="Open Galaxy Timer in new tab">
+            <i class="fas fa-stopwatch"></i> Galaxy Timer </a>
     </div>
-    
+
     <div class="top-buttons">
       <button id="btn-show-team-modal" class="app-button primary"><i class="fas fa-users-cog"></i> Create Team</button>
       <button id="btn-show-player-modal" class="app-button primary"><i class="fas fa-user-plus"></i> Create Player</button>
@@ -606,23 +626,21 @@
         <div class="team-card card-style" data-id="<%= team.id %>">
           <h2><%= team.name %></h2>
           <% if(team.logo){ %>
-            <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo">
-          <% } else { %>
+            <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo" loading="lazy"> <% } else { %>
             <p class="no-logo-text">No Logo</p>
           <% } %>
           <div class="team-actions">
             <button class="editTeam app-button small tertiary"><i class="fas fa-edit"></i> Edit</button>
             <button class="deleteTeam app-button small danger"><i class="fas fa-trash-alt"></i> Delete</button>
           </div>
-          
+
           <% if(teamPlayers.length > 0){ %>
             <div class="players-list">
               <% teamPlayers.forEach(player => { %>
                 <div class="player-row" data-id="<%= player.id %>">
                   <div class="player-photo">
                     <% if(player.photo){ %>
-                      <img src="<%= player.photo %>" alt="<%= player.name %>">
-                    <% } else { %>
+                      <img src="<%= player.photo %>" alt="<%= player.name %>" loading="lazy"> <% } else { %>
                       <div class="no-photo-placeholder"><i class="fas fa-user"></i></div>
                     <% } %>
                   </div>
@@ -639,25 +657,26 @@
           <% } %>
         </div>
       <% }); %>
+       <% if(teams.length === 0) { %>
+           <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the 'Create Team' button above.</p>
+       <% } %>
     </div>
   </div>
 
   <div id="teamModalBackdrop" class="modal-backdrop">
-    <div class="modal card-style"> <button class="close-modal" id="closeTeamModal" aria-label="Close modal">&times;</button>
+    <div class="modal card-style">
+      <button class="close-modal" id="closeTeamModal" aria-label="Close modal">&times;</button>
       <h2 id="teamModalTitle" class="modal-title-text"><i class="fas fa-users-cog"></i> Create Team</h2>
-      <div class="modal-content styled-scrollbar"> <form id="teamForm">
+      <div class="modal-content styled-scrollbar">
+        <form id="teamForm">
           <input type="hidden" name="id" id="teamId">
-          
           <label for="teamName"><i class="fas fa-signature"></i> Team Name:</label>
           <input type="text" name="name" id="teamName" required class="header-input" placeholder="Enter team name">
-          
           <label for="teamLogoFile"><i class="fas fa-image"></i> Logo File:</label>
           <input type="file" id="teamLogoFile" accept="image/*" class="header-input">
           <button type="button" id="uploadTeamLogoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Logo</button>
-          
           <label for="teamLogo"><i class="fas fa-link"></i> Or Logo URL:</label>
           <input type="text" name="logo" id="teamLogo" class="header-input" placeholder="Enter logo URL (overrides file if both set)">
-          
           <div class="form-actions">
             <button type="button" class="app-button tertiary" onclick="hideTeamModal()">Cancel</button>
             <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Team</button>
@@ -668,25 +687,21 @@
   </div>
 
   <div id="playerModalBackdrop" class="modal-backdrop">
-    <div class="modal card-style"> <button class="close-modal" id="closePlayerModal" aria-label="Close modal">&times;</button>
+    <div class="modal card-style">
+      <button class="close-modal" id="closePlayerModal" aria-label="Close modal">&times;</button>
       <h2 id="playerModalTitle" class="modal-title-text"><i class="fas fa-user-plus"></i> Create Player</h2>
       <div class="modal-content styled-scrollbar">
         <form id="playerForm">
           <input type="hidden" name="id" id="playerId">
-          
           <label for="playerName"><i class="fas fa-user-tag"></i> Player Name:</label>
           <input type="text" name="name" id="playerName" required class="header-input" placeholder="Enter player's name">
-          
           <label for="playerSteamId"><i class="fab fa-steam-symbol"></i> Steam ID (Optional):</label>
           <input type="text" name="steamId" id="playerSteamId" class="header-input" placeholder="Enter Steam ID">
-
           <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Photo File:</label>
           <input type="file" id="playerPhotoFile" accept="image/*" class="header-input">
           <button type="button" id="uploadPlayerPhotoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Photo</button>
-          
           <label for="playerPhoto"><i class="fas fa-link"></i> Or Photo URL:</label>
           <input type="text" name="photo" id="playerPhoto" class="header-input" placeholder="Enter photo URL (overrides file if both set)">
-          
           <label for="playerTeamId"><i class="fas fa-users"></i> Assign to Team:</label>
           <select id="playerTeamId" name="teamId" class="control-select styled-select">
             <option value="">-- No Team --</option>
@@ -694,7 +709,6 @@
               <option value="<%= team.id %>"><%= team.name %></option>
             <% }); %>
           </select>
-          
           <div class="form-actions">
             <button type="button" class="app-button tertiary" onclick="hidePlayerModal()">Cancel</button>
             <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Player</button>
@@ -707,9 +721,9 @@
   <script>
     function showTeamModal(editMode = false, teamData = null) {
       $("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');
-      $("#teamForm")[0].reset(); 
-      $("#teamId").val("");     
-      $("#teamLogoFile").val(''); 
+      $("#teamForm")[0].reset();
+      $("#teamId").val("");
+      $("#teamLogoFile").val('');
       if (editMode && teamData) {
         $("#teamId").val(teamData.id);
         $("#teamName").val(teamData.name);
@@ -727,15 +741,15 @@
     }
     function showPlayerModal(editMode = false, playerData = null) {
       $("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');
-      $("#playerForm")[0].reset(); 
-      $("#playerId").val("");     
-      $("#playerPhotoFile").val(''); 
+      $("#playerForm")[0].reset();
+      $("#playerId").val("");
+      $("#playerPhotoFile").val('');
       if (editMode && playerData) {
         $("#playerId").val(playerData.id);
         $("#playerName").val(playerData.name);
         $("#playerSteamId").val(playerData.steamId);
         $("#playerPhoto").val(playerData.photo);
-        $("#playerTeamId").val(playerData.teamId);
+        $("#playerTeamId").val(playerData.teamId); // Предварительный выбор команды
       }
       $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);
     }
@@ -755,17 +769,17 @@
       $("#btn-show-player-modal").click(function(){
         $.get("/api/teams", function(teams) {
             const teamSelect = $("#playerTeamId");
-            const currentTeamId = teamSelect.val(); // Сохраняем текущее выбранное значение, если есть
-            teamSelect.empty(); 
-            teamSelect.append('<option value="">-- No Team --</option>'); 
+            const currentTeamId = teamSelect.val();
+            teamSelect.empty();
+            teamSelect.append('<option value="">-- No Team --</option>');
             teams.forEach(function(team) {
                 teamSelect.append(`<option value="${team.id}">${team.name}</option>`);
             });
-            if(currentTeamId) teamSelect.val(currentTeamId); // Восстанавливаем, если было
-            showPlayerModal(false); 
+            if(currentTeamId) teamSelect.val(currentTeamId);
+            showPlayerModal(false);
         }).fail(function() {
             alert("Could not load teams for player modal.");
-            showPlayerModal(false); 
+            showPlayerModal(false);
         });
       });
       $("#closeTeamModal").click(function(){ hideTeamModal(); });
@@ -784,81 +798,37 @@
 
       $("#uploadTeamLogoBtn").click(function(){
         const fileInput = $("#teamLogoFile")[0];
-        if (!fileInput.files.length) {
-          alert("Please select a logo file first.");
-          return;
-        }
-        const formData = new FormData();
-        formData.append('logoFile', fileInput.files[0]);
-        $.ajax({
-          url: '/api/teams/uploadLogo', 
-          type: 'POST',
-          data: formData,
-          contentType: false,
-          processData: false,
-          success: function(response) {
-            $("#teamLogo").val(response.path); 
-            alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes.");
-          },
-          error: function() {
-            alert("Error uploading logo. Please try again or enter URL manually.");
-          }
+        if (!fileInput.files.length) { alert("Please select a logo file first."); return; }
+        const formData = new FormData(); formData.append('logoFile', fileInput.files[0]);
+        $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false,
+          success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); },
+          error: function() { alert("Error uploading logo. Please try again or enter URL manually."); }
         });
       });
 
       $("#uploadPlayerPhotoBtn").click(function(){
         const fileInput = $("#playerPhotoFile")[0];
-        if (!fileInput.files.length) {
-          alert("Please select a photo file first.");
-          return;
-        }
-        const formData = new FormData();
-        formData.append('photoFile', fileInput.files[0]);
-        $.ajax({
-          url: '/api/players/uploadPhoto', 
-          type: 'POST',
-          data: formData,
-          contentType: false,
-          processData: false,
-          success: function(response) {
-            $("#playerPhoto").val(response.path);
-            alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes.");
-          },
-          error: function() {
-            alert("Error uploading photo. Please try again or enter URL manually.");
-          }
+        if (!fileInput.files.length) { alert("Please select a photo file first."); return; }
+        const formData = new FormData(); formData.append('photoFile', fileInput.files[0]);
+        $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false,
+          success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); },
+          error: function() { alert("Error uploading photo. Please try again or enter URL manually."); }
         });
       });
 
       $("#teamForm").submit(function(e){
-        e.preventDefault();
-        const id = $("#teamId").val();
-        const name = $("#teamName").val();
-        const logo = $("#teamLogo").val(); 
-        
-        const url = id ? "/api/teams/" + id : "/api/teams";
-        const type = id ? "PUT" : "POST";
-
-        $.ajax({
-          url: url, type: type, data: { name, logo },
+        e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val();
+        const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST";
+        $.ajax({ url: url, type: type, data: { name, logo },
           success: function(){ hideTeamModal(); location.reload(); },
           error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
         });
       });
 
       $("#playerForm").submit(function(e){
-        e.preventDefault();
-        const id = $("#playerId").val();
-        const name = $("#playerName").val();
-        const steamId = $("#playerSteamId").val();
-        const photo = $("#playerPhoto").val(); 
-        const teamId = $("#playerTeamId").val() || null; 
-        
-        const url = id ? "/api/players/" + id : "/api/players";
-        const type = id ? "PUT" : "POST";
-
-        $.ajax({
-          url: url, type: type, data: { name, steamId, photo, teamId },
+        e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null;
+        const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST";
+        $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId },
           success: function(){ hidePlayerModal(); location.reload(); },
           error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
         });
@@ -866,18 +836,15 @@
 
       $(document).on("click", ".editTeam", function(){
         const teamId = $(this).closest(".team-card").data("id");
-        $.get("/api/teams/" + teamId, function(team){ 
+        $.get("/api/teams/" + teamId, function(team){
           if(team){ showTeamModal(true, team); } else { alert("Team data not found."); }
         }).fail(function(){ alert("Could not fetch team data for editing."); });
       });
 
       $(document).on("click", ".deleteTeam", function(){
-        const card = $(this).closest(".team-card");
-        const teamName = card.find("h2").text(); 
-        const teamId = card.data("id");
+        const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id");
         if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){
-          $.ajax({
-            url: "/api/teams/" + teamId, type: "DELETE",
+          $.ajax({ url: "/api/teams/" + teamId, type: "DELETE",
             success: function(){ location.reload(); },
             error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
           });
@@ -886,29 +853,25 @@
 
       $(document).on("click", ".editPlayer", function(){
         const playerId = $(this).closest(".player-row").data("id");
-        $.get("/api/teams", function(teams) {
-            const teamSelect = $("#playerTeamId");
-            teamSelect.empty();
-            teamSelect.append('<option value="">-- No Team --</option>');
-            teams.forEach(function(team) {
-                teamSelect.append(`<option value="${team.id}">${team.name}</option>`);
-            });
-            $.get("/api/players/" + playerId, function(player){ 
+        $.get("/api/teams", function(teams) { // Сначала грузим команды
+            const teamSelect = $("#playerTeamId"); teamSelect.empty(); teamSelect.append('<option value="">-- No Team --</option>');
+            teams.forEach(function(team) { teamSelect.append(`<option value="${team.id}">${team.name}</option>`); });
+            // Потом грузим игрока
+            $.get("/api/players/" + playerId, function(player){
                 if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); }
             }).fail(function(){ alert("Could not fetch player data for editing."); });
-        }).fail(function() {
+        }).fail(function() { // Если команды не загрузились
             alert("Could not load teams. Player's team might not be correctly pre-selected.");
-            $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }});
+            // Все равно пытаемся загрузить игрока
+            $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }})
+              .fail(function(){ alert("Could not fetch player data for editing."); }); // Добавляем fail и сюда
         });
       });
 
       $(document).on("click", ".deletePlayer", function(){
-        const row = $(this).closest(".player-row");
-        const playerName = row.find(".player-name").text();
-        const playerId = row.data("id");
+        const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id");
         if(confirm("Are you sure you want to delete player '" + playerName + "'?")){
-          $.ajax({
-            url: "/api/players/" + playerId, type: "DELETE",
+          $.ajax({ url: "/api/players/" + playerId, type: "DELETE",
             success: function(){ location.reload(); },
             error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));}
           });
