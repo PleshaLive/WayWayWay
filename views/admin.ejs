@@ -11,15 +11,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <style>
     :root {
         --font-family-base: 'Inter', sans-serif;
+        /* ... (остальные переменные CSS без изменений) ... */
         --font-weight-light: 300;
         --font-weight-normal: 400;
         --font-weight-medium: 500;
         --font-weight-semibold: 600;
         --font-weight-bold: 700;
-
         --color-background: #0a0f18;
         --color-surface: #101622;
         --color-surface-secondary: #181f2c;
@@ -27,278 +28,84 @@
         --color-border: #2a3140;
         --color-border-light: #3c4455;
         --color-divider: #222836;
-
         --color-text-primary: #e0e7ff;
         --color-text-secondary: #a0aec0;
         --color-text-muted: #718096;
         --color-text-placeholder: #5a667a;
-
         --color-primary-base: #4f46e5;
         --color-primary-light: #6366f1;
         --color-primary-dark: #4338ca;
         --rgb-primary: 79, 70, 229;
         --glow-primary: 0 0 15px rgba(var(--rgb-primary), 0.7), 0 0 30px rgba(var(--rgb-primary), 0.5);
         --text-shadow-primary: 0 0 10px rgba(var(--rgb-primary), 0.8);
-
         --color-secondary-base: #0ea5e9;
         --color-secondary-light: #38bdf8;
         --color-secondary-dark: #0284c7;
         --rgb-secondary: 14, 165, 233;
         --glow-secondary: 0 0 15px rgba(var(--rgb-secondary), 0.7), 0 0 30px rgba(var(--rgb-secondary), 0.5);
         --text-shadow-secondary: 0 0 10px rgba(var(--rgb-secondary), 0.8);
-
         --color-success: #22c55e;
         --color-success-dark: #16a34a;
         --rgb-success: 34, 197, 94;
         --glow-success: 0 0 12px rgba(var(--rgb-success), 0.7), 0 0 24px rgba(var(--rgb-success), 0.4);
-
         --color-warning: #f59e0b;
         --color-warning-dark: #d97706;
         --color-warning-text: #1f2937;
         --rgb-warning: 245, 158, 11;
         --glow-warning: 0 0 12px rgba(var(--rgb-warning), 0.7), 0 0 24px rgba(var(--rgb-warning), 0.4);
-
         --color-error: #ef4444;
         --color-error-dark: #dc2626;
         --rgb-error: 239, 68, 68;
         --glow-error: 0 0 12px rgba(var(--rgb-error), 0.7), 0 0 24px rgba(var(--rgb-error), 0.4);
-
         --color-text-on-primary: #ffffff;
         --color-text-on-accent: #ffffff;
-
         --spacing-xs: 0.25rem;
         --spacing-sm: 0.5rem;
         --spacing-md: 1rem;
         --spacing-lg: 1.5rem;
         --spacing-xl: 2rem;
-
         --border-radius-sm: 6px;
         --border-radius-md: 8px;
         --border-radius-lg: 12px;
         --border-radius-xl: 16px;
         --border-radius-round: 50%;
-
         --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
         --shadow-md: 0 5px 15px rgba(0,0,0,0.4);
         --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
         --shadow-inset: inset 0 2px 5px rgba(0,0,0,0.4);
-
         --transition-base: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         --transition-fast: all 0.15s ease-out;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ... (остальные базовые стили, container, card-style, типографика, кнопки, формы и т.д. без изменений) ... */
+     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 100%; scroll-behavior: smooth; }
-    body {
-        background-color: var(--color-background);
-        color: var(--color-text-primary);
-        font-family: var(--font-family-base);
-        font-size: 14px;
-        line-height: 1.7;
-        min-height: 100vh;
-        overflow-x: hidden;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-
-    .container {
-        max-width: 1920px;
-        margin: 0 auto;
-        padding: var(--spacing-lg) var(--spacing-xl);
-    }
-
-    .card-style {
-        background-color: var(--color-surface);
-        border-radius: var(--border-radius-lg);
-        border: 1px solid var(--color-border);
-        padding: var(--spacing-lg);
-        margin-bottom: var(--spacing-lg);
-        box-shadow: var(--shadow-md);
-        transition: var(--transition-base);
-        position: relative;
-         /* Добавляем flex для управления высотой контента */
-        display: flex;
-        flex-direction: column;
-    }
-    .card-style:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-lg), 0 0 20px rgba(var(--rgb-primary), 0.2);
-        border-color: var(--color-primary-light);
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-        font-family: var(--font-family-base);
-        font-weight: var(--font-weight-semibold);
-        line-height: 1.4;
-        margin-bottom: var(--spacing-md);
-        color: var(--color-text-primary);
-    }
-    h1 {
-        font-size: 2rem;
-        color: var(--color-primary-light);
-        text-shadow: var(--text-shadow-primary);
-        font-weight: var(--font-weight-bold);
-    }
-    .page-title-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--spacing-xl);
-        padding-bottom: var(--spacing-md);
-        border-bottom: 1px solid var(--color-divider);
-        flex-wrap: wrap;
-        gap: var(--spacing-md);
-    }
-    .page-title-container h1 {
-        margin-bottom: 0;
-        font-size: 1.8rem;
-    }
-    .page-title-container h1 i {
-        margin-right: var(--spacing-sm);
-        color: var(--color-primary-base);
-    }
-    .page-title-container .app-button {
-        font-size: 0.9rem;
-        padding: var(--spacing-sm) var(--spacing-md);
-        white-space: nowrap;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-        font-weight: var(--font-weight-medium);
-        color: var(--color-text-primary);
-        margin-bottom: var(--spacing-md);
-    }
-    .modal .modal-title-text {
-        font-size: 1.6rem;
-        color: var(--color-primary-light);
-        text-shadow: var(--text-shadow-primary);
-        text-align: center;
-        margin-bottom: var(--spacing-lg);
-    }
-    .modal .modal-title-text i {
-        margin-right: var(--spacing-sm);
-    }
-
-    h3 {
-        font-size: 1rem;
-        font-weight: var(--font-weight-medium);
-        color: var(--color-text-secondary);
-        margin-bottom: var(--spacing-sm);
-    }
-
-    label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: var(--font-weight-medium);
-        color: var(--color-text-muted);
-        margin-bottom: var(--spacing-xs);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-top: var(--spacing-sm);
-    }
-    label i {
-        margin-right: var(--spacing-xs);
-        color: var(--color-primary-light);
-    }
-
-    .header-input, .control-select,
-    input[type="text"],
-    input[type="file"],
-    select {
-        background-color: var(--color-surface-tertiary);
-        border: 1px solid var(--color-border);
-        color: var(--color-text-primary);
-        border-radius: var(--border-radius-md);
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: 0.9rem;
-        line-height: 1.5;
-        transition: var(--transition-base);
-        outline: none;
-        width: 100%;
-        font-family: var(--font-family-base);
-        box-shadow: var(--shadow-inset);
-        margin-bottom: var(--spacing-sm);
-    }
-    input[type="text"]:hover, input[type="file"]:hover, select:hover,
-    .header-input:hover, .control-select:hover {
-        border-color: var(--color-primary-light);
-    }
-    input[type="text"]:focus, input[type="file"]:focus, select:focus,
-    .header-input:focus, .control-select:focus {
-        border-color: var(--color-primary-light);
-        box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset);
-        background-color: var(--color-surface);
-    }
-    input[type="text"]::placeholder {
-        color: var(--color-text-placeholder);
-        opacity: 0.8;
-    }
-
-    .styled-select, select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a0aec0' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right var(--spacing-md) center;
-        background-size: 16px 12px;
-        padding-right: calc(var(--spacing-md) * 2 + 16px);
-    }
-    select option {
-        background-color: var(--color-surface-secondary);
-        color: var(--color-text-primary);
-    }
-    input[type="file"] {
-        padding-top: calc(var(--spacing-sm) - 1px);
-        padding-bottom: calc(var(--spacing-sm) - 1px);
-    }
-    input[type="file"]::-webkit-file-upload-button {
-        background: var(--color-primary-base);
-        color: var(--color-text-on-primary);
-        border: none;
-        border-radius: var(--border-radius-sm);
-        padding: var(--spacing-sm) var(--spacing-md);
-        margin-right: var(--spacing-md);
-        cursor: pointer;
-        font-weight: var(--font-weight-medium);
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        transition: var(--transition-fast);
-        box-shadow: 0 2px 5px rgba(var(--rgb-primary),0.2);
-    }
-    input[type="file"]::-webkit-file-upload-button:hover {
-        background: var(--color-primary-light);
-        box-shadow: var(--glow-primary);
-        transform: translateY(-1px);
-    }
-
-    .app-button, button {
-        padding: calc(var(--spacing-sm) + 2px) var(--spacing-lg);
-        font-size: 0.9rem;
-        font-weight: var(--font-weight-semibold);
-        border-radius: var(--border-radius-md);
-        border: 2px solid transparent;
-        background-color: var(--color-primary-base);
-        color: var(--color-text-on-primary);
-        cursor: pointer;
-        transition: var(--transition-base);
-        text-align: center;
-        line-height: 1.5;
-        letter-spacing: 0.03em;
-        min-width: 140px;
-        text-transform: uppercase;
-        box-shadow: 0 2px 5px rgba(var(--rgb-primary),0.2), 0 0 10px rgba(var(--rgb-primary),0.1) inset;
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        vertical-align: middle;
-        margin-top: var(--spacing-xs);
-        margin-bottom: var(--spacing-xs);
-    }
+    body { background-color: var(--color-background); color: var(--color-text-primary); font-family: var(--font-family-base); font-size: 14px; line-height: 1.7; min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .container { max-width: 1920px; margin: 0 auto; padding: var(--spacing-lg) var(--spacing-xl); }
+    .card-style { background-color: var(--color-surface); border-radius: var(--border-radius-lg); border: 1px solid var(--color-border); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg); box-shadow: var(--shadow-md); transition: var(--transition-base); position: relative; display: flex; flex-direction: column; }
+    .card-style:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg), 0 0 20px rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary-light); }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); line-height: 1.4; margin-bottom: var(--spacing-md); color: var(--color-text-primary); }
+    h1 { font-size: 2rem; color: var(--color-primary-light); text-shadow: var(--text-shadow-primary); font-weight: var(--font-weight-bold); }
+    .page-title-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-divider); flex-wrap: wrap; gap: var(--spacing-md); }
+    .page-title-container h1 { margin-bottom: 0; font-size: 1.8rem; }
+    .page-title-container h1 i { margin-right: var(--spacing-sm); color: var(--color-primary-base); }
+    .page-title-container .app-button { font-size: 0.9rem; padding: var(--spacing-sm) var(--spacing-md); white-space: nowrap; }
+    h2 { font-size: 1.5rem; font-weight: var(--font-weight-medium); color: var(--color-text-primary); margin-bottom: var(--spacing-md); }
+    .modal .modal-title-text { font-size: 1.6rem; color: var(--color-primary-light); text-shadow: var(--text-shadow-primary); text-align: center; margin-bottom: var(--spacing-lg); }
+    .modal .modal-title-text i { margin-right: var(--spacing-sm); }
+    h3 { font-size: 1rem; font-weight: var(--font-weight-medium); color: var(--color-text-secondary); margin-bottom: var(--spacing-sm); }
+    label { display: block; font-size: 0.8rem; font-weight: var(--font-weight-medium); color: var(--color-text-muted); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-top: var(--spacing-sm); }
+    label i { margin-right: var(--spacing-xs); color: var(--color-primary-light); }
+    .header-input, .control-select, input[type="text"], input[type="file"], select { background-color: var(--color-surface-tertiary); border: 1px solid var(--color-border); color: var(--color-text-primary); border-radius: var(--border-radius-md); padding: var(--spacing-sm) var(--spacing-md); font-size: 0.9rem; line-height: 1.5; transition: var(--transition-base); outline: none; width: 100%; font-family: var(--font-family-base); box-shadow: var(--shadow-inset); margin-bottom: var(--spacing-sm); }
+    input[type="text"]:hover, input[type="file"]:hover, select:hover, .header-input:hover, .control-select:hover { border-color: var(--color-primary-light); }
+    input[type="text"]:focus, input[type="file"]:focus, select:focus, .header-input:focus, .control-select:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset); background-color: var(--color-surface); }
+    input[type="text"]::placeholder { color: var(--color-text-placeholder); opacity: 0.8; }
+    .styled-select, select:not(.select2-hidden-accessible) { /* Обновлен селектор для Select2 */ appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a0aec0' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right var(--spacing-md) center; background-size: 16px 12px; padding-right: calc(var(--spacing-md) * 2 + 16px); }
+    select:not(.select2-hidden-accessible) option { background-color: var(--color-surface-secondary); color: var(--color-text-primary); } /* Обновлен селектор */
+    input[type="file"] { padding-top: calc(var(--spacing-sm) - 1px); padding-bottom: calc(var(--spacing-sm) - 1px); }
+    input[type="file"]::-webkit-file-upload-button { background: var(--color-primary-base); color: var(--color-text-on-primary); border: none; border-radius: var(--border-radius-sm); padding: var(--spacing-sm) var(--spacing-md); margin-right: var(--spacing-md); cursor: pointer; font-weight: var(--font-weight-medium); text-transform: uppercase; letter-spacing: 0.03em; transition: var(--transition-fast); box-shadow: 0 2px 5px rgba(var(--rgb-primary),0.2); }
+    input[type="file"]::-webkit-file-upload-button:hover { background: var(--color-primary-light); box-shadow: var(--glow-primary); transform: translateY(-1px); }
+    .app-button, button { padding: calc(var(--spacing-sm) + 2px) var(--spacing-lg); font-size: 0.9rem; font-weight: var(--font-weight-semibold); border-radius: var(--border-radius-md); border: 2px solid transparent; background-color: var(--color-primary-base); color: var(--color-text-on-primary); cursor: pointer; transition: var(--transition-base); text-align: center; line-height: 1.5; letter-spacing: 0.03em; min-width: 140px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(var(--rgb-primary),0.2), 0 0 10px rgba(var(--rgb-primary),0.1) inset; position: relative; overflow: hidden; z-index: 1; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-xs); }
     a.app-button { text-decoration: none; }
     .app-button i, button i { margin-right: var(--spacing-sm); font-size: 0.95em; }
     .app-button::before, button::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(255, 255, 255, 0.2); border-radius: 50%; transform: translate(-50%, -50%); transition: width 0.4s ease, height 0.4s ease; z-index: -1; opacity: 0; }
@@ -312,124 +119,42 @@
     .app-button.small i, button.small i { margin-right: var(--spacing-xs); font-size: 0.9em; }
     .app-button.danger, button.danger { background-color: transparent; border-color: var(--color-error); color: var(--color-error); box-shadow: 0 2px 5px rgba(var(--rgb-error),0.2); }
     .app-button.danger:hover, button.danger:hover { background-color: var(--color-error); color: var(--color-text-on-accent); border-color: var(--color-error-dark); box-shadow: var(--glow-error), 0 0 15px rgba(var(--rgb-error),0.3) inset; }
-
     .top-buttons { text-align: center; margin-bottom: var(--spacing-lg); display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; }
 
-    /* === Стили для сетки команд (макс. 6 колонок) === */
-    .admin-teams-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Мобильные */
-        gap: var(--spacing-md);
-        margin-top: var(--spacing-lg);
-    }
-    @media (min-width: 768px) { /* Планшеты */
-      .admin-teams-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 колонки */
-        gap: var(--spacing-md);
-      }
-    }
-    @media (min-width: 992px) { /* Небольшие десктопы */
-        .admin-teams-grid {
-            grid-template-columns: repeat(4, 1fr); /* 4 колонки */
-            gap: var(--spacing-md);
-        }
-    }
-    @media (min-width: 1400px) { /* Средние и большие десктопы */
-      .admin-teams-grid {
-        grid-template-columns: repeat(6, 1fr); /* Максимум 6 колонок */
-        gap: var(--spacing-sm); /* Можно чуть уменьшить отступ */
-       }
-    }
-    /* === Конец стилей для сетки === */
+    /* Стили для сетки команд (макс. 6 колонок) */
+    .admin-teams-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-lg); }
+    @media (min-width: 768px) { .admin-teams-grid { grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); } }
+    @media (min-width: 992px) { .admin-teams-grid { grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); } }
+    @media (min-width: 1400px) { .admin-teams-grid { grid-template-columns: repeat(6, 1fr); gap: var(--spacing-sm); } }
 
-    /* Уменьшаем размеры карточки и ее содержимого (оставляем компактные стили) */
-    .team-card {
-        padding: var(--spacing-sm);
-    }
-    .team-card h2 {
-        font-size: 1.1rem;
-        margin-bottom: var(--spacing-sm);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .team-logo {
-        max-height: 60px;
-        margin-bottom: var(--spacing-sm);
-        object-fit: contain;
-    }
-     .team-card .no-logo-text {
-        text-align:center; color: var(--color-text-muted);
-        margin-bottom: var(--spacing-sm); font-style: italic; font-size: 0.9rem;
-    }
-    .team-actions {
-        gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);
-        /* Важно: этот блок теперь не должен растягивать flex-контейнер карточки */
-        flex-shrink: 0;
-    }
+    /* Компактные стили для карточки */
+    .team-card { padding: var(--spacing-sm); }
+    .team-card h2 { font-size: 1.1rem; margin-bottom: var(--spacing-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .team-logo { max-height: 60px; margin-bottom: var(--spacing-sm); object-fit: contain; }
+    .team-card .no-logo-text { text-align:center; color: var(--color-text-muted); margin-bottom: var(--spacing-sm); font-style: italic; font-size: 0.9rem; }
+    .team-actions { gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex-shrink: 0; }
     .team-actions .app-button.small { font-size: 0.75rem; padding: var(--spacing-xs); }
 
-     /* === Стили для прокручиваемого списка игроков === */
-    .team-card .player-list-wrapper {
-        max-height: 190px; /* Максимальная высота блока игроков */
-        overflow-y: auto;
-        margin-top: auto; /* Прижимаем этот блок к низу карточки, если есть место */
-        padding-top: var(--spacing-sm);
-        border-top: 1px solid var(--color-divider);
-        padding-right: var(--spacing-xs); /* Отступ для скроллбара */
-        scrollbar-width: thin; /* Firefox */
-        scrollbar-color: var(--color-primary-base) var(--color-surface-secondary); /* Firefox */
-    }
+    /* Стили для прокручиваемого списка игроков */
+    .team-card .player-list-wrapper { max-height: 190px; overflow-y: auto; margin-top: auto; padding-top: var(--spacing-sm); border-top: 1px solid var(--color-divider); padding-right: var(--spacing-xs); scrollbar-width: thin; scrollbar-color: var(--color-primary-base) var(--color-surface-secondary); }
     .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: var(--border-radius-sm); }
     .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-base); border-radius: var(--border-radius-sm); border: 1px solid var(--color-surface-secondary); }
     .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
     .team-card .players-list { margin-top: 0; padding-top: 0; border-top: none; padding-bottom: var(--spacing-xs); }
-     .player-row:last-child { margin-bottom: 0; }
-    .team-card .player-list-wrapper .no-players {
-        padding: var(--spacing-md) 0; text-align: center;
-        color: var(--color-text-muted); font-style: italic; font-size: 0.85rem;
-    }
-     /* === Конец стилей для прокрутки === */
+    .player-row:last-child { margin-bottom: 0; }
+    .team-card .player-list-wrapper .no-players { padding: var(--spacing-md) 0; text-align: center; color: var(--color-text-muted); font-style: italic; font-size: 0.85rem; }
 
-    .player-row {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        display: flex; /* Убедимся что flex включен */
-        align-items: center; /* Выравнивание по центру */
-        background-color: var(--color-surface-secondary); /* Добавим фон для строк */
-        border-radius: var(--border-radius-md); /* Скругление строк */
-        margin-bottom: var(--spacing-sm); /* Отступ между строками */
-        border: 1px solid var(--color-border);
-        transition: var(--transition-fast);
-    }
-     .player-row:hover {
-        border-color: var(--color-primary-light);
-        background-color: rgba(var(--rgb-primary), 0.05);
-    }
-    .player-photo img, .player-photo .no-photo-placeholder {
-        max-height: 35px; width: 35px; height: 35px; font-size: 1rem; margin-right: var(--spacing-sm);
-        border-radius: var(--border-radius-round); /* Круглые фото */
-        border: 1px solid var(--color-border-light); /* Тонкая рамка */
-        flex-shrink: 0; /* Фото не должно сжиматься */
-    }
-     .player-photo .no-photo-placeholder {
-        background-color: var(--color-surface-tertiary); display: flex;
-        align-items: center; justify-content: center; color: var(--color-text-muted);
-    }
-    .player-name {
-        font-size: 0.85rem; flex-grow: 1; /* Имя занимает доступное место */
-        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; /* Обрезка длинных имен */
-        color: var(--color-text-primary); /* Цвет имени */
-        font-weight: var(--font-weight-medium);
-    }
-    .player-actions {
-         gap: var(--spacing-sm); /* Отступ между кнопками */
-         display: flex; /* Для выравнивания кнопок */
-         flex-shrink: 0; /* Кнопки не должны сжиматься */
-    }
-     .player-actions .app-button.small i { margin-right: 0; }
-     .player-actions .app-button.small { min-width: auto; padding: var(--spacing-xs); line-height: 1; }
+    .player-row { padding: var(--spacing-xs) var(--spacing-sm); display: flex; align-items: center; background-color: var(--color-surface-secondary); border-radius: var(--border-radius-md); margin-bottom: var(--spacing-sm); border: 1px solid var(--color-border); transition: var(--transition-fast); }
+    .player-row:hover { border-color: var(--color-primary-light); background-color: rgba(var(--rgb-primary), 0.05); }
+    .player-photo img, .player-photo .no-photo-placeholder { max-height: 35px; width: 35px; height: 35px; font-size: 1rem; margin-right: var(--spacing-sm); border-radius: var(--border-radius-round); border: 1px solid var(--color-border-light); flex-shrink: 0; }
+    .player-photo .no-photo-placeholder { background-color: var(--color-surface-tertiary); display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); }
+    .player-name { font-size: 0.85rem; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
+    .player-actions { gap: var(--spacing-sm); display: flex; flex-shrink: 0; }
+    .player-actions .app-button.small i { margin-right: 0; }
+    .player-actions .app-button.small { min-width: auto; padding: var(--spacing-xs); line-height: 1; }
 
+    /* Стили модальных окон */
     .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(var(--rgb-primary), 0.1); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: var(--spacing-md); overflow-y: auto; }
     .modal { width: 500px; max-width: 95vw; position: relative; animation: fadeInModal 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; max-height: 90vh; display: flex; flex-direction: column; }
     .modal-content { overflow-y: auto; padding-right: var(--spacing-xs); flex-grow: 1; }
@@ -440,6 +165,99 @@
     .modal .form-actions { margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-divider); }
     .modal #uploadTeamLogoBtn, .modal #uploadPlayerPhotoBtn { width: 100%; margin-bottom: var(--spacing-sm); }
 
+    /* --- Стили для Select2 --- */
+    .select2-container { width: 100% !important; } /* Важно для переопределения */
+    .select2-container--default .select2-selection--single {
+        background-color: var(--color-surface-tertiary);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-md);
+        height: calc(1.5em + var(--spacing-sm) * 2 + 2px); /* Match input height */
+        padding: var(--spacing-sm) var(--spacing-md);
+        /* Убираем лишний паддинг по высоте, т.к. используется height */
+         padding-top: 0;
+         padding-bottom: 0;
+         display: flex; /* Используем flex для выравнивания */
+         align-items: center; /* Вертикальное выравнивание */
+    }
+     .select2-container--default .select2-selection--single:focus {
+         border-color: var(--color-primary-light);
+        box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset);
+        outline: none;
+     }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: var(--color-text-primary);
+        line-height: 1.5; /* Важно для вертикального выравнивания текста */
+        padding-left: 0;
+        padding-right: 20px; /* Место для стрелки */
+    }
+     .select2-container--default .select2-selection--single .select2-selection__rendered .select2-selection__placeholder {
+         color: var(--color-text-placeholder); /* Цвет плейсхолдера */
+     }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: calc(1.5em + var(--spacing-sm) * 2);
+        position: absolute; /* Абсолютное позиционирование стрелки */
+        top: 1px;
+        right: var(--spacing-sm);
+        width: 20px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: var(--color-text-muted) transparent transparent transparent;
+        border-style: solid;
+        border-width: 5px 4px 0 4px;
+        height: 0;
+        left: 50%;
+        margin-left: -4px;
+        margin-top: -2px;
+        position: absolute;
+        top: 50%;
+        width: 0;
+    }
+    .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+        border-color: transparent transparent var(--color-text-muted) transparent;
+        border-width: 0 4px 5px 4px;
+    }
+     /* Стили выпадающего списка Select2 */
+     .select2-dropdown {
+        background-color: var(--color-surface-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-md);
+        z-index: 10051; /* Чуть выше z-index модалки */
+     }
+     .select2-container--default .select2-results__option {
+        padding: var(--spacing-sm) var(--spacing-md);
+        color: var(--color-text-secondary);
+     }
+     .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--color-primary-base);
+        color: var(--color-text-on-primary);
+     }
+      .select2-results__option[aria-selected=true] {
+        background-color: var(--color-surface-tertiary) !important; /* Выделяем выбранный */
+        color: var(--color-text-primary) !important;
+    }
+    .select2-search--dropdown .select2-search__field { /* Поле поиска */
+        background-color: var(--color-surface-tertiary);
+        border: 1px solid var(--color-border);
+        color: var(--color-text-primary);
+        border-radius: var(--border-radius-sm);
+        padding: var(--spacing-sm); /* Паддинг поля поиска */
+        margin: var(--spacing-sm); /* Отступы поля поиска */
+        width: calc(100% - var(--spacing-sm) * 2); /* Ширина поля поиска */
+    }
+     .select2-search--dropdown .select2-search__field:focus {
+         border-color: var(--color-primary-light);
+         box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset);
+         outline: none;
+     }
+     .select2-results__option .select2-results__group { /* Стили для групп опций, если используются */
+         color: var(--color-text-primary);
+         font-weight: var(--font-weight-semibold);
+     }
+     /* --- Конец стилей для Select2 --- */
+
+
+    /* Адаптивность */
     @media (max-width: 768px) {
         h1 { font-size: 1.6rem; }
         .modal { width: 90vw; }
@@ -455,9 +273,6 @@
         .modal .form-actions .app-button { width: 100%; }
         .page-title-container h1 { font-size: 1.5rem; }
         .modal .modal-title-text { font-size: 1.3rem; }
-        .player-row { /* На мобильных можно сделать фото над именем */
-            /* flex-direction: column; align-items: flex-start; */ /* Раскомментируйте если нужно */
-        }
     }
     .styled-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
     .styled-scrollbar::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: var(--border-radius-sm); }
@@ -564,11 +379,13 @@
           <button type="button" id="uploadPlayerPhotoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Photo</button>
           <label for="playerPhoto"><i class="fas fa-link"></i> Or Photo URL:</label>
           <input type="text" name="photo" id="playerPhoto" class="header-input" placeholder="Enter photo URL (overrides file if both set)">
+
           <label for="playerTeamId"><i class="fas fa-users"></i> Assign to Team:</label>
-          <select id="playerTeamId" name="teamId" class="control-select styled-select">
-            <option value="">-- No Team --</option>
+          <select id="playerTeamId" name="teamId" class="control-select" style="width: 100%;"> <option value="">-- No Team --</option>
             <% teams.forEach(function(team){ %>
-              <option value="<%= team.id %>"><%= team.name %></option>
+              <option value="<%= team.id %>" data-logo="<%= team.logo ? team.logo : '' %>">
+                <%= team.name %>
+              </option>
             <% }); %>
           </select>
           <div class="form-actions">
@@ -580,28 +397,120 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
   <script>
     // Функции модальных окон (без изменений)
     function showTeamModal(editMode = false, teamData = null) {$("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');if (editMode && teamData) {$("#teamId").val(teamData.id);$("#teamName").val(teamData.name);$("#teamLogo").val(teamData.logo);}$("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);}
     function hideTeamModal() {$("#teamModalBackdrop").fadeOut(200, function() {$(this).hide();$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');});}
-    function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val('');if (editMode && playerData) {$("#playerId").val(playerData.id);$("#playerName").val(playerData.name);$("#playerSteamId").val(playerData.steamId);$("#playerPhoto").val(playerData.photo);$("#playerTeamId").val(playerData.teamId);}$("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
-    function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val('');});}
+    function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); if (editMode && playerData) { $("#playerId").val(playerData.id); $("#playerName").val(playerData.name); $("#playerSteamId").val(playerData.steamId); $("#playerPhoto").val(playerData.photo); /* Устанавливаем значение Select2 после инициализации */ setTimeout(() => { $('#playerTeamId').val(playerData.teamId).trigger('change'); }, 100); } else { /* Сбрасываем Select2 для нового игрока */ setTimeout(() => { $('#playerTeamId').val("").trigger('change'); }, 100); } $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
+    function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); /* Сбрасываем Select2 при закрытии */ $('#playerTeamId').val("").trigger('change'); });}
 
     $(document).ready(function(){
-      // Обработчики кнопок и событий (без изменений)
+
+      // --- Инициализация Select2 ---
+      function formatTeamOption (team) {
+        if (!team.id) { return team.text; } // Для опции "-- No Team --"
+
+        var $team = $(
+            // Добавлен title для всплывающей подсказки с именем
+            '<span style="display: flex; align-items: center;" title="' + team.text + '"></span>'
+        );
+        var logoUrl = $(team.element).data('logo');
+
+        if (logoUrl) {
+            // Формируем полный URL если нужно (зависит от того, как хранятся пути в team.logo)
+            // Предполагаем, что team.logo хранит относительный путь типа /logos/image.png
+             const fullLogoUrl = logoUrl.startsWith('http') ? logoUrl : logoUrl; // Используем как есть
+            $team.append('<img loading="lazy" src="' + fullLogoUrl + '" style="height: 20px; width: 20px; margin-right: 8px; object-fit: contain; vertical-align: middle; border-radius: 3px;" alt="logo" />');
+        } else {
+            // Плейсхолдер если лого нет
+            $team.append('<span style="display: inline-block; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle;"></span>');
+        }
+        $team.append(document.createTextNode(team.text)); // Используем createTextNode для безопасности
+
+        return $team;
+      };
+
+      $('#playerTeamId').select2({
+          templateResult: formatTeamOption,
+          templateSelection: formatTeamOption,
+          width: '100%',
+          dropdownParent: $('#playerModalBackdrop'), // Привязываем выпадающий список к фону модалки
+          placeholder: "-- No Team --", // Плейсхолдер Select2
+          allowClear: true // Разрешить очистку выбора
+      });
+      // --- Конец инициализации Select2 ---
+
+
+      // Обработчики кнопок и событий
       $("#btn-show-team-modal").click(function(){ showTeamModal(false); });
-      $("#btn-show-player-modal").click(function(){ $.get("/api/teams", function(teams) {const teamSelect = $("#playerTeamId");const currentTeamId = teamSelect.val();teamSelect.empty();teamSelect.append('<option value="">-- No Team --</option>');teams.forEach(function(team) {teamSelect.append(`<option value="${team.id}">${team.name}</option>`);});if(currentTeamId) teamSelect.val(currentTeamId);showPlayerModal(false); }).fail(function() {alert("Could not load teams for player modal.");showPlayerModal(false); }); });
+      $("#btn-show-player-modal").click(function(){
+          // Обновляем опции Select2 перед открытием модалки
+          $.get("/api/teams", function(teams) {
+            const teamSelect = $("#playerTeamId");
+            // Сохраняем текущее значение перед очисткой
+            const currentVal = teamSelect.val();
+            // Очищаем старые опции
+            teamSelect.empty();
+            // Добавляем плейсхолдер/пустую опцию
+            teamSelect.append(new Option("-- No Team --", "", false, false));
+            // Добавляем новые опции
+            teams.forEach(function(team) {
+                teamSelect.append(new Option(team.name, team.id, false, false)).find('option[value="'+team.id+'"]').data('logo', team.logo || '');
+            });
+            // Восстанавливаем значение, если оно было, или сбрасываем
+            teamSelect.val(currentVal || "").trigger('change');
+            // Показываем модалку
+            showPlayerModal(false);
+        }).fail(function() {
+            alert("Could not load teams for player modal.");
+            showPlayerModal(false); // Показываем модалку даже если команды не загрузились
+        });
+      });
+
       $("#closeTeamModal").click(function(){ hideTeamModal(); });
       $("#closePlayerModal").click(function(){ hidePlayerModal(); });
       $(".modal-backdrop").click(function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
+
+      // AJAX Запросы (без изменений в логике)
       $("#uploadTeamLogoBtn").click(function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
       $("#uploadPlayerPhotoBtn").click(function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
       $("#teamForm").submit(function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, logo }, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
       $("#playerForm").submit(function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+
+      // Редактирование и удаление (изменена логика для editPlayer - обновление Select2)
       $(document).on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
       $(document).on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
-      $(document).on("click", ".editPlayer", function(){ const playerId = $(this).closest(".player-row").data("id"); $.get("/api/teams", function(teams) { const teamSelect = $("#playerTeamId"); teamSelect.empty(); teamSelect.append('<option value="">-- No Team --</option>'); teams.forEach(function(team) { teamSelect.append(`<option value="${team.id}">${team.name}</option>`); }); $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); } }).fail(function(){ alert("Could not fetch player data for editing."); }); }).fail(function() { alert("Could not load teams. Player's team might not be correctly pre-selected."); $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }}) .fail(function(){ alert("Could not fetch player data for editing."); }); }); });
+
+      $(document).on("click", ".editPlayer", function(){
+        const playerId = $(this).closest(".player-row").data("id");
+        // Сначала грузим команды для Select2
+        $.get("/api/teams", function(teams) {
+            const teamSelect = $("#playerTeamId");
+            teamSelect.empty(); // Очищаем
+            teamSelect.append(new Option("-- No Team --", "", false, false)); // Добавляем пустую опцию
+            teams.forEach(function(team) { // Добавляем команды
+                 teamSelect.append(new Option(team.name, team.id, false, false)).find('option[value="'+team.id+'"]').data('logo', team.logo || '');
+            });
+
+            // Потом грузим данные игрока
+            $.get("/api/players/" + playerId, function(player){
+                if(player){
+                    // Вызываем showPlayerModal, который теперь установит значение Select2
+                    showPlayerModal(true, player);
+                } else { alert("Player data not found."); }
+            }).fail(function(){ alert("Could not fetch player data for editing."); });
+        }).fail(function() {
+            alert("Could not load teams. Player data might be incomplete.");
+            // Пытаемся загрузить игрока даже без команд
+            $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }})
+              .fail(function(){ alert("Could not fetch player data for editing."); });
+        });
+      });
+
       $(document).on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+
     });
   </script>
 </body>
