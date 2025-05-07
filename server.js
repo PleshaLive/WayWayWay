@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
+const cors = require('cors'); // <--- Добавьте эту строку
 
 const app = express();
 const port = process.env.PORT || 2727;
@@ -14,6 +15,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
+// Включите CORS для всех маршрутов
+app.use(cors()); // <--- Добавьте эту строку
+
 // Статические файлы (логотипы, фото и т.д.)
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -21,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const DATA_FILE = path.join(__dirname, 'data.json');
 
 // Данные для админки – команды и игроки (persistent storage)
-let teams = [];    // Объекты: { id, name, logo, score }
+let teams = [];      // Объекты: { id, name, logo, score }
 let players = [];  // Объекты: { id, name, steamId, photo, teamId, match_stats }
 
 // Объект scoreboard для данных GSI (от CS:GO/CS2)
@@ -791,7 +795,7 @@ app.get('/mvp', (req, res) => {
           team_name: team_name, 
           kills, 
           assists,
-          deaths,    
+          deaths,      
           adr: adrNum, 
           mvpScore: scoreValue, 
           photo: photoFull,
@@ -832,6 +836,7 @@ app.get('/admin', (req, res) => {
   res.render('admin', { teams, players });
 });
 
+// Теперь этот эндпоинт будет доступен для кросс-доменных запросов
 app.get('/api/teams', (req, res) => {
   res.json(teams);
 });
