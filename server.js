@@ -726,8 +726,23 @@ app.get('/admin', (req, res) => {
   res.render('admin', { teams, players });
 });
 
-// API для команд
+// ==================================
+// === НАЧАЛО СЕКЦИИ API ДЛЯ CRUD ===
+// ==================================
+
+// --- API для команд ---
 app.get('/api/teams', (req, res) => res.json(teams));
+
+// ДОБАВЛЕННЫЙ МАРШРУТ ДЛЯ ПОЛУЧЕНИЯ ОДНОЙ КОМАНДЫ
+app.get('/api/teams/:id', (req, res) => {
+  const { id } = req.params;
+  const team = teams.find(t => t.id === id);
+  if (team) {
+    res.json(team);
+  } else {
+    res.status(404).json({ error: "Team not found with ID: " + id });
+  }
+});
 
 app.post('/api/teams', (req, res) => {
   const { name, logo, score } = req.body; // Оставил score, как в вашем оригинале
@@ -754,7 +769,7 @@ app.put('/api/teams/:id', (req, res) => {
 app.delete('/api/teams/:id', (req, res) => {
   const { id } = req.params;
   const originalLength = teams.length;
-  teams = teams.filter(t => t.id !== id);
+  teams = teams.filter(t => t.id !== id); // Используем filter, как в вашем оригинале
   if (teams.length < originalLength) {
     players = players.map(p => p.teamId === id ? { ...p, teamId: null } : p);
     saveData();
@@ -770,10 +785,10 @@ app.post('/api/teams/uploadLogo', uploadTeams.single('logoFile'), (req, res) => 
   res.json({ path: filePath });
 });
 
-// API для игроков
+// --- API для игроков ---
 app.get('/api/players', (req, res) => res.json(players));
 
-// === ДОБАВЛЕННЫЙ МАРШРУТ ДЛЯ ПОЛУЧЕНИЯ ОДНОГО ИГРОКА ===
+// ДОБАВЛЕННЫЙ МАРШРУТ ДЛЯ ПОЛУЧЕНИЯ ОДНОГО ИГРОКА
 app.get('/api/players/:id', (req, res) => {
   const { id } = req.params;
   const player = players.find(p => p.id === id);
@@ -783,7 +798,6 @@ app.get('/api/players/:id', (req, res) => {
     res.status(404).json({ error: "Player not found with ID: " + id });
   }
 });
-// === КОНЕЦ ДОБАВЛЕННОГО МАРШРУТА ===
 
 app.post('/api/players', (req, res) => {
   const { name, steamId, photo, teamId, match_stats } = req.body; // Оставил match_stats
@@ -816,7 +830,7 @@ app.put('/api/players/:id', (req, res) => {
 app.delete('/api/players/:id', (req, res) => {
   const { id } = req.params;
   const originalLength = players.length;
-  players = players.filter(p => p.id !== id);
+  players = players.filter(p => p.id !== id); // Используем filter, как в вашем оригинале
   if (players.length < originalLength) {
     saveData();
     res.status(200).json({ message: "Player deleted" }); // Статус 200
@@ -830,6 +844,11 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
   const filePath = '/players/' + req.file.filename;
   res.json({ path: filePath });
 });
+
+// ================================
+// === КОНЕЦ СЕКЦИИ API ДЛЯ CRUD ===
+// ================================
+
 
 app.get('/alive', (req, res) => res.json(roundsAlive));
 
