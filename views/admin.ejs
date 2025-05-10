@@ -42,7 +42,7 @@
         --color-secondary-base: #7A64B9;
         --color-secondary-light: #7A64B9;
         --color-secondary-dark: #50467A;
-        --rgb-secondary: 14, 165, 233;
+        --rgb-secondary: 14, 165, 233; /* Был 122, 100, 185, изменил для контраста с primary glow */
         --glow-secondary: 0 0 15px rgba(var(--rgb-secondary), 0.7), 0 0 30px rgba(var(--rgb-secondary), 0.5);
         --text-shadow-secondary: 0 0 10px rgba(var(--rgb-secondary), 0.8);
         --color-success: #22c55e;
@@ -130,9 +130,12 @@
 
     /* === Компактные стили для карточки === */
     .team-card { padding: var(--spacing-sm); }
-    .team-card h2 { font-size: 1.1rem; margin-bottom: var(--spacing-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .team-card h2 { font-size: 1.1rem; margin-bottom: var(--spacing-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Уменьшил margin-bottom */
     .team-logo { max-height: 60px; margin-bottom: var(--spacing-sm); object-fit: contain; }
     .team-card .no-logo-text { text-align:center; color: var(--color-text-muted); margin-bottom: var(--spacing-sm); font-style: italic; font-size: 0.9rem; }
+    /* НОВЫЙ СТИЛЬ: Информация для сортировки */
+    .team-info-sort { font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: var(--spacing-sm); line-height: 1.3; }
+    .team-info-sort span { display: block; }
     .team-actions { gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex-shrink: 0; }
     .team-actions .app-button.small { font-size: 0.75rem; padding: var(--spacing-xs); }
     /* === Конец компактных стилей === */
@@ -192,10 +195,40 @@
     select.select2-hidden-accessible { background-image: none !important; }
     /* === Конец стилей для Select2 === */
 
+    /* === НОВЫЕ СТИЛИ ДЛЯ СОРТИРОВКИ === */
+    .sorting-controls-container {
+      background-color: var(--color-surface-secondary);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+    .sorting-controls-container label {
+      margin-bottom: 0; /* Убираем нижний отступ у label */
+      margin-top: 0; /* Убираем верхний отступ у label */
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+      font-weight: var(--font-weight-medium);
+    }
+    .sorting-controls-container label i {
+      margin-right: var(--spacing-xs);
+      color: var(--color-primary-light);
+    }
+    .sorting-controls-container .control-select {
+      width: auto; /* Автоматическая ширина для select */
+      min-width: 200px;
+      margin-bottom: 0; /* Убираем нижний отступ у select */
+    }
+    /* === КОНЕЦ СТИЛЕЙ ДЛЯ СОРТИРОВКИ === */
+
 
     /* === Адаптивность и Скроллбар === */
     @media (max-width: 768px) { h1 { font-size: 1.6rem; } .modal { width: 90vw; } .page-title-container { justify-content: center; text-align: center; } }
-    @media (max-width: 480px) { .container { padding: var(--spacing-md); } .top-buttons { flex-direction: column; gap: var(--spacing-sm); } .top-buttons .app-button { width: 100%; } .team-actions { flex-direction: column; gap: var(--spacing-sm); } .team-actions .app-button { width: 100%; } .modal .form-actions { flex-direction: column; } .modal .form-actions .app-button { width: 100%; } .page-title-container h1 { font-size: 1.5rem; } .modal .modal-title-text { font-size: 1.3rem; } }
+    @media (max-width: 480px) { .container { padding: var(--spacing-md); } .top-buttons { flex-direction: column; gap: var(--spacing-sm); } .top-buttons .app-button { width: 100%; } .team-actions { flex-direction: column; gap: var(--spacing-sm); } .team-actions .app-button { width: 100%; } .modal .form-actions { flex-direction: column; } .modal .form-actions .app-button { width: 100%; } .page-title-container h1 { font-size: 1.5rem; } .modal .modal-title-text { font-size: 1.3rem; } .sorting-controls-container { flex-direction: column; align-items: stretch;} .sorting-controls-container .control-select { width: 100%;} }
     .styled-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
     .styled-scrollbar::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: var(--border-radius-sm); }
     .styled-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-base); border-radius: var(--border-radius-sm); border: 1px solid var(--color-surface-secondary); }
@@ -216,16 +249,50 @@
       <button id="btn-show-player-modal" class="app-button primary"><i class="fas fa-user-plus"></i> Create Player</button>
     </div>
 
+    <div class="sorting-controls-container card-style">
+        <label for="sortTeamsBy"><i class="fas fa-sort-amount-down"></i> Sort Teams By:</label>
+        <select id="sortTeamsBy" class="control-select styled-select">
+            <option value="nameAsc">Name (A-Z)</option>
+            <option value="nameDesc">Name (Z-A)</option>
+            <option value="playerCountAsc">Players (Low to High)</option>
+            <option value="playerCountDesc">Players (High to Low)</option>
+            <option value="dateCreatedAsc">Created Date (Oldest)</option>
+            <option value="dateCreatedDesc">Created Date (Newest)</option>
+        </select>
+    </div>
+
     <div id="teamsGrid" class="admin-teams-grid">
-      <% teams.forEach(team => { %>
-        <% const teamPlayers = players.filter(p => p.teamId === team.id); %>
-        <div class="team-card card-style" data-id="<%= team.id %>">
+      <%
+        // Предполагаем, что teams приходит как массив объектов
+        // И у каждого объекта team есть свойство createdAt (например, new Date().toISOString())
+        // Если createdAt нет, сортировка по дате не будет работать корректно
+        teams.forEach(team => {
+          const teamPlayers = players.filter(p => p.teamId === team.id);
+          const creationDate = team.createdAt ? new Date(team.createdAt) : null;
+          const creationTimestamp = creationDate ? creationDate.getTime() : 0;
+      %>
+        <div class="team-card card-style"
+             data-id="<%= team.id %>"
+             data-name="<%= team.name.toLowerCase() %>"
+             data-player-count="<%= teamPlayers.length %>"
+             data-created-at="<%= creationTimestamp %>">
+
           <h2><%= team.name %></h2>
           <% if(team.logo){ %>
             <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo" loading="lazy">
           <% } else { %>
             <p class="no-logo-text">No Logo</p>
           <% } %>
+
+          <div class="team-info-sort">
+            <span>Players: <%= teamPlayers.length %></span>
+            <% if (creationDate) { %>
+              <span>Created: <%= creationDate.toLocaleDateString() %> <%= creationDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></span>
+            <% } else { %>
+              <span>Created: N/A</span>
+            <% } %>
+          </div>
+
           <div class="team-actions">
             <button class="editTeam app-button small tertiary"><i class="fas fa-edit"></i> Edit</button>
             <button class="deleteTeam app-button small danger"><i class="fas fa-trash-alt"></i> Delete</button>
@@ -255,10 +322,11 @@
               <p class="no-players">No players in this team.</p>
             <% } %>
           </div>
-          </div> <% }); %>
-       <% if(teams.length === 0) { %>
-           <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the 'Create Team' button above.</p>
-       <% } %>
+        </div>
+      <% }); %>
+      <% if(teams.length === 0) { %>
+            <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the 'Create Team' button above.</p>
+      <% } %>
     </div>
   </div>
 
@@ -324,7 +392,7 @@
 
   <script>
     // Функции модальных окон
-    function showTeamModal(editMode = false, teamData = null) {$("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');if (editMode && teamData) {$("#teamId").val(teamData.id);$("#teamName").val(teamData.name);$("#teamLogo").val(teamData.logo);}$("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);}
+    function showTeamModal(editMode = false, teamData = null) {$("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');if (editMode && teamData) {$("#teamId").val(teamData.id);$("#teamName").val(teamData.name);$("#teamLogo").val(teamData.logo); /* Если у вас есть поле createdAt и вы хотите его показать: $("#teamCreatedAt").val(teamData.createdAt); */ }$("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);}
     function hideTeamModal() {$("#teamModalBackdrop").fadeOut(200, function() {$(this).hide();$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');});}
     function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); if (editMode && playerData) { $("#playerId").val(playerData.id); $("#playerName").val(playerData.name); $("#playerSteamId").val(playerData.steamId); $("#playerPhoto").val(playerData.photo); /* Устанавливаем значение Select2 после инициализации */ setTimeout(() => { $('#playerTeamId').val(playerData.teamId).trigger('change'); }, 50); /* Небольшая задержка */ } else { /* Сбрасываем Select2 для нового игрока */ setTimeout(() => { $('#playerTeamId').val("").trigger('change'); }, 50); } $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
     function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); /* Сбрасываем Select2 при закрытии */ $('#playerTeamId').val("").trigger('change'); });}
@@ -339,15 +407,13 @@
         var logoUrl = $(team.element).data('logo');
 
         if (logoUrl && logoUrl.trim() !== "") {
-             // Убедимся, что путь правильный (добавляем / если нужно)
             const fullLogoUrl = logoUrl.startsWith('http') ? logoUrl : (logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl);
-            $team.append('<img loading="lazy" src="' + fullLogoUrl + '" style="height: 20px; width: 20px; margin-right: 8px; object-fit: contain; vertical-align: middle; border-radius: 3px;" alt="logo" onerror="this.style.display=\'none\'; this.nextSibling.style.display=\'inline-block\'" />' // Прячем img при ошибке
-                       + '<span style="display: none; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle; text-align: center; line-height: 18px; font-size: 10px;">?</span>'); // Показываем span при ошибке
+            $team.append('<img loading="lazy" src="' + fullLogoUrl + '" style="height: 20px; width: 20px; margin-right: 8px; object-fit: contain; vertical-align: middle; border-radius: 3px;" alt="logo" onerror="this.style.display=\'none\'; $(this).next(\'.logo-placeholder-s2\').show();" />'
+                        + '<span class="logo-placeholder-s2" style="display: none; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle; text-align: center; line-height: 18px; font-size: 10px; color: var(--color-text-muted);">?</span>');
         } else {
             $team.append('<span style="display: inline-block; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle;"></span>');
         }
         $team.append(document.createTextNode(team.text));
-
         return $team;
       };
 
@@ -362,7 +428,7 @@
         });
       } catch(e) {
         console.error("Select2 initialization failed:", e);
-        alert("Failed to initialize team selector. Please check console.");
+        // alert("Failed to initialize team selector. Please check console."); // Можно убрать, если не критично
       }
       // === Конец Инициализация Select2 ===
 
@@ -372,25 +438,21 @@
       $("#btn-show-player-modal").click(function(){
           $.get("/api/teams", function(teams) {
             const teamSelect = $("#playerTeamId");
-            const currentVal = teamSelect.val();
-            // Сохраняем текущее выбранное значение перед очисткой и пересозданием
-            const selectedValue = $('#playerTeamId').val();
+            const selectedValue = teamSelect.val();
 
-            // Уничтожаем старый Select2, если он был
             if (teamSelect.data('select2')) {
                 teamSelect.select2('destroy');
             }
 
-            teamSelect.empty(); // Очищаем старые опции
-            teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo',''); // Добавляем пустую опцию
+            teamSelect.empty();
+            teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
 
-            teams.forEach(function(team) { // Добавляем новые опции
+            teams.forEach(function(team) {
                 const option = new Option(team.name, team.id, false, false);
-                $(option).data('logo', team.logo || ''); // Сохраняем лого в data
+                $(option).data('logo', team.logo || '');
                 teamSelect.append(option);
             });
 
-            // Повторная инициализация Select2
             teamSelect.select2({
                 templateResult: formatTeamOption,
                 templateSelection: formatTeamOption,
@@ -400,10 +462,8 @@
                 allowClear: true
             });
 
-            // Восстанавливаем предыдущее значение или сбрасываем
             teamSelect.val(selectedValue || "").trigger('change');
-
-            showPlayerModal(false); // Показываем модалку
+            showPlayerModal(false);
 
         }).fail(function() {
             alert("Could not load teams for player modal.");
@@ -418,7 +478,7 @@
       // AJAX Запросы
       $("#uploadTeamLogoBtn").click(function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
       $("#uploadPlayerPhotoBtn").click(function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
-      $("#teamForm").submit(function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, logo }, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+      $("#teamForm").submit(function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; if (!id) { /* При создании новой команды можно добавить createdAt на клиенте, но лучше на сервере */ /* data.createdAt = new Date().toISOString(); */ } $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
       $("#playerForm").submit(function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
 
       // Редактирование и удаление
@@ -427,22 +487,19 @@
 
       $(document).on("click", ".editPlayer", function(){
         const playerId = $(this).closest(".player-row").data("id");
-        // Грузим команды для обновления Select2
         $.get("/api/teams", function(teams) {
             const teamSelect = $("#playerTeamId");
-             // Уничтожаем старый Select2 перед обновлением опций
             if (teamSelect.data('select2')) {
                 teamSelect.select2('destroy');
             }
             teamSelect.empty();
             teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
             teams.forEach(function(team) {
-                 const option = new Option(team.name, team.id, false, false);
-                 $(option).data('logo', team.logo || '');
-                 teamSelect.append(option);
+                const option = new Option(team.name, team.id, false, false);
+                $(option).data('logo', team.logo || '');
+                teamSelect.append(option);
             });
 
-            // Повторно инициализируем Select2 *после* добавления опций
             teamSelect.select2({
                 templateResult: formatTeamOption,
                 templateSelection: formatTeamOption,
@@ -452,21 +509,85 @@
                 allowClear: true
             });
 
-            // Потом грузим данные игрока
             $.get("/api/players/" + playerId, function(player){
                 if(player){
-                    // Показываем модалку (она установит значение Select2)
                     showPlayerModal(true, player);
                 } else { alert("Player data not found."); }
             }).fail(function(){ alert("Could not fetch player data for editing."); });
         }).fail(function() {
             alert("Could not load teams. Player data might be incomplete.");
-            $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }}) // Попытка загрузить игрока
+            $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }})
               .fail(function(){ alert("Could not fetch player data for editing."); });
         });
       });
 
       $(document).on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+
+
+      // === Начало: Логика сортировки команд ===
+      function sortAndDisplayTeams() {
+          const sortBy = $('#sortTeamsBy').val();
+          const teamsGrid = $('#teamsGrid');
+          let teamCards = teamsGrid.find('.team-card').get(); // Получаем массив DOM элементов
+
+          teamCards.sort(function(a, b) {
+              let valA, valB;
+
+              // Извлекаем значения для сравнения
+              const nameA = $(a).data('name');
+              const nameB = $(b).data('name');
+              const playerCountA = parseInt($(a).data('player-count'), 10);
+              const playerCountB = parseInt($(b).data('player-count'), 10);
+              const dateCreatedA = parseInt($(a).data('created-at'), 10);
+              const dateCreatedB = parseInt($(b).data('created-at'), 10);
+
+              switch (sortBy) {
+                  case 'nameAsc':
+                      return nameA.localeCompare(nameB);
+                  case 'nameDesc':
+                      return nameB.localeCompare(nameA);
+                  case 'playerCountAsc':
+                      valA = playerCountA;
+                      valB = playerCountB;
+                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
+                      return valA - valB;
+                  case 'playerCountDesc':
+                      valA = playerCountA;
+                      valB = playerCountB;
+                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
+                      return valB - valA;
+                  case 'dateCreatedAsc':
+                      valA = dateCreatedA;
+                      valB = dateCreatedB;
+                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
+                      return valA - valB;
+                  case 'dateCreatedDesc':
+                      valA = dateCreatedA;
+                      valB = dateCreatedB;
+                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
+                      return valB - valA;
+                  default:
+                      return 0;
+              }
+          });
+
+          // Очищаем и добавляем отсортированные карточки обратно в сетку
+          teamsGrid.empty();
+          $.each(teamCards, function(i, card) {
+              teamsGrid.append(card);
+          });
+      }
+
+      // Слушатель события для выпадающего списка сортировки
+      $('#sortTeamsBy').on('change', function() {
+          sortAndDisplayTeams();
+      });
+
+      // Применить сортировку по умолчанию при загрузке страницы, если есть команды
+      if ($('#teamsGrid .team-card').length > 0) {
+          sortAndDisplayTeams(); // Сортировка по значению, выбранному по умолчанию в select
+      }
+      // === Конец: Логика сортировки команд ===
 
     });
   </script>
