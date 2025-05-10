@@ -14,7 +14,7 @@
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
   <style>
-    /* === ОСНОВНЫЕ СТИЛИ (остаются без изменений, как в предыдущем примере) === */
+    /* === ОСНОВНЫЕ СТИЛИ === */
     :root {
         --font-family-base: 'Inter', sans-serif;
         --font-weight-light: 300;
@@ -121,8 +121,7 @@
     .top-buttons { text-align: center; margin-bottom: var(--spacing-lg); display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; }
     /* === КОНЕЦ ОСНОВНЫХ СТИЛЕЙ === */
 
-    /* ... (остальные стили без изменений) ... */
-     /* === Стили для сетки команд (макс. 6 колонок) === */
+    /* === Стили для сетки команд (макс. 6 колонок) === */
     .admin-teams-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-lg); }
     @media (min-width: 768px) { .admin-teams-grid { grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); } }
     @media (min-width: 992px) { .admin-teams-grid { grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); } }
@@ -280,6 +279,9 @@
 
       <div id="teamsGrid" class="admin-teams-grid">
         <%
+          // Предполагаем, что teams приходит как массив объектов
+          // И у каждого объекта team есть свойство createdAt (например, new Date().toISOString())
+          // Если createdAt нет, сортировка по дате не будет работать корректно
           teams.forEach(team => {
             const teamPlayers = players.filter(p => p.teamId === team.id);
             const creationDate = team.createdAt ? new Date(team.createdAt) : null;
@@ -411,61 +413,98 @@
     // --- Login Logic ---
     const CORRECT_USERNAME = "God";
     const CORRECT_PASSWORD = "2007";
-    const STORAGE_KEY_LOGGED_IN = 'adminGalaxyTimerLoggedIn';
+    const STORAGE_KEY_LOGGED_IN = 'adminGalaxyTimerLoggedIn_v2'; // Немного измененный ключ для теста
 
     $(document).ready(function(){
-      // Проверка статуса входа при загрузке страницы
-      if (localStorage.getItem(STORAGE_KEY_LOGGED_IN) === 'true') {
+      console.log("Document ready. Checking login status...");
+      const isLoggedIn = localStorage.getItem(STORAGE_KEY_LOGGED_IN);
+      console.log("localStorage status for '" + STORAGE_KEY_LOGGED_IN + "':", isLoggedIn);
+
+      if (isLoggedIn === 'true') {
+        console.log("User is logged in according to localStorage. Attempting to show admin panel.");
         $("#loginSection").hide();
         $("#adminSection").show();
-        initializeAdminPanel();
-        addLogoutButton();
+        try {
+            initializeAdminPanel();
+            addLogoutButton();
+            console.log("Admin panel initialized and logout button added successfully from localStorage state.");
+        } catch (e) {
+            console.error("ERROR during post-login initialization from localStorage state:", e);
+            // Попытка отката, если что-то пошло не так при инициализации
+            localStorage.removeItem(STORAGE_KEY_LOGGED_IN); // Очищаем ошибочное состояние
+            $("#adminSection").hide();
+            $("#loginSection").show();
+            alert("Произошла ошибка при загрузке панели администратора. Пожалуйста, попробуйте войти снова.");
+        }
       } else {
-        // Форма входа отображается по умолчанию, если пользователь не "запомнен"
+        console.log("User is NOT logged in (localStorage is '" + isLoggedIn + "'). Showing login form.");
         $("#loginSection").show();
         $("#adminSection").hide();
       }
 
       $("#loginForm").submit(function(e) {
         e.preventDefault();
+        console.log("Login form submitted.");
         const username = $("#username").val();
         const password = $("#password").val();
 
         if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
-          localStorage.setItem(STORAGE_KEY_LOGGED_IN, 'true'); // Сохраняем статус входа
+          console.log("Login successful. Setting localStorage...");
+          try {
+              localStorage.setItem(STORAGE_KEY_LOGGED_IN, 'true');
+              console.log("localStorage item '" + STORAGE_KEY_LOGGED_IN + "' set to 'true'. Value now:", localStorage.getItem(STORAGE_KEY_LOGGED_IN));
 
-          $("#loginSection").fadeOut(300, function() {
-            $(this).hide(); // Скрываем, а не удаляем, на случай выхода без перезагрузки
-            $("#adminSection").fadeIn(300, function() {
-              initializeAdminPanel();
-              addLogoutButton();
-            });
-          });
-          $("#loginError").hide();
+              $("#loginSection").fadeOut(300, function() {
+                $(this).hide();
+                $("#adminSection").fadeIn(300, function() {
+                  try {
+                    initializeAdminPanel();
+                    addLogoutButton();
+                    console.log("Admin panel shown and initialized after login.");
+                  } catch (initError) {
+                    console.error("ERROR initializing admin panel after login:", initError);
+                    alert("Произошла ошибка при инициализации панели. Попробуйте обновить страницу.");
+                  }
+                });
+              });
+              $("#loginError").hide();
+          } catch (storageError) {
+              console.error("Error setting localStorage:", storageError);
+              alert("Не удалось сохранить сессию входа. Проверьте настройки браузера для localStorage/cookies.");
+          }
         } else {
-          localStorage.removeItem(STORAGE_KEY_LOGGED_IN); // На всякий случай, если была неудачная попытка
+          console.log("Login failed. Credentials: user='" + username + "'. Clearing localStorage just in case.");
+          localStorage.removeItem(STORAGE_KEY_LOGGED_IN);
           $("#loginError").fadeIn();
         }
       });
 
       function addLogoutButton() {
-        // Проверяем, не была ли кнопка уже добавлена
+        console.log("Attempting to add logout button.");
         if ($('#btnLogoutAdmin').length === 0) {
           const logoutButton = $('<button id="btnLogoutAdmin" class="app-button danger small" style="margin-left: var(--spacing-md);"><i class="fas fa-sign-out-alt"></i> Logout</button>');
-          // Добавляем кнопку после ссылки "OVERLAYS"
-          $('.page-title-container .teams-link').after(logoutButton);
+          if ($('.page-title-container .teams-link').length > 0) {
+            $('.page-title-container .teams-link').after(logoutButton);
+          } else {
+            $('.page-title-container').append(logoutButton); // Запасной вариант
+          }
+          console.log("Logout button added.");
 
           logoutButton.click(function() {
+            console.log("Logout button clicked.");
             localStorage.removeItem(STORAGE_KEY_LOGGED_IN);
-            // Очищаем поля и перезагружаем страницу для чистого выхода
-            $('#username').val('');
+            console.log("localStorage item '" + STORAGE_KEY_LOGGED_IN + "' removed. Value now:", localStorage.getItem(STORAGE_KEY_LOGGED_IN));
+            $('#username').val(''); // Очистка полей
             $('#password').val('');
-            location.reload();
+            location.reload(); // Перезагрузка для отображения формы входа
           });
+        } else {
+            console.log("Logout button already exists.");
         }
       }
 
       function initializeAdminPanel() {
+        console.log("Initializing Admin Panel...");
         // === Начало Инициализация Select2 ===
         function formatTeamOption (team) {
           if (!team.id || team.id === "") { return team.text; }
@@ -483,45 +522,40 @@
         };
 
         try {
-          // Эта инициализация Select2 для модального окна игрока.
-          // Она будет корректно работать, т.к. логика открытия модального окна
-          // обычно включает обновление или переинициализацию Select2.
-          if (!$('#playerTeamId').data('select2')) { // Простая проверка, чтобы не инициализировать повторно без нужды
+          if (!$('#playerTeamId').data('select2')) {
+             console.log("Initializing Select2 for #playerTeamId");
              $('#playerTeamId').select2({
                 templateResult: formatTeamOption,
                 templateSelection: formatTeamOption,
                 width: 'style',
-                dropdownParent: $('#playerModalBackdrop'),
+                dropdownParent: $('#playerModalBackdrop'), // Убедитесь, что этот элемент существует, когда это вызывается
                 placeholder: "-- Select a Team --",
                 allowClear: true
             });
+          } else {
+            console.log("Select2 for #playerTeamId already initialized.");
           }
         } catch(e) {
           console.error("Select2 initialization failed for #playerTeamId:", e);
         }
         // === Конец Инициализация Select2 ===
 
-
-        // Обработчики кнопок и событий (остаются как в предыдущем примере)
-        $("#btn-show-team-modal").off('click').on('click', function(){ showTeamModal(false); }); // Используем .off().on() для предотвращения дублирования обработчиков
+        // Обработчики кнопок и событий
+        console.log("Setting up event handlers...");
+        $("#btn-show-team-modal").off('click').on('click', function(){ console.log("Create Team button clicked"); showTeamModal(false); });
         $("#btn-show-player-modal").off('click').on('click', function(){
+            console.log("Create Player button clicked");
             $.get("/api/teams", function(teams) {
               const teamSelect = $("#playerTeamId");
               const selectedValue = teamSelect.val();
-
-              if (teamSelect.data('select2')) {
-                  teamSelect.select2('destroy');
-              }
-
+              if (teamSelect.data('select2')) { teamSelect.select2('destroy'); }
               teamSelect.empty();
               teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
-
               teams.forEach(function(team) {
                   const option = new Option(team.name, team.id, false, false);
                   $(option).data('logo', team.logo || '');
                   teamSelect.append(option);
               });
-
               teamSelect.select2({
                   templateResult: formatTeamOption,
                   templateSelection: formatTeamOption,
@@ -530,11 +564,10 @@
                   placeholder: "-- Select a Team --",
                   allowClear: true
               });
-
               teamSelect.val(selectedValue || "").trigger('change');
               showPlayerModal(false);
-
             }).fail(function() {
+              console.error("Could not load teams for player modal.");
               alert("Could not load teams for player modal.");
               showPlayerModal(false);
             });
@@ -542,33 +575,22 @@
 
         $("#closeTeamModal").off('click').on('click', function(){ hideTeamModal(); });
         $("#closePlayerModal").off('click').on('click', function(){ hidePlayerModal(); });
+        $(document).off("click", ".modal-backdrop").on("click", ".modal-backdrop", function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
 
-        // Удаляем предыдущие обработчики .modal-backdrop перед добавлением нового
-        $(document).off("click", ".modal-backdrop").on("click", ".modal-backdrop", function(event) {
-            if ($(event.target).is(".modal-backdrop")) {
-                if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); }
-                if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); }
-            }
-        });
-
-
-        // AJAX Запросы (используем .off().on() для форм)
+        // AJAX Запросы
         $("#uploadTeamLogoBtn").off('click').on('click', function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
         $("#uploadPlayerPhotoBtn").off('click').on('click', function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
         $("#teamForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
         $("#playerForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
 
-        // Редактирование и удаление (используем $(document).off().on() для динамических элементов)
+        // Редактирование и удаление
         $(document).off("click", ".editTeam").on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
         $(document).off("click", ".deleteTeam").on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
-
         $(document).off("click", ".editPlayer").on("click", ".editPlayer", function(){
             const playerId = $(this).closest(".player-row").data("id");
             $.get("/api/teams", function(teams) {
               const teamSelect = $("#playerTeamId");
-              if (teamSelect.data('select2')) {
-                  teamSelect.select2('destroy');
-              }
+              if (teamSelect.data('select2')) { teamSelect.select2('destroy'); }
               teamSelect.empty();
               teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
               teams.forEach(function(team) {
@@ -576,7 +598,6 @@
                   $(option).data('logo', team.logo || '');
                   teamSelect.append(option);
               });
-
               teamSelect.select2({
                   templateResult: formatTeamOption,
                   templateSelection: formatTeamOption,
@@ -585,68 +606,40 @@
                   placeholder: "-- Select a Team --",
                   allowClear: true
               });
-
-              $.get("/api/players/" + playerId, function(player){
-                  if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); }
-              }).fail(function(){ alert("Could not fetch player data for editing."); });
-            }).fail(function() {
-              alert("Could not load teams. Player data might be incomplete.");
-              $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }})
-                .fail(function(){ alert("Could not fetch player data for editing."); });
-            });
+              $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); } }).fail(function(){ alert("Could not fetch player data for editing."); });
+            }).fail(function() { alert("Could not load teams. Player data might be incomplete."); $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }}) .fail(function(){ alert("Could not fetch player data for editing."); }); });
         });
         $(document).off("click", ".deletePlayer").on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
 
-
         // === Начало: Логика сортировки команд ===
-        function sortAndDisplayTeams() { /* ... код сортировки ... */
+        console.log("Setting up sorting logic...");
+        function sortAndDisplayTeams() {
+            console.log("Sorting teams...");
             const sortBy = $('#sortTeamsBy').val();
             const teamsGrid = $('#teamsGrid');
             let teamCards = teamsGrid.find('.team-card').get();
-
             teamCards.sort(function(a, b) {
                 let valA, valB;
-                const nameA = $(a).data('name');
-                const nameB = $(b).data('name');
-                const playerCountA = parseInt($(a).data('player-count'), 10);
-                const playerCountB = parseInt($(b).data('player-count'), 10);
-                const dateCreatedA = parseInt($(a).data('created-at'), 10);
-                const dateCreatedB = parseInt($(b).data('created-at'), 10);
-
+                const nameA = $(a).data('name'); const nameB = $(b).data('name');
+                const playerCountA = parseInt($(a).data('player-count'), 10); const playerCountB = parseInt($(b).data('player-count'), 10);
+                const dateCreatedA = parseInt($(a).data('created-at'), 10); const dateCreatedB = parseInt($(b).data('created-at'), 10);
                 switch (sortBy) {
                     case 'nameAsc': return nameA.localeCompare(nameB);
                     case 'nameDesc': return nameB.localeCompare(nameA);
-                    case 'playerCountAsc':
-                        valA = playerCountA; valB = playerCountB;
-                        if (valA === valB) return nameA.localeCompare(nameB);
-                        return valA - valB;
-                    case 'playerCountDesc':
-                        valA = playerCountA; valB = playerCountB;
-                        if (valA === valB) return nameA.localeCompare(nameB);
-                        return valB - valA;
-                    case 'dateCreatedAsc':
-                        valA = dateCreatedA; valB = dateCreatedB;
-                        if (valA === valB) return nameA.localeCompare(nameB);
-                        return valA - valB;
-                    case 'dateCreatedDesc':
-                        valA = dateCreatedA; valB = dateCreatedB;
-                        if (valA === valB) return nameA.localeCompare(nameB);
-                        return valB - valA;
+                    case 'playerCountAsc': valA = playerCountA; valB = playerCountB; if (valA === valB) return nameA.localeCompare(nameB); return valA - valB;
+                    case 'playerCountDesc': valA = playerCountA; valB = playerCountB; if (valA === valB) return nameA.localeCompare(nameB); return valB - valA;
+                    case 'dateCreatedAsc': valA = dateCreatedA; valB = dateCreatedB; if (valA === valB) return nameA.localeCompare(nameB); return valA - valB;
+                    case 'dateCreatedDesc': valA = dateCreatedA; valB = dateCreatedB; if (valA === valB) return nameA.localeCompare(nameB); return valB - valA;
                     default: return 0;
                 }
             });
             teamsGrid.empty();
             $.each(teamCards, function(i, card) { teamsGrid.append(card); });
         }
-
-        $('#sortTeamsBy').off('change').on('change', function() { // Используем .off().on()
-            sortAndDisplayTeams();
-        });
-
-        if ($('#teamsGrid .team-card').length > 0) {
-            sortAndDisplayTeams();
-        }
+        $('#sortTeamsBy').off('change').on('change', function() { sortAndDisplayTeams(); });
+        if ($('#teamsGrid .team-card').length > 0) { sortAndDisplayTeams(); }
         // === Конец: Логика сортировки команд ===
+        console.log("Admin Panel Initialized.");
       } // Конец initializeAdminPanel
     }); // Конец document.ready
   </script>
