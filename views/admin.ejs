@@ -14,7 +14,7 @@
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
   <style>
-    /* === ОСНОВНЫЕ СТИЛИ === */
+    /* === ОСНОВНЫЕ СТИЛИ (остаются без изменений, как в предыдущем примере) === */
     :root {
         --font-family-base: 'Inter', sans-serif;
         --font-weight-light: 300;
@@ -121,7 +121,8 @@
     .top-buttons { text-align: center; margin-bottom: var(--spacing-lg); display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; }
     /* === КОНЕЦ ОСНОВНЫХ СТИЛЕЙ === */
 
-    /* === Стили для сетки команд (макс. 6 колонок) === */
+    /* ... (остальные стили без изменений) ... */
+     /* === Стили для сетки команд (макс. 6 колонок) === */
     .admin-teams-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-lg); }
     @media (min-width: 768px) { .admin-teams-grid { grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); } }
     @media (min-width: 992px) { .admin-teams-grid { grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); } }
@@ -258,7 +259,7 @@
       <div class="page-title-container">
           <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
           <a href="https://galaxytimer-production.up.railway.app" class="teams-link app-button tertiary"><i class="fas fa-users"></i> OVERLAYS</a>
-      </div>
+          </div>
 
       <div class="top-buttons">
         <button id="btn-show-team-modal" class="app-button primary"><i class="fas fa-users-cog"></i> Create Team</button>
@@ -341,9 +342,7 @@
               <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the 'Create Team' button above.</p>
         <% } %>
       </div>
-    </div>
-
-    <div id="teamModalBackdrop" class="modal-backdrop">
+    </div> <div id="teamModalBackdrop" class="modal-backdrop">
       <div class="modal card-style">
         <button class="close-modal" id="closeTeamModal" aria-label="Close modal">&times;</button>
         <h2 id="teamModalTitle" class="modal-title-text"><i class="fas fa-users-cog"></i> Create Team</h2>
@@ -410,38 +409,68 @@
     function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); $('#playerTeamId').val("").trigger('change'); });}
 
     // --- Login Logic ---
-    // ВНИМАНИЕ: Эти учетные данные видны в исходном коде! Не используйте для защиты важных данных.
     const CORRECT_USERNAME = "God";
     const CORRECT_PASSWORD = "2007";
+    const STORAGE_KEY_LOGGED_IN = 'adminGalaxyTimerLoggedIn';
 
     $(document).ready(function(){
+      // Проверка статуса входа при загрузке страницы
+      if (localStorage.getItem(STORAGE_KEY_LOGGED_IN) === 'true') {
+        $("#loginSection").hide();
+        $("#adminSection").show();
+        initializeAdminPanel();
+        addLogoutButton();
+      } else {
+        // Форма входа отображается по умолчанию, если пользователь не "запомнен"
+        $("#loginSection").show();
+        $("#adminSection").hide();
+      }
+
       $("#loginForm").submit(function(e) {
         e.preventDefault();
         const username = $("#username").val();
         const password = $("#password").val();
 
         if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
+          localStorage.setItem(STORAGE_KEY_LOGGED_IN, 'true'); // Сохраняем статус входа
+
           $("#loginSection").fadeOut(300, function() {
-            $(this).remove(); // Или $(this).hide();
+            $(this).hide(); // Скрываем, а не удаляем, на случай выхода без перезагрузки
             $("#adminSection").fadeIn(300, function() {
-              // Инициализировать функции админ-панели ПОСЛЕ успешного входа
               initializeAdminPanel();
+              addLogoutButton();
             });
           });
           $("#loginError").hide();
         } else {
+          localStorage.removeItem(STORAGE_KEY_LOGGED_IN); // На всякий случай, если была неудачная попытка
           $("#loginError").fadeIn();
         }
       });
+
+      function addLogoutButton() {
+        // Проверяем, не была ли кнопка уже добавлена
+        if ($('#btnLogoutAdmin').length === 0) {
+          const logoutButton = $('<button id="btnLogoutAdmin" class="app-button danger small" style="margin-left: var(--spacing-md);"><i class="fas fa-sign-out-alt"></i> Logout</button>');
+          // Добавляем кнопку после ссылки "OVERLAYS"
+          $('.page-title-container .teams-link').after(logoutButton);
+
+          logoutButton.click(function() {
+            localStorage.removeItem(STORAGE_KEY_LOGGED_IN);
+            // Очищаем поля и перезагружаем страницу для чистого выхода
+            $('#username').val('');
+            $('#password').val('');
+            location.reload();
+          });
+        }
+      }
 
       function initializeAdminPanel() {
         // === Начало Инициализация Select2 ===
         function formatTeamOption (team) {
           if (!team.id || team.id === "") { return team.text; }
-
           var $team = $('<span style="display: flex; align-items: center;" title="' + team.text + '"></span>');
           var logoUrl = $(team.element).data('logo');
-
           if (logoUrl && logoUrl.trim() !== "") {
               const fullLogoUrl = logoUrl.startsWith('http') ? logoUrl : (logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl);
               $team.append('<img loading="lazy" src="' + fullLogoUrl + '" style="height: 20px; width: 20px; margin-right: 8px; object-fit: contain; vertical-align: middle; border-radius: 3px;" alt="logo" onerror="this.style.display=\'none\'; $(this).next(\'.logo-placeholder-s2\').show();" />'
@@ -454,23 +483,28 @@
         };
 
         try {
-          $('#playerTeamId').select2({
-              templateResult: formatTeamOption,
-              templateSelection: formatTeamOption,
-              width: 'style',
-              dropdownParent: $('#playerModalBackdrop'),
-              placeholder: "-- Select a Team --",
-              allowClear: true
-          });
+          // Эта инициализация Select2 для модального окна игрока.
+          // Она будет корректно работать, т.к. логика открытия модального окна
+          // обычно включает обновление или переинициализацию Select2.
+          if (!$('#playerTeamId').data('select2')) { // Простая проверка, чтобы не инициализировать повторно без нужды
+             $('#playerTeamId').select2({
+                templateResult: formatTeamOption,
+                templateSelection: formatTeamOption,
+                width: 'style',
+                dropdownParent: $('#playerModalBackdrop'),
+                placeholder: "-- Select a Team --",
+                allowClear: true
+            });
+          }
         } catch(e) {
-          console.error("Select2 initialization failed:", e);
+          console.error("Select2 initialization failed for #playerTeamId:", e);
         }
         // === Конец Инициализация Select2 ===
 
 
-        // Обработчики кнопок и событий
-        $("#btn-show-team-modal").click(function(){ showTeamModal(false); });
-        $("#btn-show-player-modal").click(function(){
+        // Обработчики кнопок и событий (остаются как в предыдущем примере)
+        $("#btn-show-team-modal").off('click').on('click', function(){ showTeamModal(false); }); // Используем .off().on() для предотвращения дублирования обработчиков
+        $("#btn-show-player-modal").off('click').on('click', function(){
             $.get("/api/teams", function(teams) {
               const teamSelect = $("#playerTeamId");
               const selectedValue = teamSelect.val();
@@ -506,21 +540,29 @@
             });
         });
 
-        $("#closeTeamModal").click(function(){ hideTeamModal(); });
-        $("#closePlayerModal").click(function(){ hidePlayerModal(); });
-        $(".modal-backdrop").click(function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
+        $("#closeTeamModal").off('click').on('click', function(){ hideTeamModal(); });
+        $("#closePlayerModal").off('click').on('click', function(){ hidePlayerModal(); });
 
-        // AJAX Запросы
-        $("#uploadTeamLogoBtn").click(function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
-        $("#uploadPlayerPhotoBtn").click(function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
-        $("#teamForm").submit(function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; if (!id) { } $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
-        $("#playerForm").submit(function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+        // Удаляем предыдущие обработчики .modal-backdrop перед добавлением нового
+        $(document).off("click", ".modal-backdrop").on("click", ".modal-backdrop", function(event) {
+            if ($(event.target).is(".modal-backdrop")) {
+                if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); }
+                if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); }
+            }
+        });
 
-        // Редактирование и удаление
-        $(document).on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
-        $(document).on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
 
-        $(document).on("click", ".editPlayer", function(){
+        // AJAX Запросы (используем .off().on() для форм)
+        $("#uploadTeamLogoBtn").off('click').on('click', function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
+        $("#uploadPlayerPhotoBtn").off('click').on('click', function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
+        $("#teamForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+        $("#playerForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+
+        // Редактирование и удаление (используем $(document).off().on() для динамических элементов)
+        $(document).off("click", ".editTeam").on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
+        $(document).off("click", ".deleteTeam").on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+
+        $(document).off("click", ".editPlayer").on("click", ".editPlayer", function(){
             const playerId = $(this).closest(".player-row").data("id");
             $.get("/api/teams", function(teams) {
               const teamSelect = $("#playerTeamId");
@@ -545,9 +587,7 @@
               });
 
               $.get("/api/players/" + playerId, function(player){
-                  if(player){
-                      showPlayerModal(true, player);
-                  } else { alert("Player data not found."); }
+                  if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); }
               }).fail(function(){ alert("Could not fetch player data for editing."); });
             }).fail(function() {
               alert("Could not load teams. Player data might be incomplete.");
@@ -555,12 +595,11 @@
                 .fail(function(){ alert("Could not fetch player data for editing."); });
             });
         });
-
-        $(document).on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+        $(document).off("click", ".deletePlayer").on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
 
 
         // === Начало: Логика сортировки команд ===
-        function sortAndDisplayTeams() {
+        function sortAndDisplayTeams() { /* ... код сортировки ... */
             const sortBy = $('#sortTeamsBy').val();
             const teamsGrid = $('#teamsGrid');
             let teamCards = teamsGrid.find('.team-card').get();
@@ -575,42 +614,32 @@
                 const dateCreatedB = parseInt($(b).data('created-at'), 10);
 
                 switch (sortBy) {
-                    case 'nameAsc':
-                        return nameA.localeCompare(nameB);
-                    case 'nameDesc':
-                        return nameB.localeCompare(nameA);
+                    case 'nameAsc': return nameA.localeCompare(nameB);
+                    case 'nameDesc': return nameB.localeCompare(nameA);
                     case 'playerCountAsc':
-                        valA = playerCountA;
-                        valB = playerCountB;
+                        valA = playerCountA; valB = playerCountB;
                         if (valA === valB) return nameA.localeCompare(nameB);
                         return valA - valB;
                     case 'playerCountDesc':
-                        valA = playerCountA;
-                        valB = playerCountB;
+                        valA = playerCountA; valB = playerCountB;
                         if (valA === valB) return nameA.localeCompare(nameB);
                         return valB - valA;
                     case 'dateCreatedAsc':
-                        valA = dateCreatedA;
-                        valB = dateCreatedB;
+                        valA = dateCreatedA; valB = dateCreatedB;
                         if (valA === valB) return nameA.localeCompare(nameB);
                         return valA - valB;
                     case 'dateCreatedDesc':
-                        valA = dateCreatedA;
-                        valB = dateCreatedB;
+                        valA = dateCreatedA; valB = dateCreatedB;
                         if (valA === valB) return nameA.localeCompare(nameB);
                         return valB - valA;
-                    default:
-                        return 0;
+                    default: return 0;
                 }
             });
-
             teamsGrid.empty();
-            $.each(teamCards, function(i, card) {
-                teamsGrid.append(card);
-            });
+            $.each(teamCards, function(i, card) { teamsGrid.append(card); });
         }
 
-        $('#sortTeamsBy').on('change', function() {
+        $('#sortTeamsBy').off('change').on('change', function() { // Используем .off().on()
             sortAndDisplayTeams();
         });
 
