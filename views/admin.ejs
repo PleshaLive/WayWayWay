@@ -95,10 +95,10 @@
     h3 { font-size: 1rem; font-weight: var(--font-weight-medium); color: var(--color-text-secondary); margin-bottom: var(--spacing-sm); }
     label { display: block; font-size: 0.8rem; font-weight: var(--font-weight-medium); color: var(--color-text-muted); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-top: var(--spacing-sm); }
     label i { margin-right: var(--spacing-xs); color: var(--color-primary-light); }
-    .header-input, .control-select, input[type="text"], input[type="file"], select { background-color: var(--color-surface-tertiary); border: 1px solid var(--color-border); color: var(--color-text-primary); border-radius: var(--border-radius-md); padding: var(--spacing-sm) var(--spacing-md); font-size: 0.9rem; line-height: 1.5; transition: var(--transition-base); outline: none; width: 100%; font-family: var(--font-family-base); box-shadow: var(--shadow-inset); margin-bottom: var(--spacing-sm); }
-    input[type="text"]:hover, input[type="file"]:hover, select:hover, .header-input:hover, .control-select:hover { border-color: var(--color-primary-light); }
-    input[type="text"]:focus, input[type="file"]:focus, select:focus, .header-input:focus, .control-select:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset); background-color: var(--color-surface); }
-    input[type="text"]::placeholder { color: var(--color-text-placeholder); opacity: 0.8; }
+    .header-input, .control-select, input[type="text"], input[type="password"], input[type="file"], select { background-color: var(--color-surface-tertiary); border: 1px solid var(--color-border); color: var(--color-text-primary); border-radius: var(--border-radius-md); padding: var(--spacing-sm) var(--spacing-md); font-size: 0.9rem; line-height: 1.5; transition: var(--transition-base); outline: none; width: 100%; font-family: var(--font-family-base); box-shadow: var(--shadow-inset); margin-bottom: var(--spacing-sm); }
+    input[type="text"]:hover, input[type="password"]:hover, input[type="file"]:hover, select:hover, .header-input:hover, .control-select:hover { border-color: var(--color-primary-light); }
+    input[type="text"]:focus, input[type="password"]:focus, input[type="file"]:focus, select:focus, .header-input:focus, .control-select:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset); background-color: var(--color-surface); }
+    input[type="text"]::placeholder, input[type="password"]::placeholder { color: var(--color-text-placeholder); opacity: 0.8; }
     .styled-select, select:not(.select2-hidden-accessible) { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a0aec0' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right var(--spacing-md) center; background-size: 16px 12px; padding-right: calc(var(--spacing-md) * 2 + 16px); }
     select:not(.select2-hidden-accessible) option { background-color: var(--color-surface-secondary); color: var(--color-text-primary); }
     input[type="file"] { padding-top: calc(var(--spacing-sm) - 1px); padding-bottom: calc(var(--spacing-sm) - 1px); }
@@ -197,31 +197,31 @@
 
     /* === НОВЫЕ СТИЛИ ДЛЯ СОРТИРОВКИ === */
     .sorting-controls-container {
-      background-color: var(--color-surface-secondary);
-      padding: var(--spacing-md);
-      margin-bottom: var(--spacing-lg);
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-md);
-      flex-wrap: wrap;
+        background-color: var(--color-surface-secondary);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
     }
     .sorting-controls-container label {
-      margin-bottom: 0; /* Убираем нижний отступ у label */
-      margin-top: 0; /* Убираем верхний отступ у label */
-      color: var(--color-text-secondary);
-      font-size: 0.9rem;
-      font-weight: var(--font-weight-medium);
+        margin-bottom: 0; /* Убираем нижний отступ у label */
+        margin-top: 0; /* Убираем верхний отступ у label */
+        color: var(--color-text-secondary);
+        font-size: 0.9rem;
+        font-weight: var(--font-weight-medium);
     }
     .sorting-controls-container label i {
-      margin-right: var(--spacing-xs);
-      color: var(--color-primary-light);
+        margin-right: var(--spacing-xs);
+        color: var(--color-primary-light);
     }
     .sorting-controls-container .control-select {
-      width: auto; /* Автоматическая ширина для select */
-      min-width: 200px;
-      margin-bottom: 0; /* Убираем нижний отступ у select */
+        width: auto; /* Автоматическая ширина для select */
+        min-width: 200px;
+        margin-bottom: 0; /* Убираем нижний отступ у select */
     }
     /* === КОНЕЦ СТИЛЕЙ ДЛЯ СОРТИРОВКИ === */
 
@@ -234,362 +234,392 @@
     .styled-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-base); border-radius: var(--border-radius-sm); border: 1px solid var(--color-surface-secondary); }
     .styled-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
     /* === Конец Адаптивности и Скроллбара === */
-
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="page-title-container">
-        <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
-        <a href="https://galaxytimer-production.up.railway.app" class="teams-link app-button tertiary"><i class="fas fa-users"></i> OVERLAYS</a>
-    </div>
-
-    <div class="top-buttons">
-      <button id="btn-show-team-modal" class="app-button primary"><i class="fas fa-users-cog"></i> Create Team</button>
-      <button id="btn-show-player-modal" class="app-button primary"><i class="fas fa-user-plus"></i> Create Player</button>
-    </div>
-
-    <div class="sorting-controls-container card-style">
-        <label for="sortTeamsBy"><i class="fas fa-sort-amount-down"></i> Sort Teams By:</label>
-        <select id="sortTeamsBy" class="control-select styled-select">
-            <option value="nameAsc">Name (A-Z)</option>
-            <option value="nameDesc">Name (Z-A)</option>
-            <option value="playerCountAsc">Players (Low to High)</option>
-            <option value="playerCountDesc">Players (High to Low)</option>
-            <option value="dateCreatedAsc">Created Date (Oldest)</option>
-            <option value="dateCreatedDesc">Created Date (Newest)</option>
-        </select>
-    </div>
-
-    <div id="teamsGrid" class="admin-teams-grid">
-      <%
-        // Предполагаем, что teams приходит как массив объектов
-        // И у каждого объекта team есть свойство createdAt (например, new Date().toISOString())
-        // Если createdAt нет, сортировка по дате не будет работать корректно
-        teams.forEach(team => {
-          const teamPlayers = players.filter(p => p.teamId === team.id);
-          const creationDate = team.createdAt ? new Date(team.createdAt) : null;
-          const creationTimestamp = creationDate ? creationDate.getTime() : 0;
-      %>
-        <div class="team-card card-style"
-             data-id="<%= team.id %>"
-             data-name="<%= team.name.toLowerCase() %>"
-             data-player-count="<%= teamPlayers.length %>"
-             data-created-at="<%= creationTimestamp %>">
-
-          <h2><%= team.name %></h2>
-          <% if(team.logo){ %>
-            <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo" loading="lazy">
-          <% } else { %>
-            <p class="no-logo-text">No Logo</p>
-          <% } %>
-
-          <div class="team-info-sort">
-            <span>Players: <%= teamPlayers.length %></span>
-            <% if (creationDate) { %>
-              <span>Created: <%= creationDate.toLocaleDateString() %> <%= creationDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></span>
-            <% } else { %>
-              <span>Created: N/A</span>
-            <% } %>
-          </div>
-
-          <div class="team-actions">
-            <button class="editTeam app-button small tertiary"><i class="fas fa-edit"></i> Edit</button>
-            <button class="deleteTeam app-button small danger"><i class="fas fa-trash-alt"></i> Delete</button>
-          </div>
-
-          <div class="player-list-wrapper styled-scrollbar">
-            <% if(teamPlayers.length > 0){ %>
-              <div class="players-list">
-                <% teamPlayers.forEach(player => { %>
-                  <div class="player-row" data-id="<%= player.id %>">
-                    <div class="player-photo">
-                      <% if(player.photo){ %>
-                        <img src="<%= player.photo %>" alt="<%= player.name %>" loading="lazy">
-                      <% } else { %>
-                        <div class="no-photo-placeholder"><i class="fas fa-user"></i></div>
-                      <% } %>
-                    </div>
-                    <div class="player-name"><%= player.name %></div>
-                    <div class="player-actions">
-                      <button class="editPlayer app-button small tertiary" title="Edit Player"><i class="fas fa-user-edit"></i></button>
-                      <button class="deletePlayer app-button small danger" title="Delete Player"><i class="fas fa-user-minus"></i></button>
-                    </div>
-                  </div>
-                <% }); %>
-              </div>
-            <% } else { %>
-              <p class="no-players">No players in this team.</p>
-            <% } %>
-          </div>
+  <div id="loginSection" class="container" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+    <div class="card-style" style="width: 400px; max-width: 90%;">
+      <h2 style="text-align: center; color: var(--color-primary-light); text-shadow: var(--text-shadow-primary);"><i class="fas fa-lock"></i> Admin Login</h2>
+      <form id="loginForm" style="margin-top: var(--spacing-md);">
+        <label for="username"><i class="fas fa-user"></i> Login:</label>
+        <input type="text" id="username" name="username" required class="header-input" placeholder="Enter login">
+        <label for="password"><i class="fas fa-key"></i> Password:</label>
+        <input type="password" id="password" name="password" required class="header-input" placeholder="Enter password">
+        <p id="loginError" style="color: var(--color-error); text-align: center; margin-top: var(--spacing-sm); display: none;">Invalid login or password.</p>
+        <div class="form-actions" style="margin-top: var(--spacing-lg); justify-content: center;">
+          <button type="submit" class="app-button primary"><i class="fas fa-sign-in-alt"></i> Sign In</button>
         </div>
-      <% }); %>
-      <% if(teams.length === 0) { %>
-            <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the 'Create Team' button above.</p>
-      <% } %>
+      </form>
     </div>
   </div>
 
-  <div id="teamModalBackdrop" class="modal-backdrop">
-    <div class="modal card-style">
-      <button class="close-modal" id="closeTeamModal" aria-label="Close modal">&times;</button>
-      <h2 id="teamModalTitle" class="modal-title-text"><i class="fas fa-users-cog"></i> Create Team</h2>
-      <div class="modal-content styled-scrollbar">
-        <form id="teamForm">
-          <input type="hidden" name="id" id="teamId">
-          <label for="teamName"><i class="fas fa-signature"></i> Team Name:</label>
-          <input type="text" name="name" id="teamName" required class="header-input" placeholder="Enter team name">
-          <label for="teamLogoFile"><i class="fas fa-image"></i> Logo File:</label>
-          <input type="file" id="teamLogoFile" accept="image/*" class="header-input">
-          <button type="button" id="uploadTeamLogoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Logo</button>
-          <label for="teamLogo"><i class="fas fa-link"></i> Or Logo URL:</label>
-          <input type="text" name="logo" id="teamLogo" class="header-input" placeholder="Enter logo URL (overrides file if both set)">
-          <div class="form-actions">
-            <button type="button" class="app-button tertiary" onclick="hideTeamModal()">Cancel</button>
-            <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Team</button>
-          </div>
-        </form>
+  <div id="adminSection" style="display: none;">
+    <div class="container">
+      <div class="page-title-container">
+          <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
+          <a href="https://galaxytimer-production.up.railway.app" class="teams-link app-button tertiary"><i class="fas fa-users"></i> OVERLAYS</a>
       </div>
-    </div>
-  </div>
 
-  <div id="playerModalBackdrop" class="modal-backdrop">
-    <div class="modal card-style">
-      <button class="close-modal" id="closePlayerModal" aria-label="Close modal">&times;</button>
-      <h2 id="playerModalTitle" class="modal-title-text"><i class="fas fa-user-plus"></i> Create Player</h2>
-      <div class="modal-content styled-scrollbar">
-        <form id="playerForm">
-          <input type="hidden" name="id" id="playerId">
-          <label for="playerName"><i class="fas fa-user-tag"></i> Player Name:</label>
-          <input type="text" name="name" id="playerName" required class="header-input" placeholder="Enter player's name">
-          <label for="playerSteamId"><i class="fab fa-steam-symbol"></i> Steam ID (Optional):</label>
-          <input type="text" name="steamId" id="playerSteamId" class="header-input" placeholder="Enter Steam ID">
-          <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Photo File:</label>
-          <input type="file" id="playerPhotoFile" accept="image/*" class="header-input">
-          <button type="button" id="uploadPlayerPhotoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Photo</button>
-          <label for="playerPhoto"><i class="fas fa-link"></i> Or Photo URL:</label>
-          <input type="text" name="photo" id="playerPhoto" class="header-input" placeholder="Enter photo URL (overrides file if both set)">
+      <div class="top-buttons">
+        <button id="btn-show-team-modal" class="app-button primary"><i class="fas fa-users-cog"></i> Create Team</button>
+        <button id="btn-show-player-modal" class="app-button primary"><i class="fas fa-user-plus"></i> Create Player</button>
+      </div>
 
-          <label for="playerTeamId"><i class="fas fa-users"></i> Assign to Team:</label>
-          <select id="playerTeamId" name="teamId" class="control-select" style="width: 100%;">
-            <option value="">-- No Team --</option>
-            <% teams.forEach(function(team){ %>
-              <option value="<%= team.id %>" data-logo="<%= team.logo ? team.logo : '' %>">
-                <%= team.name %>
-              </option>
-            <% }); %>
+      <div class="sorting-controls-container card-style">
+          <label for="sortTeamsBy"><i class="fas fa-sort-amount-down"></i> Sort Teams By:</label>
+          <select id="sortTeamsBy" class="control-select styled-select">
+              <option value="nameAsc">Name (A-Z)</option>
+              <option value="nameDesc">Name (Z-A)</option>
+              <option value="playerCountAsc">Players (Low to High)</option>
+              <option value="playerCountDesc">Players (High to Low)</option>
+              <option value="dateCreatedAsc">Created Date (Oldest)</option>
+              <option value="dateCreatedDesc">Created Date (Newest)</option>
           </select>
-          <div class="form-actions">
-            <button type="button" class="app-button tertiary" onclick="hidePlayerModal()">Cancel</button>
-            <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Player</button>
+      </div>
+
+      <div id="teamsGrid" class="admin-teams-grid">
+        <%
+          teams.forEach(team => {
+            const teamPlayers = players.filter(p => p.teamId === team.id);
+            const creationDate = team.createdAt ? new Date(team.createdAt) : null;
+            const creationTimestamp = creationDate ? creationDate.getTime() : 0;
+        %>
+          <div class="team-card card-style"
+               data-id="<%= team.id %>"
+               data-name="<%= team.name.toLowerCase() %>"
+               data-player-count="<%= teamPlayers.length %>"
+               data-created-at="<%= creationTimestamp %>">
+
+            <h2><%= team.name %></h2>
+            <% if(team.logo){ %>
+              <img src="<%= team.logo %>" alt="<%= team.name %> Logo" class="team-logo" loading="lazy">
+            <% } else { %>
+              <p class="no-logo-text">No Logo</p>
+            <% } %>
+
+            <div class="team-info-sort">
+              <span>Players: <%= teamPlayers.length %></span>
+              <% if (creationDate) { %>
+                <span>Created: <%= creationDate.toLocaleDateString() %> <%= creationDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></span>
+              <% } else { %>
+                <span>Created: N/A</span>
+              <% } %>
+            </div>
+
+            <div class="team-actions">
+              <button class="editTeam app-button small tertiary"><i class="fas fa-edit"></i> Edit</button>
+              <button class="deleteTeam app-button small danger"><i class="fas fa-trash-alt"></i> Delete</button>
+            </div>
+
+            <div class="player-list-wrapper styled-scrollbar">
+              <% if(teamPlayers.length > 0){ %>
+                <div class="players-list">
+                  <% teamPlayers.forEach(player => { %>
+                    <div class="player-row" data-id="<%= player.id %>">
+                      <div class="player-photo">
+                        <% if(player.photo){ %>
+                          <img src="<%= player.photo %>" alt="<%= player.name %>" loading="lazy">
+                        <% } else { %>
+                          <div class="no-photo-placeholder"><i class="fas fa-user"></i></div>
+                        <% } %>
+                      </div>
+                      <div class="player-name"><%= player.name %></div>
+                      <div class="player-actions">
+                        <button class="editPlayer app-button small tertiary" title="Edit Player"><i class="fas fa-user-edit"></i></button>
+                        <button class="deletePlayer app-button small danger" title="Delete Player"><i class="fas fa-user-minus"></i></button>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+              <% } else { %>
+                <p class="no-players">No players in this team.</p>
+              <% } %>
+            </div>
           </div>
-        </form>
+        <% }); %>
+        <% if(teams.length === 0) { %>
+              <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the 'Create Team' button above.</p>
+        <% } %>
       </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <div id="teamModalBackdrop" class="modal-backdrop">
+      <div class="modal card-style">
+        <button class="close-modal" id="closeTeamModal" aria-label="Close modal">&times;</button>
+        <h2 id="teamModalTitle" class="modal-title-text"><i class="fas fa-users-cog"></i> Create Team</h2>
+        <div class="modal-content styled-scrollbar">
+          <form id="teamForm">
+            <input type="hidden" name="id" id="teamId">
+            <label for="teamName"><i class="fas fa-signature"></i> Team Name:</label>
+            <input type="text" name="name" id="teamName" required class="header-input" placeholder="Enter team name">
+            <label for="teamLogoFile"><i class="fas fa-image"></i> Logo File:</label>
+            <input type="file" id="teamLogoFile" accept="image/*" class="header-input">
+            <button type="button" id="uploadTeamLogoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Logo</button>
+            <label for="teamLogo"><i class="fas fa-link"></i> Or Logo URL:</label>
+            <input type="text" name="logo" id="teamLogo" class="header-input" placeholder="Enter logo URL (overrides file if both set)">
+            <div class="form-actions">
+              <button type="button" class="app-button tertiary" onclick="hideTeamModal()">Cancel</button>
+              <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Team</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="playerModalBackdrop" class="modal-backdrop">
+      <div class="modal card-style">
+        <button class="close-modal" id="closePlayerModal" aria-label="Close modal">&times;</button>
+        <h2 id="playerModalTitle" class="modal-title-text"><i class="fas fa-user-plus"></i> Create Player</h2>
+        <div class="modal-content styled-scrollbar">
+          <form id="playerForm">
+            <input type="hidden" name="id" id="playerId">
+            <label for="playerName"><i class="fas fa-user-tag"></i> Player Name:</label>
+            <input type="text" name="name" id="playerName" required class="header-input" placeholder="Enter player's name">
+            <label for="playerSteamId"><i class="fab fa-steam-symbol"></i> Steam ID (Optional):</label>
+            <input type="text" name="steamId" id="playerSteamId" class="header-input" placeholder="Enter Steam ID">
+            <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Photo File:</label>
+            <input type="file" id="playerPhotoFile" accept="image/*" class="header-input">
+            <button type="button" id="uploadPlayerPhotoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Photo</button>
+            <label for="playerPhoto"><i class="fas fa-link"></i> Or Photo URL:</label>
+            <input type="text" name="photo" id="playerPhoto" class="header-input" placeholder="Enter photo URL (overrides file if both set)">
+
+            <label for="playerTeamId"><i class="fas fa-users"></i> Assign to Team:</label>
+            <select id="playerTeamId" name="teamId" class="control-select" style="width: 100%;">
+              <option value="">-- No Team --</option>
+              <% teams.forEach(function(team){ %>
+                <option value="<%= team.id %>" data-logo="<%= team.logo ? team.logo : '' %>">
+                  <%= team.name %>
+                </option>
+              <% }); %>
+            </select>
+            <div class="form-actions">
+              <button type="button" class="app-button tertiary" onclick="hidePlayerModal()">Cancel</button>
+              <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Player</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div> <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <script>
-    // Функции модальных окон
-    function showTeamModal(editMode = false, teamData = null) {$("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');if (editMode && teamData) {$("#teamId").val(teamData.id);$("#teamName").val(teamData.name);$("#teamLogo").val(teamData.logo); /* Если у вас есть поле createdAt и вы хотите его показать: $("#teamCreatedAt").val(teamData.createdAt); */ }$("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);}
+    // Функции модальных окон (остаются глобально доступными)
+    function showTeamModal(editMode = false, teamData = null) {$("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');if (editMode && teamData) {$("#teamId").val(teamData.id);$("#teamName").val(teamData.name);$("#teamLogo").val(teamData.logo); }$("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);}
     function hideTeamModal() {$("#teamModalBackdrop").fadeOut(200, function() {$(this).hide();$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');});}
-    function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); if (editMode && playerData) { $("#playerId").val(playerData.id); $("#playerName").val(playerData.name); $("#playerSteamId").val(playerData.steamId); $("#playerPhoto").val(playerData.photo); /* Устанавливаем значение Select2 после инициализации */ setTimeout(() => { $('#playerTeamId').val(playerData.teamId).trigger('change'); }, 50); /* Небольшая задержка */ } else { /* Сбрасываем Select2 для нового игрока */ setTimeout(() => { $('#playerTeamId').val("").trigger('change'); }, 50); } $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
-    function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); /* Сбрасываем Select2 при закрытии */ $('#playerTeamId').val("").trigger('change'); });}
+    function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); if (editMode && playerData) { $("#playerId").val(playerData.id); $("#playerName").val(playerData.name); $("#playerSteamId").val(playerData.steamId); $("#playerPhoto").val(playerData.photo); setTimeout(() => { $('#playerTeamId').val(playerData.teamId).trigger('change'); }, 50); } else { setTimeout(() => { $('#playerTeamId').val("").trigger('change'); }, 50); } $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
+    function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); $('#playerTeamId').val("").trigger('change'); });}
+
+    // --- Login Logic ---
+    // ВНИМАНИЕ: Эти учетные данные видны в исходном коде! Не используйте для защиты важных данных.
+    const CORRECT_USERNAME = "God";
+    const CORRECT_PASSWORD = "2007";
 
     $(document).ready(function(){
+      $("#loginForm").submit(function(e) {
+        e.preventDefault();
+        const username = $("#username").val();
+        const password = $("#password").val();
 
-      // === Начало Инициализация Select2 ===
-      function formatTeamOption (team) {
-        if (!team.id || team.id === "") { return team.text; } // Для опции "-- No Team --" или плейсхолдера
-
-        var $team = $('<span style="display: flex; align-items: center;" title="' + team.text + '"></span>');
-        var logoUrl = $(team.element).data('logo');
-
-        if (logoUrl && logoUrl.trim() !== "") {
-            const fullLogoUrl = logoUrl.startsWith('http') ? logoUrl : (logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl);
-            $team.append('<img loading="lazy" src="' + fullLogoUrl + '" style="height: 20px; width: 20px; margin-right: 8px; object-fit: contain; vertical-align: middle; border-radius: 3px;" alt="logo" onerror="this.style.display=\'none\'; $(this).next(\'.logo-placeholder-s2\').show();" />'
-                        + '<span class="logo-placeholder-s2" style="display: none; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle; text-align: center; line-height: 18px; font-size: 10px; color: var(--color-text-muted);">?</span>');
+        if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
+          $("#loginSection").fadeOut(300, function() {
+            $(this).remove(); // Или $(this).hide();
+            $("#adminSection").fadeIn(300, function() {
+              // Инициализировать функции админ-панели ПОСЛЕ успешного входа
+              initializeAdminPanel();
+            });
+          });
+          $("#loginError").hide();
         } else {
-            $team.append('<span style="display: inline-block; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle;"></span>');
+          $("#loginError").fadeIn();
         }
-        $team.append(document.createTextNode(team.text));
-        return $team;
-      };
-
-      try {
-        $('#playerTeamId').select2({
-            templateResult: formatTeamOption,
-            templateSelection: formatTeamOption,
-            width: 'style', // Используем style атрибут для ширины
-            dropdownParent: $('#playerModalBackdrop'), // Важно для корректного отображения в модалке
-            placeholder: "-- Select a Team --",
-            allowClear: true
-        });
-      } catch(e) {
-        console.error("Select2 initialization failed:", e);
-        // alert("Failed to initialize team selector. Please check console."); // Можно убрать, если не критично
-      }
-      // === Конец Инициализация Select2 ===
-
-
-      // Обработчики кнопок и событий
-      $("#btn-show-team-modal").click(function(){ showTeamModal(false); });
-      $("#btn-show-player-modal").click(function(){
-          $.get("/api/teams", function(teams) {
-            const teamSelect = $("#playerTeamId");
-            const selectedValue = teamSelect.val();
-
-            if (teamSelect.data('select2')) {
-                teamSelect.select2('destroy');
-            }
-
-            teamSelect.empty();
-            teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
-
-            teams.forEach(function(team) {
-                const option = new Option(team.name, team.id, false, false);
-                $(option).data('logo', team.logo || '');
-                teamSelect.append(option);
-            });
-
-            teamSelect.select2({
-                templateResult: formatTeamOption,
-                templateSelection: formatTeamOption,
-                width: 'style',
-                dropdownParent: $('#playerModalBackdrop'),
-                placeholder: "-- Select a Team --",
-                allowClear: true
-            });
-
-            teamSelect.val(selectedValue || "").trigger('change');
-            showPlayerModal(false);
-
-        }).fail(function() {
-            alert("Could not load teams for player modal.");
-            showPlayerModal(false);
-        });
       });
 
-      $("#closeTeamModal").click(function(){ hideTeamModal(); });
-      $("#closePlayerModal").click(function(){ hidePlayerModal(); });
-      $(".modal-backdrop").click(function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
+      function initializeAdminPanel() {
+        // === Начало Инициализация Select2 ===
+        function formatTeamOption (team) {
+          if (!team.id || team.id === "") { return team.text; }
 
-      // AJAX Запросы
-      $("#uploadTeamLogoBtn").click(function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
-      $("#uploadPlayerPhotoBtn").click(function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
-      $("#teamForm").submit(function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; if (!id) { /* При создании новой команды можно добавить createdAt на клиенте, но лучше на сервере */ /* data.createdAt = new Date().toISOString(); */ } $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
-      $("#playerForm").submit(function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+          var $team = $('<span style="display: flex; align-items: center;" title="' + team.text + '"></span>');
+          var logoUrl = $(team.element).data('logo');
 
-      // Редактирование и удаление
-      $(document).on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
-      $(document).on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+          if (logoUrl && logoUrl.trim() !== "") {
+              const fullLogoUrl = logoUrl.startsWith('http') ? logoUrl : (logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl);
+              $team.append('<img loading="lazy" src="' + fullLogoUrl + '" style="height: 20px; width: 20px; margin-right: 8px; object-fit: contain; vertical-align: middle; border-radius: 3px;" alt="logo" onerror="this.style.display=\'none\'; $(this).next(\'.logo-placeholder-s2\').show();" />'
+                          + '<span class="logo-placeholder-s2" style="display: none; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle; text-align: center; line-height: 18px; font-size: 10px; color: var(--color-text-muted);">?</span>');
+          } else {
+              $team.append('<span style="display: inline-block; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle;"></span>');
+          }
+          $team.append(document.createTextNode(team.text));
+          return $team;
+        };
 
-      $(document).on("click", ".editPlayer", function(){
-        const playerId = $(this).closest(".player-row").data("id");
-        $.get("/api/teams", function(teams) {
-            const teamSelect = $("#playerTeamId");
-            if (teamSelect.data('select2')) {
-                teamSelect.select2('destroy');
-            }
-            teamSelect.empty();
-            teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
-            teams.forEach(function(team) {
-                const option = new Option(team.name, team.id, false, false);
-                $(option).data('logo', team.logo || '');
-                teamSelect.append(option);
-            });
-
-            teamSelect.select2({
-                templateResult: formatTeamOption,
-                templateSelection: formatTeamOption,
-                width: 'style',
-                dropdownParent: $('#playerModalBackdrop'),
-                placeholder: "-- Select a Team --",
-                allowClear: true
-            });
-
-            $.get("/api/players/" + playerId, function(player){
-                if(player){
-                    showPlayerModal(true, player);
-                } else { alert("Player data not found."); }
-            }).fail(function(){ alert("Could not fetch player data for editing."); });
-        }).fail(function() {
-            alert("Could not load teams. Player data might be incomplete.");
-            $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }})
-              .fail(function(){ alert("Could not fetch player data for editing."); });
-        });
-      });
-
-      $(document).on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+        try {
+          $('#playerTeamId').select2({
+              templateResult: formatTeamOption,
+              templateSelection: formatTeamOption,
+              width: 'style',
+              dropdownParent: $('#playerModalBackdrop'),
+              placeholder: "-- Select a Team --",
+              allowClear: true
+          });
+        } catch(e) {
+          console.error("Select2 initialization failed:", e);
+        }
+        // === Конец Инициализация Select2 ===
 
 
-      // === Начало: Логика сортировки команд ===
-      function sortAndDisplayTeams() {
-          const sortBy = $('#sortTeamsBy').val();
-          const teamsGrid = $('#teamsGrid');
-          let teamCards = teamsGrid.find('.team-card').get(); // Получаем массив DOM элементов
+        // Обработчики кнопок и событий
+        $("#btn-show-team-modal").click(function(){ showTeamModal(false); });
+        $("#btn-show-player-modal").click(function(){
+            $.get("/api/teams", function(teams) {
+              const teamSelect = $("#playerTeamId");
+              const selectedValue = teamSelect.val();
 
-          teamCards.sort(function(a, b) {
-              let valA, valB;
-
-              // Извлекаем значения для сравнения
-              const nameA = $(a).data('name');
-              const nameB = $(b).data('name');
-              const playerCountA = parseInt($(a).data('player-count'), 10);
-              const playerCountB = parseInt($(b).data('player-count'), 10);
-              const dateCreatedA = parseInt($(a).data('created-at'), 10);
-              const dateCreatedB = parseInt($(b).data('created-at'), 10);
-
-              switch (sortBy) {
-                  case 'nameAsc':
-                      return nameA.localeCompare(nameB);
-                  case 'nameDesc':
-                      return nameB.localeCompare(nameA);
-                  case 'playerCountAsc':
-                      valA = playerCountA;
-                      valB = playerCountB;
-                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
-                      return valA - valB;
-                  case 'playerCountDesc':
-                      valA = playerCountA;
-                      valB = playerCountB;
-                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
-                      return valB - valA;
-                  case 'dateCreatedAsc':
-                      valA = dateCreatedA;
-                      valB = dateCreatedB;
-                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
-                      return valA - valB;
-                  case 'dateCreatedDesc':
-                      valA = dateCreatedA;
-                      valB = dateCreatedB;
-                      if (valA === valB) return nameA.localeCompare(nameB); // Вторичная по имени
-                      return valB - valA;
-                  default:
-                      return 0;
+              if (teamSelect.data('select2')) {
+                  teamSelect.select2('destroy');
               }
-          });
 
-          // Очищаем и добавляем отсортированные карточки обратно в сетку
-          teamsGrid.empty();
-          $.each(teamCards, function(i, card) {
-              teamsGrid.append(card);
-          });
-      }
+              teamSelect.empty();
+              teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
 
-      // Слушатель события для выпадающего списка сортировки
-      $('#sortTeamsBy').on('change', function() {
-          sortAndDisplayTeams();
-      });
+              teams.forEach(function(team) {
+                  const option = new Option(team.name, team.id, false, false);
+                  $(option).data('logo', team.logo || '');
+                  teamSelect.append(option);
+              });
 
-      // Применить сортировку по умолчанию при загрузке страницы, если есть команды
-      if ($('#teamsGrid .team-card').length > 0) {
-          sortAndDisplayTeams(); // Сортировка по значению, выбранному по умолчанию в select
-      }
-      // === Конец: Логика сортировки команд ===
+              teamSelect.select2({
+                  templateResult: formatTeamOption,
+                  templateSelection: formatTeamOption,
+                  width: 'style',
+                  dropdownParent: $('#playerModalBackdrop'),
+                  placeholder: "-- Select a Team --",
+                  allowClear: true
+              });
 
-    });
+              teamSelect.val(selectedValue || "").trigger('change');
+              showPlayerModal(false);
+
+            }).fail(function() {
+              alert("Could not load teams for player modal.");
+              showPlayerModal(false);
+            });
+        });
+
+        $("#closeTeamModal").click(function(){ hideTeamModal(); });
+        $("#closePlayerModal").click(function(){ hidePlayerModal(); });
+        $(".modal-backdrop").click(function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
+
+        // AJAX Запросы
+        $("#uploadTeamLogoBtn").click(function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
+        $("#uploadPlayerPhotoBtn").click(function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
+        $("#teamForm").submit(function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; if (!id) { } $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+        $("#playerForm").submit(function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
+
+        // Редактирование и удаление
+        $(document).on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
+        $(document).on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+
+        $(document).on("click", ".editPlayer", function(){
+            const playerId = $(this).closest(".player-row").data("id");
+            $.get("/api/teams", function(teams) {
+              const teamSelect = $("#playerTeamId");
+              if (teamSelect.data('select2')) {
+                  teamSelect.select2('destroy');
+              }
+              teamSelect.empty();
+              teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
+              teams.forEach(function(team) {
+                  const option = new Option(team.name, team.id, false, false);
+                  $(option).data('logo', team.logo || '');
+                  teamSelect.append(option);
+              });
+
+              teamSelect.select2({
+                  templateResult: formatTeamOption,
+                  templateSelection: formatTeamOption,
+                  width: 'style',
+                  dropdownParent: $('#playerModalBackdrop'),
+                  placeholder: "-- Select a Team --",
+                  allowClear: true
+              });
+
+              $.get("/api/players/" + playerId, function(player){
+                  if(player){
+                      showPlayerModal(true, player);
+                  } else { alert("Player data not found."); }
+              }).fail(function(){ alert("Could not fetch player data for editing."); });
+            }).fail(function() {
+              alert("Could not load teams. Player data might be incomplete.");
+              $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }})
+                .fail(function(){ alert("Could not fetch player data for editing."); });
+            });
+        });
+
+        $(document).on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
+
+
+        // === Начало: Логика сортировки команд ===
+        function sortAndDisplayTeams() {
+            const sortBy = $('#sortTeamsBy').val();
+            const teamsGrid = $('#teamsGrid');
+            let teamCards = teamsGrid.find('.team-card').get();
+
+            teamCards.sort(function(a, b) {
+                let valA, valB;
+                const nameA = $(a).data('name');
+                const nameB = $(b).data('name');
+                const playerCountA = parseInt($(a).data('player-count'), 10);
+                const playerCountB = parseInt($(b).data('player-count'), 10);
+                const dateCreatedA = parseInt($(a).data('created-at'), 10);
+                const dateCreatedB = parseInt($(b).data('created-at'), 10);
+
+                switch (sortBy) {
+                    case 'nameAsc':
+                        return nameA.localeCompare(nameB);
+                    case 'nameDesc':
+                        return nameB.localeCompare(nameA);
+                    case 'playerCountAsc':
+                        valA = playerCountA;
+                        valB = playerCountB;
+                        if (valA === valB) return nameA.localeCompare(nameB);
+                        return valA - valB;
+                    case 'playerCountDesc':
+                        valA = playerCountA;
+                        valB = playerCountB;
+                        if (valA === valB) return nameA.localeCompare(nameB);
+                        return valB - valA;
+                    case 'dateCreatedAsc':
+                        valA = dateCreatedA;
+                        valB = dateCreatedB;
+                        if (valA === valB) return nameA.localeCompare(nameB);
+                        return valA - valB;
+                    case 'dateCreatedDesc':
+                        valA = dateCreatedA;
+                        valB = dateCreatedB;
+                        if (valA === valB) return nameA.localeCompare(nameB);
+                        return valB - valA;
+                    default:
+                        return 0;
+                }
+            });
+
+            teamsGrid.empty();
+            $.each(teamCards, function(i, card) {
+                teamsGrid.append(card);
+            });
+        }
+
+        $('#sortTeamsBy').on('change', function() {
+            sortAndDisplayTeams();
+        });
+
+        if ($('#teamsGrid .team-card').length > 0) {
+            sortAndDisplayTeams();
+        }
+        // === Конец: Логика сортировки команд ===
+      } // Конец initializeAdminPanel
+    }); // Конец document.ready
   </script>
 </body>
 </html>
