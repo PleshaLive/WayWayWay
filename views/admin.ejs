@@ -151,7 +151,8 @@
     /* === Компактные стили для карточки === */
     .team-card { padding: var(--spacing-sm); }
     .team-card h2 { font-size: 1.1rem; margin-bottom: var(--spacing-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Уменьшил margin-bottom */
-    .team-logo { max-height: 60px; margin-bottom: var(--spacing-sm); object-fit: contain; }
+    .team-logo { max-height: 60px; margin-bottom: var(--spacing-sm); object-fit: contain; will-change: transform; transition: transform 0.2s ease; }
+    .team-logo:hover { transform: scale(1.05); }
     .team-card .no-logo-text { text-align:center; color: var(--color-text-muted); margin-bottom: var(--spacing-sm); font-style: italic; font-size: 0.9rem; }
     /* НОВЫЙ СТИЛЬ: Информация для сортировки */
     .team-info-sort { font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: var(--spacing-sm); line-height: 1.3; }
@@ -174,7 +175,8 @@
     /* === Стили для строки игрока === */
     .player-row { padding: var(--spacing-xs) var(--spacing-sm); display: flex; align-items: center; background-color: var(--color-surface-secondary); border-radius: var(--border-radius-md); margin-bottom: var(--spacing-sm); border: 1px solid var(--color-border); transition: var(--transition-fast); }
     .player-row:hover { border-color: var(--color-primary-light); background-color: rgba(var(--rgb-primary), 0.05); }
-    .player-photo img, .player-photo .no-photo-placeholder { max-height: 35px; width: 35px; height: 35px; font-size: 1rem; margin-right: var(--spacing-sm); border-radius: var(--border-radius-round); border: 1px solid var(--color-border-light); flex-shrink: 0; }
+    .player-photo img, .player-photo .no-photo-placeholder { max-height: 35px; width: 35px; height: 35px; font-size: 1rem; margin-right: var(--spacing-sm); border-radius: var(--border-radius-round); border: 1px solid var(--color-border-light); flex-shrink: 0; will-change: transform; transition: transform 0.2s ease; }
+    .player-photo img:hover { transform: scale(1.1); }
     .player-photo .no-photo-placeholder { background-color: var(--color-surface-tertiary); display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); }
     .player-name { font-size: 0.85rem; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
     .player-actions { gap: var(--spacing-sm); display: flex; flex-shrink: 0; }
@@ -191,7 +193,7 @@
     .close-modal:hover { color: var(--color-error); transform: scale(1.1); }
     .modal form { margin-top: var(--spacing-md); }
     .modal .form-actions { margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-divider); }
-    .modal #convertTeamLogoBase64Btn, .modal #convertPlayerPhotoBase64Btn { width: 100%; margin-bottom: var(--spacing-sm); }
+    .modal #uploadTeamLogoBtn, .modal #uploadPlayerPhotoBtn { width: 100%; margin-bottom: var(--spacing-sm); }
     /* === Конец стилей модальных окон === */
 
     /* === Начало стилей для Select2 === */
@@ -354,10 +356,11 @@
             <input type="hidden" name="id" id="teamId">
             <label for="teamName"><i class="fas fa-signature"></i> Team Name:</label>
             <input type="text" name="name" id="teamName" required class="header-input" placeholder="Enter team name">
-            <label for="teamLogoFile"><i class="fas fa-image"></i> Select Logo File:</label>
+            <label for="teamLogoFile"><i class="fas fa-image"></i> Logo File:</label>
             <input type="file" id="teamLogoFile" accept="image/*" class="header-input">
-            <button type="button" id="convertTeamLogoBase64Btn" class="app-button success" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-magic"></i> Convert to Base64 & Save</button>
-            <input type="hidden" name="logo" id="teamLogo">
+            <button type="button" id="uploadTeamLogoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Logo</button>
+            <label for="teamLogo"><i class="fas fa-link"></i> Or Logo URL:</label>
+            <input type="text" name="logo" id="teamLogo" class="header-input" placeholder="Enter logo URL (overrides file if both set)">
             <div class="form-actions">
               <button type="button" class="app-button tertiary" onclick="hideTeamModal()">Cancel</button>
               <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Team</button>
@@ -378,10 +381,11 @@
             <input type="text" name="name" id="playerName" required class="header-input" placeholder="Enter player's name">
             <label for="playerSteamId"><i class="fab fa-steam-symbol"></i> Steam ID (Optional):</label>
             <input type="text" name="steamId" id="playerSteamId" class="header-input" placeholder="Enter Steam ID">
-            <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Select Photo File:</label>
+            <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Photo File:</label>
             <input type="file" id="playerPhotoFile" accept="image/*" class="header-input">
-            <button type="button" id="convertPlayerPhotoBase64Btn" class="app-button success" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-magic"></i> Convert to Base64 & Save</button>
-            <input type="hidden" name="photo" id="playerPhoto">
+            <button type="button" id="uploadPlayerPhotoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Photo</button>
+            <label for="playerPhoto"><i class="fas fa-link"></i> Or Photo URL:</label>
+            <input type="text" name="photo" id="playerPhoto" class="header-input" placeholder="Enter photo URL (overrides file if both set)">
 
             <label for="playerTeamId"><i class="fas fa-users"></i> Assign to Team:</label>
             <select id="playerTeamId" name="teamId" class="control-select" style="width: 100%;">
@@ -548,8 +552,8 @@
         $("#closePlayerModal").off('click').on('click', function(){ hidePlayerModal(); });
         $(document).off("click", ".modal-backdrop").on("click", ".modal-backdrop", function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
 
-        // AJAX Запросы - только Base64 конвертация
-        $("#convertTeamLogoBase64Btn").off('click').on('click', function(){
+        // AJAX Запросы
+        $("#uploadTeamLogoBtn").off('click').on('click', function(){
             const fileInput = $("#teamLogoFile")[0];
             if (!fileInput.files.length) {
                 alert("Please select a logo file first.");
@@ -559,31 +563,23 @@
             const formData = new FormData();
             formData.append('logoFile', fileInput.files[0]);
             
-            // Показываем индикатор загрузки
-            $(this).html('<i class="fas fa-spinner fa-spin"></i> Converting...');
-            $(this).prop('disabled', true);
-            
             $.ajax({
-                url: '/api/teams/uploadLogoBase64',
+                url: '/api/teams/uploadLogo',
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    $("#teamLogo").val(response.base64);
-                    alert("✅ Logo converted to Base64 and ready to save!");
+                    $("#teamLogo").val(response.path);
+                    alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes.");
                 },
-                error: function(xhr) {
-                    alert("Error converting logo to Base64: " + (xhr.responseJSON ? xhr.responseJSON.error : "Unknown error"));
-                },
-                complete: function() {
-                    $("#convertTeamLogoBase64Btn").html('<i class="fas fa-magic"></i> Convert to Base64 & Save');
-                    $("#convertTeamLogoBase64Btn").prop('disabled', false);
+                error: function() {
+                    alert("Error uploading logo. Please try again or enter URL manually.");
                 }
             });
         });
         
-        $("#convertPlayerPhotoBase64Btn").off('click').on('click', function(){
+        $("#uploadPlayerPhotoBtn").off('click').on('click', function(){
             const fileInput = $("#playerPhotoFile")[0];
             if (!fileInput.files.length) {
                 alert("Please select a photo file first.");
@@ -593,26 +589,18 @@
             const formData = new FormData();
             formData.append('photoFile', fileInput.files[0]);
             
-            // Показываем индикатор загрузки
-            $(this).html('<i class="fas fa-spinner fa-spin"></i> Converting...');
-            $(this).prop('disabled', true);
-            
             $.ajax({
-                url: '/api/players/uploadPhotoBase64',
+                url: '/api/players/uploadPhoto',
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    $("#playerPhoto").val(response.base64);
-                    alert("✅ Photo converted to Base64 and ready to save!");
+                    $("#playerPhoto").val(response.path);
+                    alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes.");
                 },
-                error: function(xhr) {
-                    alert("Error converting photo to Base64: " + (xhr.responseJSON ? xhr.responseJSON.error : "Unknown error"));
-                },
-                complete: function() {
-                    $("#convertPlayerPhotoBase64Btn").html('<i class="fas fa-magic"></i> Convert to Base64 & Save');
-                    $("#convertPlayerPhotoBase64Btn").prop('disabled', false);
+                error: function() {
+                    alert("Error uploading photo. Please try again or enter URL manually.");
                 }
             });
         });
