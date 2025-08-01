@@ -133,6 +133,11 @@
     .app-button.small i, button.small i { margin-right: var(--spacing-xs); font-size: 0.9em; }
     .app-button.danger, button.danger { background-color: transparent; border-color: var(--color-error); color: var(--color-error); box-shadow: 0 2px 5px rgba(var(--rgb-error),0.2); }
     .app-button.danger:hover, button.danger:hover { background-color: var(--color-error); color: var(--color-text-on-accent); border-color: var(--color-error-dark); box-shadow: var(--glow-error), 0 0 15px rgba(var(--rgb-error),0.3) inset; }
+    .app-button.success, button.success { background-color: #10B981; border-color: #10B981; color: white; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); }
+    .app-button.success:hover, button.success:hover { background-color: #059669; border-color: #059669; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.3) inset; transform: translateY(-2px) scale(1.02); }
+    .app-button.success:active, button.success:active { transform: translateY(0px) scale(1); background-color: #047857; box-shadow: var(--shadow-inset); }
+    .app-button.secondary, button.secondary { background-color: var(--color-secondary-base); border-color: var(--color-secondary-base); color: var(--color-text-on-accent); }
+    .app-button.secondary:hover, button.secondary:hover { background-color: var(--color-secondary-light); border-color: var(--color-secondary-light); box-shadow: var(--glow-secondary), 0 0 15px rgba(var(--rgb-secondary),0.3) inset; }
     .top-buttons { text-align: center; margin-bottom: var(--spacing-lg); display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; }
     /* === КОНЕЦ ОСНОВНЫХ СТИЛЕЙ === */
 
@@ -186,7 +191,7 @@
     .close-modal:hover { color: var(--color-error); transform: scale(1.1); }
     .modal form { margin-top: var(--spacing-md); }
     .modal .form-actions { margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-divider); }
-    .modal #uploadTeamLogoBtn, .modal #uploadPlayerPhotoBtn { width: 100%; margin-bottom: var(--spacing-sm); }
+    .modal #convertTeamLogoBase64Btn, .modal #convertPlayerPhotoBase64Btn { width: 100%; margin-bottom: var(--spacing-sm); }
     /* === Конец стилей модальных окон === */
 
     /* === Начало стилей для Select2 === */
@@ -349,11 +354,10 @@
             <input type="hidden" name="id" id="teamId">
             <label for="teamName"><i class="fas fa-signature"></i> Team Name:</label>
             <input type="text" name="name" id="teamName" required class="header-input" placeholder="Enter team name">
-            <label for="teamLogoFile"><i class="fas fa-image"></i> Logo File:</label>
+            <label for="teamLogoFile"><i class="fas fa-image"></i> Select Logo File:</label>
             <input type="file" id="teamLogoFile" accept="image/*" class="header-input">
-            <button type="button" id="uploadTeamLogoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Logo</button>
-            <label for="teamLogo"><i class="fas fa-link"></i> Or Logo URL:</label>
-            <input type="text" name="logo" id="teamLogo" class="header-input" placeholder="Enter logo URL (overrides file if both set)">
+            <button type="button" id="convertTeamLogoBase64Btn" class="app-button success" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-magic"></i> Convert to Base64 & Save</button>
+            <input type="hidden" name="logo" id="teamLogo">
             <div class="form-actions">
               <button type="button" class="app-button tertiary" onclick="hideTeamModal()">Cancel</button>
               <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Team</button>
@@ -374,11 +378,10 @@
             <input type="text" name="name" id="playerName" required class="header-input" placeholder="Enter player's name">
             <label for="playerSteamId"><i class="fab fa-steam-symbol"></i> Steam ID (Optional):</label>
             <input type="text" name="steamId" id="playerSteamId" class="header-input" placeholder="Enter Steam ID">
-            <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Photo File:</label>
+            <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Select Photo File:</label>
             <input type="file" id="playerPhotoFile" accept="image/*" class="header-input">
-            <button type="button" id="uploadPlayerPhotoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Photo</button>
-            <label for="playerPhoto"><i class="fas fa-link"></i> Or Photo URL:</label>
-            <input type="text" name="photo" id="playerPhoto" class="header-input" placeholder="Enter photo URL (overrides file if both set)">
+            <button type="button" id="convertPlayerPhotoBase64Btn" class="app-button success" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-magic"></i> Convert to Base64 & Save</button>
+            <input type="hidden" name="photo" id="playerPhoto">
 
             <label for="playerTeamId"><i class="fas fa-users"></i> Assign to Team:</label>
             <select id="playerTeamId" name="teamId" class="control-select" style="width: 100%;">
@@ -545,9 +548,74 @@
         $("#closePlayerModal").off('click').on('click', function(){ hidePlayerModal(); });
         $(document).off("click", ".modal-backdrop").on("click", ".modal-backdrop", function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
 
-        // AJAX Запросы
-        $("#uploadTeamLogoBtn").off('click').on('click', function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
-        $("#uploadPlayerPhotoBtn").off('click').on('click', function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
+        // AJAX Запросы - только Base64 конвертация
+        $("#convertTeamLogoBase64Btn").off('click').on('click', function(){
+            const fileInput = $("#teamLogoFile")[0];
+            if (!fileInput.files.length) {
+                alert("Please select a logo file first.");
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('logoFile', fileInput.files[0]);
+            
+            // Показываем индикатор загрузки
+            $(this).html('<i class="fas fa-spinner fa-spin"></i> Converting...');
+            $(this).prop('disabled', true);
+            
+            $.ajax({
+                url: '/api/teams/uploadLogoBase64',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    $("#teamLogo").val(response.base64);
+                    alert("✅ Logo converted to Base64 and ready to save!");
+                },
+                error: function(xhr) {
+                    alert("Error converting logo to Base64: " + (xhr.responseJSON ? xhr.responseJSON.error : "Unknown error"));
+                },
+                complete: function() {
+                    $("#convertTeamLogoBase64Btn").html('<i class="fas fa-magic"></i> Convert to Base64 & Save');
+                    $("#convertTeamLogoBase64Btn").prop('disabled', false);
+                }
+            });
+        });
+        
+        $("#convertPlayerPhotoBase64Btn").off('click').on('click', function(){
+            const fileInput = $("#playerPhotoFile")[0];
+            if (!fileInput.files.length) {
+                alert("Please select a photo file first.");
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('photoFile', fileInput.files[0]);
+            
+            // Показываем индикатор загрузки
+            $(this).html('<i class="fas fa-spinner fa-spin"></i> Converting...');
+            $(this).prop('disabled', true);
+            
+            $.ajax({
+                url: '/api/players/uploadPhotoBase64',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    $("#playerPhoto").val(response.base64);
+                    alert("✅ Photo converted to Base64 and ready to save!");
+                },
+                error: function(xhr) {
+                    alert("Error converting photo to Base64: " + (xhr.responseJSON ? xhr.responseJSON.error : "Unknown error"));
+                },
+                complete: function() {
+                    $("#convertPlayerPhotoBase64Btn").html('<i class="fas fa-magic"></i> Convert to Base64 & Save');
+                    $("#convertPlayerPhotoBase64Btn").prop('disabled', false);
+                }
+            });
+        });
         $("#teamForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
         $("#playerForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
 

@@ -161,6 +161,33 @@ const storagePlayers = multer.diskStorage({
 });
 const uploadPlayers = multer({ storage: storagePlayers });
 
+// ------------------------------
+// Настройка Multer для Base64 конвертации
+// ------------------------------
+const uploadTeamsBase64 = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB лимит
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
+
+const uploadPlayersBase64 = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB лимит
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
+
 function fixUrl(url) {
   if (!url) return url; // Если URL пустой, возвращаем как есть
   if ((url.startsWith("http:/") && !url.startsWith("http://")) ||
@@ -906,10 +933,25 @@ app.delete('/api/teams/:id', async (req, res) => {
   }
 });
 
-app.post('/api/teams/uploadLogo', uploadTeams.single('logoFile'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  const filePath = '/logos/' + req.file.filename;
-  res.json({ path: filePath });
+// Новый endpoint для конвертации логотипа команды в Base64
+app.post('/api/teams/uploadLogoBase64', uploadTeamsBase64.single('logoFile'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    
+    // Конвертируем в Base64
+    const base64 = req.file.buffer.toString('base64');
+    const mimeType = req.file.mimetype;
+    const dataUri = `data:${mimeType};base64,${base64}`;
+    
+    res.json({ 
+      base64: dataUri,
+      success: true,
+      message: 'Image converted to Base64 successfully'
+    });
+  } catch (error) {
+    console.error('Error converting image to Base64:', error);
+    res.status(500).json({ error: 'Failed to convert image to Base64' });
+  }
 });
 
 // --- API для игроков ---
@@ -1034,10 +1076,25 @@ app.delete('/api/players/:id', async (req, res) => {
   }
 });
 
-app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  const filePath = '/players/' + req.file.filename;
-  res.json({ path: filePath });
+// Новый endpoint для конвертации фото игрока в Base64
+app.post('/api/players/uploadPhotoBase64', uploadPlayersBase64.single('photoFile'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    
+    // Конвертируем в Base64
+    const base64 = req.file.buffer.toString('base64');
+    const mimeType = req.file.mimetype;
+    const dataUri = `data:${mimeType};base64,${base64}`;
+    
+    res.json({ 
+      base64: dataUri,
+      success: true,
+      message: 'Image converted to Base64 successfully'
+    });
+  } catch (error) {
+    console.error('Error converting image to Base64:', error);
+    res.status(500).json({ error: 'Failed to convert image to Base64' });
+  }
 });
 
 // ================================
