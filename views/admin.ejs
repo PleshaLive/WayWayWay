@@ -401,7 +401,8 @@
         </div>
       </div>
     </div>
-  </div> <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  </div> 
+  <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
 
   <script>
     // Функции модальных окон (остаются глобально доступными)
@@ -505,66 +506,37 @@
 
       function initializeAdminPanel() {
         console.log("Initializing Admin Panel...");
-        // === Начало Инициализация Select2 ===
-        function formatTeamOption (team) {
-          if (!team.id || team.id === "") { return team.text; }
-          var $team = $('<span style="display: flex; align-items: center;" title="' + team.text + '"></span>');
-          var logoUrl = $(team.element).data('logo');
-          if (logoUrl && logoUrl.trim() !== "") {
-              const fullLogoUrl = logoUrl.startsWith('http') ? logoUrl : (logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl);
-              $team.append('<img loading="lazy" src="' + fullLogoUrl + '" style="height: 20px; width: 20px; margin-right: 8px; object-fit: contain; vertical-align: middle; border-radius: 3px;" alt="logo" onerror="this.style.display=\'none\'; $(this).next(\'.logo-placeholder-s2\').show();" />'
-                          + '<span class="logo-placeholder-s2" style="display: none; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle; text-align: center; line-height: 18px; font-size: 10px; color: var(--color-text-muted);">?</span>');
-          } else {
-              $team.append('<span style="display: inline-block; width: 20px; height: 20px; margin-right: 8px; background: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: 3px; vertical-align: middle;"></span>');
-          }
-          $team.append(document.createTextNode(team.text));
-          return $team;
-        };
-
+        
         try {
-          if (!$('#playerTeamId').data('select2')) {
-             console.log("Initializing Select2 for #playerTeamId");
-             $('#playerTeamId').select2({
-                templateResult: formatTeamOption,
-                templateSelection: formatTeamOption,
-                width: 'style',
-                dropdownParent: $('#playerModalBackdrop'), // Убедитесь, что этот элемент существует, когда это вызывается
-                placeholder: "-- Select a Team --",
-                allowClear: true
-            });
-          } else {
-            console.log("Select2 for #playerTeamId already initialized.");
-          }
-        } catch(e) {
-          console.error("Select2 initialization failed for #playerTeamId:", e);
+          console.log("Admin panel initialization started successfully");
+          
+          // Проверяем наличие основных элементов
+          console.log("Checking required elements...");
+          console.log("btn-show-team-modal exists:", $("#btn-show-team-modal").length > 0);
+          console.log("btn-show-player-modal exists:", $("#btn-show-player-modal").length > 0);
+          console.log("closeTeamModal exists:", $("#closeTeamModal").length > 0);
+          console.log("closePlayerModal exists:", $("#closePlayerModal").length > 0);
+          console.log("teamForm exists:", $("#teamForm").length > 0);
+          console.log("playerForm exists:", $("#playerForm").length > 0);
+          
+          console.log("Setting up event handlers...");
+        } catch(initError) {
+          console.error("Error during initialization:", initError);
+          throw initError; // Пересылаем ошибку дальше
         }
-        // === Конец Инициализация Select2 ===
-
-        // Обработчики кнопок и событий
-        console.log("Setting up event handlers...");
         $("#btn-show-team-modal").off('click').on('click', function(){ console.log("Create Team button clicked"); showTeamModal(false); });
         $("#btn-show-player-modal").off('click').on('click', function(){
             console.log("Create Player button clicked");
             $.get("/api/teams", function(teams) {
               const teamSelect = $("#playerTeamId");
               const selectedValue = teamSelect.val();
-              if (teamSelect.data('select2')) { teamSelect.select2('destroy'); }
               teamSelect.empty();
-              teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
+              teamSelect.append(new Option("-- No Team --", "", false, false));
               teams.forEach(function(team) {
                   const option = new Option(team.name, team.id, false, false);
-                  $(option).data('logo', team.logo || '');
                   teamSelect.append(option);
               });
-              teamSelect.select2({
-                  templateResult: formatTeamOption,
-                  templateSelection: formatTeamOption,
-                  width: 'style',
-                  dropdownParent: $('#playerModalBackdrop'),
-                  placeholder: "-- Select a Team --",
-                  allowClear: true
-              });
-              teamSelect.val(selectedValue || "").trigger('change');
+              teamSelect.val(selectedValue || "");
               showPlayerModal(false);
             }).fail(function() {
               console.error("Could not load teams for player modal.");
@@ -590,21 +562,11 @@
             const playerId = $(this).closest(".player-row").data("id");
             $.get("/api/teams", function(teams) {
               const teamSelect = $("#playerTeamId");
-              if (teamSelect.data('select2')) { teamSelect.select2('destroy'); }
               teamSelect.empty();
-              teamSelect.append(new Option("-- No Team --", "", false, false)).data('logo','');
+              teamSelect.append(new Option("-- No Team --", "", false, false));
               teams.forEach(function(team) {
                   const option = new Option(team.name, team.id, false, false);
-                  $(option).data('logo', team.logo || '');
                   teamSelect.append(option);
-              });
-              teamSelect.select2({
-                  templateResult: formatTeamOption,
-                  templateSelection: formatTeamOption,
-                  width: 'style',
-                  dropdownParent: $('#playerModalBackdrop'),
-                  placeholder: "-- Select a Team --",
-                  allowClear: true
               });
               $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); } else { alert("Player data not found."); } }).fail(function(){ alert("Could not fetch player data for editing."); });
             }).fail(function() { alert("Could not load teams. Player data might be incomplete."); $.get("/api/players/" + playerId, function(player){ if(player){ showPlayerModal(true, player); }}) .fail(function(){ alert("Could not fetch player data for editing."); }); });
@@ -620,9 +582,9 @@
             let teamCards = teamsGrid.find('.team-card').get();
             teamCards.sort(function(a, b) {
                 let valA, valB;
-                const nameA = $(a).data('name'); const nameB = $(b).data('name');
-                const playerCountA = parseInt($(a).data('player-count'), 10); const playerCountB = parseInt($(b).data('player-count'), 10);
-                const dateCreatedA = parseInt($(a).data('created-at'), 10); const dateCreatedB = parseInt($(b).data('created-at'), 10);
+                const nameA = String($(a).data('name') || ''); const nameB = String($(b).data('name') || '');
+                const playerCountA = parseInt($(a).data('player-count'), 10) || 0; const playerCountB = parseInt($(b).data('player-count'), 10) || 0;
+                const dateCreatedA = parseInt($(a).data('created-at'), 10) || 0; const dateCreatedB = parseInt($(b).data('created-at'), 10) || 0;
                 switch (sortBy) {
                     case 'nameAsc': return nameA.localeCompare(nameB);
                     case 'nameDesc': return nameB.localeCompare(nameA);
