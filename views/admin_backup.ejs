@@ -361,74 +361,29 @@
         border-radius: var(--border-radius-lg);
         border: 1px solid transparent;
         cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s ease;
         text-align: left;
-        backdrop-filter: blur(15px);
+        backdrop-filter: blur(10px);
         position: relative;
         overflow: hidden;
-        box-shadow: 
-            0 4px 15px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
-    
-    .action-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, 
-            transparent, 
-            rgba(255, 255, 255, 0.2), 
-            transparent);
-        transition: left 0.5s ease;
-    }
-    
-    .action-btn:hover::before {
-        left: 100%;
-    }
-    
     .action-btn.primary {
-        background: linear-gradient(135deg, 
-            var(--color-primary-base), 
-            var(--color-primary-light));
-        color: white;
-        box-shadow: 
-            0 6px 20px rgba(var(--rgb-primary), 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, var(--color-primary-base), var(--color-primary-light));
+        color: var(--color-text-on-primary);
+        box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.3);
     }
-    
     .action-btn.primary:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 
-            0 12px 30px rgba(var(--rgb-primary), 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(var(--rgb-primary), 0.4);
     }
-    
-    .action-btn.primary:active {
-        transform: translateY(-1px) scale(1.01);
-    }
-    
     .action-btn.secondary {
-        background: linear-gradient(135deg, 
-            var(--color-secondary-base), 
-            var(--color-secondary-light));
-        color: white;
-        box-shadow: 
-            0 6px 20px rgba(var(--rgb-secondary), 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, var(--color-secondary-base), var(--color-secondary-light));
+        color: var(--color-text-on-accent);
+        box-shadow: 0 4px 15px rgba(var(--rgb-secondary), 0.3);
     }
-    
     .action-btn.secondary:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 
-            0 12px 30px rgba(var(--rgb-secondary), 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    
-    .action-btn.secondary:active {
-        transform: translateY(-1px) scale(1.01);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(var(--rgb-secondary), 0.4);
     }
     
     /* === Секция команд === */
@@ -555,8 +510,8 @@
     /* Список команд */
     .teams-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: var(--spacing-md);
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
         list-style: none;
         padding: 0;
         margin: 0;
@@ -569,7 +524,7 @@
         backdrop-filter: blur(15px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: var(--border-radius-xl);
-        padding: var(--spacing-md);
+        padding: var(--spacing-lg);
         box-shadow: 
             0 8px 32px rgba(0, 0, 0, 0.1),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -611,8 +566,8 @@
     }
     
     .team-logo {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         border-radius: var(--border-radius-lg);
         object-fit: cover;
         background: linear-gradient(135deg, var(--color-primary-base), var(--color-primary-light));
@@ -632,84 +587,6 @@
         color: var(--color-text-secondary);
         display: flex;
         align-items: center;
-        gap: var(--spacing-xs);
-    }
-
-    /* Новые стили для команд */
-    .team-stats {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
-    }
-
-    .player-count {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-xs);
-    }
-
-    .team-players {
-        margin: var(--spacing-md) 0;
-        padding: var(--spacing-md);
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: var(--border-radius-md);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .players-title {
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-        margin-bottom: var(--spacing-sm);
-        font-weight: var(--font-weight-medium);
-    }
-
-    .players-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-xs);
-        max-height: 120px;
-        overflow-y: auto;
-    }
-
-    .player-item {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
-        padding: var(--spacing-xs);
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: var(--border-radius-sm);
-        transition: background 0.2s ease;
-    }
-
-    .player-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .player-avatar {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        object-fit: cover;
-        background: var(--color-surface-secondary);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .player-name {
-        font-size: 0.8rem;
-        color: var(--color-text-primary);
-        font-weight: var(--font-weight-medium);
-    }
-
-    .no-players {
-        text-align: center;
-        color: var(--color-text-muted);
-        font-size: 0.8rem;
-        padding: var(--spacing-sm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
         gap: var(--spacing-xs);
     }
     
@@ -1865,9 +1742,9 @@
         left: 0; 
         right: 0; 
         bottom: 0; 
-        background: rgba(0, 0, 0, 0.6); 
-        backdrop-filter: blur(15px); 
-        -webkit-backdrop-filter: blur(15px);
+        background: rgba(0, 0, 0, 0.4); 
+        backdrop-filter: blur(12px); 
+        -webkit-backdrop-filter: blur(12px);
         display: none; 
         justify-content: center; 
         align-items: center; 
@@ -1876,20 +1753,12 @@
         overflow-y: auto;
         animation: fadeInBackdrop 0.3s ease-out;
     }
-    
     @keyframes fadeInBackdrop {
-        from { 
-            opacity: 0; 
-            backdrop-filter: blur(0px); 
-        }
-        to { 
-            opacity: 1; 
-            backdrop-filter: blur(15px); 
-        }
+        from { opacity: 0; backdrop-filter: blur(0px); }
+        to { opacity: 1; backdrop-filter: blur(12px); }
     }
-    
     .modal { 
-        width: 520px; 
+        width: 500px; 
         max-width: 95vw; 
         position: relative; 
         animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; 
@@ -1897,18 +1766,16 @@
         display: flex; 
         flex-direction: column;
         background: linear-gradient(135deg, 
-            rgba(255, 255, 255, 0.12) 0%, 
-            rgba(255, 255, 255, 0.06) 100%);
-        backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+            rgba(var(--rgb-primary), 0.05) 0%, 
+            rgba(var(--rgb-secondary), 0.03) 100%);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: var(--border-radius-xl);
         box-shadow: 
-            0 25px 50px rgba(0, 0, 0, 0.25),
-            0 0 0 1px rgba(255, 255, 255, 0.05),
+            0 20px 60px rgba(0, 0, 0, 0.5),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
         overflow: hidden;
     }
-    
     .modal::before {
         content: '';
         position: absolute;
@@ -1945,14 +1812,15 @@
         top: var(--spacing-md); 
         right: var(--spacing-md); 
         background: rgba(255, 255, 255, 0.05); 
+        backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1); 
-        color: var(--color-text-secondary); 
+        color: var(--color-text-muted); 
         font-size: 1.4rem; 
         line-height: 1; 
         cursor: pointer; 
-        padding: 0; 
-        border-radius: var(--border-radius-md);
-        transition: all 0.2s ease; 
+        padding: var(--spacing-xs); 
+        border-radius: var(--border-radius-round);
+        transition: var(--transition-fast); 
         z-index: 10;
         width: 32px;
         height: 32px;
@@ -1960,15 +1828,11 @@
         align-items: center;
         justify-content: center;
     }
-    
     .close-modal:hover { 
-        color: var(--color-text-primary); 
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    .close-modal:active {
-        background: rgba(255, 255, 255, 0.15);
+        color: var(--color-error); 
+        background: rgba(var(--rgb-error), 0.1);
+        border-color: rgba(var(--rgb-error), 0.3);
+        transform: scale(1.1) rotate(90deg);
     }
     .modal form { margin-top: var(--spacing-sm); }
     .modal .form-actions { 
@@ -2005,167 +1869,6 @@
     /* Убираем стандартную стрелку у оригинального селекта, когда используется Select2 */
     select.select2-hidden-accessible { background-image: none !important; }
     /* === Конец стилей для Select2 === */
-
-    /* === КАСТОМНЫЕ УВЕДОМЛЕНИЯ === */
-    .notification-backdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(8px);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-        animation: fadeIn 0.3s ease;
-    }
-
-    .notification-modal {
-        background: linear-gradient(135deg, 
-            rgba(255, 255, 255, 0.15) 0%, 
-            rgba(255, 255, 255, 0.08) 100%);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: var(--border-radius-xl);
-        padding: var(--spacing-xl);
-        max-width: 400px;
-        width: 90%;
-        box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        animation: slideIn 0.3s ease;
-        text-align: center;
-    }
-
-    .notification-icon {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto var(--spacing-md);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        animation: iconPulse 0.5s ease;
-    }
-
-    .notification-icon.success {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        color: white;
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
-    }
-
-    .notification-icon.error {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
-        box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-    }
-
-    .notification-icon.warning {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
-        box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
-    }
-
-    .notification-icon.info {
-        background: linear-gradient(135deg, var(--color-primary-base), var(--color-primary-light));
-        color: white;
-        box-shadow: 0 0 20px rgba(var(--rgb-primary), 0.4);
-    }
-
-    .notification-icon.question {
-        background: linear-gradient(135deg, var(--color-secondary-base), var(--color-secondary-light));
-        color: white;
-        box-shadow: 0 0 20px rgba(var(--rgb-secondary), 0.4);
-    }
-
-    .notification-title {
-        font-size: 1.4rem;
-        font-weight: var(--font-weight-bold);
-        color: var(--color-text-primary);
-        margin-bottom: var(--spacing-sm);
-    }
-
-    .notification-message {
-        font-size: 1rem;
-        color: var(--color-text-secondary);
-        line-height: 1.5;
-        margin-bottom: var(--spacing-lg);
-    }
-
-    .notification-buttons {
-        display: flex;
-        gap: var(--spacing-sm);
-        justify-content: center;
-    }
-
-    .notification-btn {
-        padding: var(--spacing-sm) var(--spacing-lg);
-        border: none;
-        border-radius: var(--border-radius-md);
-        font-size: 0.9rem;
-        font-weight: var(--font-weight-semibold);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 80px;
-    }
-
-    .notification-btn.primary {
-        background: linear-gradient(135deg, var(--color-primary-base), var(--color-primary-light));
-        color: white;
-        box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.3);
-    }
-
-    .notification-btn.primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(var(--rgb-primary), 0.4);
-    }
-
-    .notification-btn.secondary {
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--color-text-primary);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .notification-btn.secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: translateY(-1px);
-    }
-
-    .notification-btn.danger {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-    }
-
-    .notification-btn.danger:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes slideIn {
-        from { 
-            transform: scale(0.8) translateY(20px); 
-            opacity: 0; 
-        }
-        to { 
-            transform: scale(1) translateY(0); 
-            opacity: 1; 
-        }
-    }
-
-    @keyframes iconPulse {
-        0% { transform: scale(0.8); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
 
     /* === Адаптивность и Скроллбар === */
     @media (max-width: 768px) { 
@@ -2460,42 +2163,18 @@
                 <img src="<%= team.logo || '/none.png' %>" alt="<%= team.name %>" class="team-logo" onerror="this.src='/none.png'">
                 <div class="team-info">
                   <h4><%= team.name %></h4>
-                  <div class="team-stats">
-                    <span class="player-count">
-                      <i class="fas fa-users"></i>
-                      <%= teamPlayers.length %> игроков
-                    </span>
+                  <div class="team-matches">
+                    <span>📊</span>
+                    <%= teamPlayers.length %> players
                   </div>
                 </div>
               </div>
-              
-              <% if (teamPlayers.length > 0) { %>
-              <div class="team-players">
-                <div class="players-title">Состав команды:</div>
-                <div class="players-list">
-                  <% teamPlayers.forEach(player => { %>
-                  <div class="player-item">
-                    <img src="<%= player.photo || '/none.png' %>" alt="<%= player.name %>" class="player-avatar" onerror="this.src='/none.png'">
-                    <span class="player-name"><%= player.name %></span>
-                  </div>
-                  <% }); %>
-                </div>
-              </div>
-              <% } else { %>
-              <div class="team-players">
-                <div class="no-players">
-                  <i class="fas fa-user-plus"></i>
-                  Нет игроков в команде
-                </div>
-              </div>
-              <% } %>
-              
               <div class="team-actions">
-                <button class="edit-btn" data-team-id="<%= team.id %>" onclick="editTeam('<%= team.id %>')">
-                  <i class="fas fa-edit"></i> Редактировать
+                <button class="edit-btn" onclick="editTeam('<%= team.name %>')">
+                  <span>✏️</span> Edit
                 </button>
-                <button class="delete-btn" data-team-id="<%= team.id %>" onclick="deleteTeam('<%= team.id %>')">
-                  <i class="fas fa-trash"></i> Удалить
+                <button class="delete-btn" onclick="deleteTeam('<%= team.name %>')">
+                  <span>🗑️</span> Delete
                 </button>
               </div>
             </div>
@@ -2573,106 +2252,6 @@
     function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); if (editMode && playerData) { $("#playerId").val(playerData.id); $("#playerName").val(playerData.name); $("#playerSteamId").val(playerData.steamId); $("#playerPhoto").val(playerData.photo); setTimeout(() => { $('#playerTeamId').val(playerData.teamId).trigger('change'); }, 50); } else { setTimeout(() => { $('#playerTeamId').val("").trigger('change'); }, 50); } $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
     function hidePlayerModal() {$("#playerModalBackdrop").fadeOut(200, function() {$(this).hide();$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); $('#playerTeamId').val("").trigger('change'); });}
 
-    // === КАСТОМНЫЕ УВЕДОМЛЕНИЯ ===
-    function showNotification(type, title, message, buttons = null) {
-        const backdrop = $("#notification-backdrop");
-        const iconElement = $("#notification-icon-element");
-        const iconContainer = $("#notification-icon");
-        const titleElement = $("#notification-title");
-        const messageElement = $("#notification-message");
-        const buttonsContainer = $("#notification-buttons");
-
-        // Устанавливаем иконку и класс
-        let icon;
-        switch(type) {
-            case 'success':
-                icon = 'fas fa-check';
-                break;
-            case 'error':
-                icon = 'fas fa-times';
-                break;
-            case 'warning':
-                icon = 'fas fa-exclamation-triangle';
-                break;
-            case 'info':
-                icon = 'fas fa-info';
-                break;
-            case 'question':
-                icon = 'fas fa-question';
-                break;
-            default:
-                icon = 'fas fa-info';
-        }
-
-        iconElement.attr('class', icon);
-        iconContainer.attr('class', 'notification-icon ' + type);
-        titleElement.text(title);
-        messageElement.text(message);
-
-        // Создаем кнопки
-        buttonsContainer.empty();
-        if (buttons && buttons.length > 0) {
-            buttons.forEach(button => {
-                const btn = $(`<button class="notification-btn ${button.class || 'secondary'}">${button.text}</button>`);
-                btn.click(function() {
-                    hideNotification();
-                    if (button.callback) {
-                        button.callback();
-                    }
-                });
-                buttonsContainer.append(btn);
-            });
-        } else {
-            // Кнопка по умолчанию
-            const okBtn = $('<button class="notification-btn primary">OK</button>');
-            okBtn.click(hideNotification);
-            buttonsContainer.append(okBtn);
-        }
-
-        backdrop.css('display', 'flex').hide().fadeIn(300);
-    }
-
-    function hideNotification() {
-        $("#notification-backdrop").fadeOut(200);
-    }
-
-    // Вспомогательные функции для быстрого вызова
-    function showSuccess(title, message, callback = null) {
-        const buttons = callback ? [
-            { text: 'OK', class: 'primary', callback: callback }
-        ] : null;
-        showNotification('success', title, message, buttons);
-    }
-
-    function showError(title, message, callback = null) {
-        const buttons = callback ? [
-            { text: 'OK', class: 'primary', callback: callback }
-        ] : null;
-        showNotification('error', title, message, buttons);
-    }
-
-    function showConfirm(title, message, onConfirm, onCancel = null) {
-        const buttons = [
-            { text: 'Отмена', class: 'secondary', callback: onCancel },
-            { text: 'Подтвердить', class: 'danger', callback: onConfirm }
-        ];
-        showNotification('question', title, message, buttons);
-    }
-
-    function showInfo(title, message, callback = null) {
-        const buttons = callback ? [
-            { text: 'OK', class: 'primary', callback: callback }
-        ] : null;
-        showNotification('info', title, message, buttons);
-    }
-
-    // Закрытие по клику на backdrop
-    $("#notification-backdrop").click(function(e) {
-        if ($(e.target).is("#notification-backdrop")) {
-            hideNotification();
-        }
-    });
-
     // --- Login Logic ---
     const CORRECT_USERNAME = "admin";
     const CORRECT_PASSWORD = "admin";
@@ -2720,175 +2299,28 @@
         location.reload();
     };
 
-    // Обработчики для кнопок модальных окон
-    $(document).ready(function() {
-        $("#btn-show-team-modal").click(function() {
-            console.log("Opening team creation modal");
-            showTeamModal(false);
-        });
+    window.editTeam = function(teamName) {
+        alert('Edit team: ' + teamName);
+    };
 
-        $("#btn-show-player-modal").click(function() {
-            console.log("Opening player creation modal");
-            // Сначала загружаем команды для селекта
-            $.get("/api/teams", function(teams) {
-                const teamSelect = $("#playerTeamId");
-                teamSelect.empty();
-                teamSelect.append(new Option("-- Без команды --", "", false, false));
-                
-                teams.forEach(function(team) {
-                    const option = new Option(team.name, team.id, false, false);
-                    teamSelect.append(option);
-                });
-                
-                showPlayerModal(false);
-            }).fail(function() {
-                showError("Ошибка", "Не удалось загрузить команды. Данные игрока могут быть неполными.");
-                showPlayerModal(false);
-            });
-        });
-        
-        // Обработчики для закрытия модальных окон
-        $("#closeTeamModal").click(function() {
-            console.log("Closing team modal via close button");
-            hideTeamModal();
-        });
-        
-        $("#closePlayerModal").click(function() {
-            console.log("Closing player modal via close button");
-            hidePlayerModal();
-        });
-        
-        // Закрытие по клику на backdrop
-        $(".modal-backdrop").click(function(e) {
-            if ($(e.target).hasClass("modal-backdrop")) {
-                console.log("Closing modal via backdrop click");
-                if ($(this).attr("id") === "teamModalBackdrop") {
-                    hideTeamModal();
-                } else if ($(this).attr("id") === "playerModalBackdrop") {
-                    hidePlayerModal();
-                }
-            }
-        });
-        
-        // Закрытие по Escape
-        $(document).keydown(function(e) {
-            if (e.key === "Escape") {
-                if ($("#teamModalBackdrop").is(":visible")) {
-                    console.log("Closing team modal via Escape key");
-                    hideTeamModal();
-                }
-                if ($("#playerModalBackdrop").is(":visible")) {
-                    console.log("Closing player modal via Escape key");
-                    hidePlayerModal();
-                }
-            }
-        });
-        
-        // === ПОИСК КОМАНД ===
-        $("#teamSearch").on("input", function() {
-            const searchTerm = $(this).val().toLowerCase().trim();
-            const teamCards = $(".team-card");
-            
-            teamCards.each(function() {
-                const teamName = $(this).find("h4").text().toLowerCase();
-                if (teamName.includes(searchTerm)) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-            
-            // Обновляем счетчики
-            const visibleCount = teamCards.filter(":visible").length;
-            const totalCount = teamCards.length;
-            
-            if (searchTerm && visibleCount !== totalCount) {
-                $(".teams-count").text(visibleCount + "/" + totalCount);
-            } else {
-                $(".teams-count").text(totalCount);
-            }
-        });
-        
-        // === ОБРАБОТЧИКИ ФОРМ ===
-        $("#teamForm").on("submit", function(e) {
-            e.preventDefault();
-            console.log("Team form submitted");
-            
-            const id = $("#teamId").val();
-            const name = $("#teamName").val().trim();
-            const logo = $("#teamLogo").val().trim();
-            
-            if (!name) {
-                showError("Ошибка", "Пожалуйста, введите название команды.");
-                return;
-            }
-            
-            const url = id ? "/api/teams/" + id : "/api/teams";
-            const method = id ? "PUT" : "POST";
-            const data = { name, logo };
-            
-            $.ajax({
-                url: url,
-                type: method,
-                data: data,
-                success: function(response) {
-                    console.log("Team saved successfully:", response);
-                    hideTeamModal();
-                    showSuccess("Успех", "Команда успешно сохранена!", function() {
-                        location.reload();
-                    });
-                },
-                error: function(xhr) {
-                    console.error("Error saving team:", xhr);
-                    const message = xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText;
-                    showError("Ошибка", "Ошибка при сохранении команды: " + message);
-                }
-            });
-        });
-        
-        $("#playerForm").on("submit", function(e) {
-            e.preventDefault();
-            console.log("Player form submitted");
-            
-            const id = $("#playerId").val();
-            const name = $("#playerName").val().trim();
-            const steamId = $("#playerSteamId").val().trim();
-            const photo = $("#playerPhoto").val().trim();
-            const teamId = $("#playerTeamId").val() || null;
-            
-            if (!name) {
-                showError("Ошибка", "Пожалуйста, введите имя игрока.");
-                return;
-            }
-            
-            const url = id ? "/api/players/" + id : "/api/players";
-            const method = id ? "PUT" : "POST";
-            const data = { name, steamId, photo, teamId };
-            
-            $.ajax({
-                url: url,
-                type: method,
-                data: data,
-                success: function(response) {
-                    console.log("Player saved successfully:", response);
-                    hidePlayerModal();
-                    showSuccess("Успех", "Игрок успешно сохранен!", function() {
-                        location.reload();
-                    });
-                },
-                error: function(xhr) {
-                    console.error("Error saving player:", xhr);
-                    const message = xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText;
-                    showError("Ошибка", "Ошибка при сохранении игрока: " + message);
-                }
-            });
-        });
-        
-        // === ЗАГРУЗКА ФАЙЛОВ ===
-        $("#uploadTeamLogoBtn").click(function() {
+    window.deleteTeam = function(teamName) {
+        if (confirm('Delete team: ' + teamName + '?')) {
+            alert('Team deleted (demo)');
+        }
+    };
+  </script>
+</body>
+</html>
+
+        $("#closeTeamModal").off('click').on('click', function(){ hideTeamModal(); });
+        $("#closePlayerModal").off('click').on('click', function(){ hidePlayerModal(); });
+        $(document).off("click", ".modal-backdrop").on("click", ".modal-backdrop", function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
+
+        // AJAX Запросы
+        $("#uploadTeamLogoBtn").off('click').on('click', function(){
             const fileInput = $("#teamLogoFile")[0];
             if (!fileInput.files.length) {
-                showError("Ошибка", "Пожалуйста, выберите файл логотипа.");
+                alert("Please select a logo file first.");
                 return;
             }
             
@@ -2903,18 +2335,18 @@
                 processData: false,
                 success: function(response) {
                     $("#teamLogo").val(response.path);
-                    showSuccess("Успех", "Логотип загружен. Путь: " + response.path);
+                    alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes.");
                 },
                 error: function() {
-                    showError("Ошибка", "Ошибка при загрузке логотипа. Попробуйте еще раз или введите URL вручную.");
+                    alert("Error uploading logo. Please try again or enter URL manually.");
                 }
             });
         });
         
-        $("#uploadPlayerPhotoBtn").click(function() {
+        $("#uploadPlayerPhotoBtn").off('click').on('click', function(){
             const fileInput = $("#playerPhotoFile")[0];
             if (!fileInput.files.length) {
-                showError("Ошибка", "Пожалуйста, выберите файл фотографии.");
+                alert("Please select a photo file first.");
                 return;
             }
             
@@ -2929,78 +2361,336 @@
                 processData: false,
                 success: function(response) {
                     $("#playerPhoto").val(response.path);
-                    showSuccess("Успех", "Фотография загружена. Путь: " + response.path);
+                    alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes.");
                 },
                 error: function() {
-                    showError("Ошибка", "Ошибка при загрузке фотографии. Попробуйте еще раз или введите URL вручную.");
+                    alert("Error uploading photo. Please try again or enter URL manually.");
                 }
             });
         });
-    });
-
-    window.editTeam = function(teamId) {
-        console.log("Editing team with ID:", teamId);
+        $("#teamForm").off('submit').on('submit', function(e){ 
+            e.preventDefault(); 
+            const id = $("#teamId").val(); 
+            const name = $("#teamName").val(); 
+            const logo = $("#teamLogo").val(); 
+            const url = id ? "/api/teams/" + id : "/api/teams"; 
+            const type = id ? "PUT" : "POST"; 
+            const data = { name, logo }; 
+            $.ajax({ 
+                url: url, 
+                type: type, 
+                data: data, 
+                success: function(){ 
+                    hideTeamModal(); 
+                    location.reload(); 
+                }, 
+                error: function(xhr) { 
+                    alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
+                } 
+            }); 
+        });
         
-        // Найдем данные команды через AJAX
-        $.get("/api/teams/" + teamId, function(team) {
-            console.log("Team data received:", team);
-            if (team) {
-                showTeamModal(true, team);
+        $("#playerForm").off('submit').on('submit', function(e){ 
+            e.preventDefault(); 
+            const id = $("#playerId").val(); 
+            const name = $("#playerName").val(); 
+            const steamId = $("#playerSteamId").val(); 
+            const photo = $("#playerPhoto").val(); 
+            const teamId = $("#playerTeamId").val() || null; 
+            const url = id ? "/api/players/" + id : "/api/players"; 
+            const type = id ? "PUT" : "POST"; 
+            $.ajax({ 
+                url: url, 
+                type: type, 
+                data: { name, steamId, photo, teamId }, 
+                success: function(){ 
+                    hidePlayerModal(); 
+                    location.reload(); 
+                }, 
+                error: function(xhr) { 
+                    alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
+                } 
+            }); 
+        });
+
+        // Редактирование и удаление команд
+        $(document).off("click", ".editTeam").on("click", ".editTeam", function(){ 
+            const teamId = $(this).closest(".team-card").data("id"); 
+            $.get("/api/teams/" + teamId, function(team){ 
+                if(team){ 
+                    showTeamModal(true, team); 
+                } else { 
+                    alert("Team data not found."); 
+                } 
+            }).fail(function(){ 
+                alert("Could not fetch team data for editing."); 
+            }); 
+        });
+        
+        $(document).off("click", ".deleteTeam").on("click", ".deleteTeam", function(){ 
+            const card = $(this).closest(".team-card"); 
+            const teamName = card.find("h2").text(); 
+            const teamId = card.data("id"); 
+            if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ 
+                $.ajax({ 
+                    url: "/api/teams/" + teamId, 
+                    type: "DELETE", 
+                    success: function(){ 
+                        location.reload(); 
+                    }, 
+                    error: function(xhr) { 
+                        alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
+                    } 
+                }); 
+            } 
+        });
+        
+        // Редактирование и удаление игроков
+        $(document).off("click", ".editPlayer").on("click", ".editPlayer", function(){
+            const playerId = $(this).closest(".player-row").data("id");
+            
+            // Сначала загружаем команды для селекта
+            $.get("/api/teams", function(teams) {
+                const teamSelect = $("#playerTeamId");
+                teamSelect.empty();
+                teamSelect.append(new Option("-- No Team --", "", false, false));
+                teams.forEach(function(team) {
+                    const option = new Option(team.name, team.id, false, false);
+                    teamSelect.append(option);
+                });
+                
+                // Затем загружаем данные игрока
+                $.get("/api/players/" + playerId, function(player){ 
+                    if(player){ 
+                        showPlayerModal(true, player); 
+                    } else { 
+                        alert("Player data not found."); 
+                    } 
+                }).fail(function(){ 
+                    alert("Could not fetch player data for editing."); 
+                });
+            }).fail(function() { 
+                alert("Could not load teams. Player data might be incomplete."); 
+            });
+        });
+        
+        $(document).off("click", ".deletePlayer").on("click", ".deletePlayer", function(){ 
+            const row = $(this).closest(".player-row"); 
+            const playerName = row.find(".player-name").text(); 
+            const playerId = row.data("id"); 
+            if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ 
+                $.ajax({ 
+                    url: "/api/players/" + playerId, 
+                    type: "DELETE", 
+                    success: function(){ 
+                        location.reload(); 
+                    }, 
+                    error: function(xhr) { 
+                        alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
+                    } 
+                }); 
+            } 
+        });
+
+        // === Начало: Логика сортировки и поиска команд ===
+        console.log("Setting up sorting and search logic...");
+        function sortAndDisplayTeams() {
+            console.log("Sorting and filtering teams...");
+            const sortBy = $('#sortTeams').val() || 'name';
+            const searchTerm = $('#teamSearch').val().toLowerCase().trim();
+            const teamsContainer = $('.teams-list');
+            let teamCards = teamsContainer.find('.team-card').get();
+            
+            // Фильтрация по поиску
+            let filteredCards = teamCards;
+            if (searchTerm) {
+                filteredCards = teamCards.filter(function(card) {
+                    const teamName = $(card).find('h4').text().toLowerCase();
+                    return teamName.includes(searchTerm);
+                });
+            }
+            
+            // Сортировка отфильтрованных карточек
+            filteredCards.sort(function(a, b) {
+                let valA, valB;
+                const nameA = $(a).find('h4').text();
+                const nameB = $(b).find('h4').text();
+                const matchesA = parseInt($(a).find('.team-matches').text().match(/\d+/) || [0]);
+                const matchesB = parseInt($(b).find('.team-matches').text().match(/\d+/) || [0]);
+                
+                switch (sortBy) {
+                    case 'name': 
+                        return nameA.localeCompare(nameB);
+                    case 'newest':
+                    case 'oldest':
+                        // Для простоты сортируем по имени
+                        return nameA.localeCompare(nameB);
+                    case 'matches':
+                        return matchesB - matchesA;
+                    default: 
+                        return nameA.localeCompare(nameB);
+                }
+            });
+            
+            // Скрытие всех карточек
+            $(teamCards).hide();
+            
+            // Показ отфильтрованных карточек
+            teamsContainer.empty();
+            if (filteredCards.length > 0) {
+                $.each(filteredCards, function(i, card) { 
+                    $(card).show();
+                    teamsContainer.append(card); 
+                });
+            } else if (searchTerm) {
+                // Показать сообщение о том, что ничего не найдено
+                teamsContainer.html(`
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-title">Команды не найдены</div>
+                        <div class="empty-description">Попробуйте изменить поисковый запрос</div>
+                    </div>
+                `);
             } else {
-                showError("Данные команды не найдены.");
+                // Показать все карточки если поиск пустой
+                $.each(teamCards, function(i, card) { 
+                    $(card).show();
+                    teamsContainer.append(card); 
+                });
             }
-        }).fail(function(xhr) {
-            console.error("Failed to fetch team data:", xhr);
-            showError("Ошибка при получении данных команды.");
-        });
-    };
-
-    window.deleteTeam = function(teamId) {
-        console.log("Deleting team with ID:", teamId);
+            
+            // Обновить счетчики
+            updateCounters();
+        }
+                    teamsGrid.append(card); 
+                });
+            }
+            
+            // Обновить счетчики
+            updateCounters();
+        }
         
-        // Получим название команды для подтверждения
-        $.get("/api/teams/" + teamId, function(team) {
-            if (team) {
-                showConfirm(
-                    "Удаление команды",
-                    `Вы уверены, что хотите удалить команду "${team.name}"? Это также отвяжет всех её игроков.`,
-                    function() {
-                        // Подтверждение удаления
-                        $.ajax({
-                            url: "/api/teams/" + teamId,
-                            type: "DELETE",
-                            success: function() {
-                                console.log("Team deleted successfully");
-                                showSuccess("Успех", "Команда успешно удалена!", function() {
-                                    location.reload();
-                                });
-                            },
-                            error: function(xhr) {
-                                console.error("Failed to delete team:", xhr);
-                                showError("Ошибка", "Ошибка при удалении команды: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
-                            }
-                        });
-                    }
-                );
+        // Обработчики событий
+        $('#sortTeams').off('change').on('change', function() { sortAndDisplayTeams(); });
+        
+        // Поиск в реальном времени
+        $('#teamSearch').off('input').on('input', function() { 
+            const searchValue = $(this).val();
+            const clearBtn = $('.clear-btn');
+            
+            if (searchValue.trim()) {
+                clearBtn.addClass('visible');
+            } else {
+                clearBtn.removeClass('visible');
             }
-        }).fail(function(xhr) {
-            console.error("Failed to fetch team data for deletion:", xhr);
-            showError("Ошибка", "Ошибка при получении данных команды для удаления.");
+            
+            sortAndDisplayTeams(); 
         });
-    };
+        
+        // Кнопка очистки поиска
+        $('.clear-btn').off('click').on('click', function() {
+            $('#teamSearch').val('').trigger('input');
+            $(this).removeClass('visible');
+        });
+        
+        if ($('#teamsGrid .team-card').length > 0) { sortAndDisplayTeams(); }
+        // === Конец: Логика сортировки и поиска команд ===
+        
+        // === Функции для кнопок действий ===
+        window.openAddTeamModal = function() {
+            showTeamModal(false);
+        };
+        
+        window.openEditTeamModal = function() {
+            // Здесь можно добавить логику выбора команды для редактирования
+            alert('Выберите команду для редактирования из списка ниже');
+        };
+        
+        window.editTeam = function(teamName) {
+            // Найти данные команды из существующих карточек
+            const teamCards = document.querySelectorAll('.team-card');
+            let teamData = null;
+            
+            teamCards.forEach(card => {
+                const cardTeamName = card.querySelector('h4').textContent;
+                if (cardTeamName === teamName) {
+                    const logo = card.querySelector('.team-logo').src;
+                    teamData = {
+                        name: teamName,
+                        logo: logo
+                    };
+                }
+            });
+            
+            if (teamData) {
+                showTeamModal(true, teamData);
+            }
+        };
+        
+        window.deleteTeam = function(teamName) {
+            if (confirm(`Вы уверены, что хотите удалить команду "${teamName}"?`)) {
+                fetch('/delete-team', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ teamName: teamName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Ошибка при удалении команды: ' + (data.error || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при удалении команды');
+                });
+            }
+        };
+        
+        // === Переключение видов (если понадобится в будущем) ===
+        $('.view-btn').off('click').on('click', function() {
+            $('.view-btn').removeClass('active');
+            $(this).addClass('active');
+            
+            const view = $(this).data('view');
+            if (view === 'list') {
+                $('.teams-list').addClass('list-view');
+            } else {
+                $('.teams-list').removeClass('list-view');
+            }
+        });
+        
+        // === Обновление счетчиков при инициализации ===
+        updateCounters();
+        
+        // === Функция обновления счетчиков ===
+        function updateCounters() {
+          const visibleTeamsCount = $('.teams-list .team-card:visible').length;
+          const totalTeamsCount = $('.teams-list .team-card').length;
+          const playersCount = $('.player-row').length;
+          
+          // Обновляем счетчик команд с индикацией фильтрации
+          const searchTerm = $('#teamSearch').val().trim();
+          if (searchTerm && visibleTeamsCount !== totalTeamsCount) {
+            $('.teams-count').html(`${visibleTeamsCount}/${totalTeamsCount}`);
+          } else {
+            $('.teams-count').text(totalTeamsCount);
+          }
+          
+          // Обновляем статистику в панели управления
+          $('.stat-number').eq(0).text(totalTeamsCount);
+          $('.stat-number').eq(1).text(playersCount);
+          
+          console.log(`Counters updated: ${visibleTeamsCount}/${totalTeamsCount} teams, ${playersCount} players`);
+        }
+        
+        console.log("Admin Panel Initialized.");
+      } // Конец initializeAdminPanel
+    }); // Конец document.ready
   </script>
-
-  <!-- Кастомные уведомления -->
-  <div id="notification-backdrop" class="notification-backdrop">
-    <div class="notification-modal">
-      <div id="notification-icon" class="notification-icon">
-        <i id="notification-icon-element"></i>
-      </div>
-      <div id="notification-title" class="notification-title"></div>
-      <div id="notification-message" class="notification-message"></div>
-      <div id="notification-buttons" class="notification-buttons"></div>
-    </div>
-  </div>
-
 </body>
 </html>
