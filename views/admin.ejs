@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -6,7 +6,51 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnec        .sorting-controls-con    .sorting-control    .sorting-controls-container .control-select {
+        width: auto;
+        min-width: 160px;
+        margin-bottom: 0 !important;
+        margin-right: var(--spacing-sm);
+        flex-shrink: 0;
+    }tainer label {
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+        color: var(--color-text-secondary);
+        font-size: 0.9rem;
+        font-weight: var(--font-weight-medium);
+        white-space: nowrap;
+        flex-shrink: 0;
+        display: inline-block;
+    }   .sorting-controls-container .control-select {
+        width: auto;
+        min-width: 160px;
+        margin-bottom: 0;
+        margin-right: var(--spacing-md);
+    }l {
+        margin-bottom: 0;
+        margin-top: 0;
+        color: var(--color-text-secondary);
+        font-size: 0.9rem;
+        font-weight: var(--font-weight-medium);
+        flex-shrink: 0;
+        white-space: nowrap;
+    }   .sorting-controls-container .control-select {
+        width: auto;
+        min-width: 180px;
+        max-width: 220px;
+        margin-bottom: 0;
+    }ntainer label {
+        margin-bottom: 0;
+        margin-top: 0;
+        color: var(--color-text-secondary);
+        font-size: 0.9rem;
+        font-weight: var(--font-weight-medium);
+        flex-shrink: 0;
+    }   .sorting-controls-container .control-select {
+        width: 100%;
+        min-width: 200px;
+        margin-bottom: 0;
+    }tps://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -14,7 +58,7 @@
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
   <style>
-    /* === ОСНОВНЫЕ СТИЛИ === */
+    /* === ÐžÐ¡ÐÐžÐ’ÐÐ«Ð• Ð¡Ð¢Ð˜Ð›Ð˜ === */
     :root {
         --font-family-base: 'Inter', sans-serif;
         --font-weight-light: 300;
@@ -42,7 +86,7 @@
         --color-secondary-base: #7A64B9;
         --color-secondary-light: #7A64B9;
         --color-secondary-dark: #50467A;
-        --rgb-secondary: 14, 165, 233; /* Был 122, 100, 185, изменил для контраста с primary glow */
+        --rgb-secondary: 14, 165, 233; /* Ð‘Ñ‹Ð» 122, 100, 185, Ð¸Ð·Ð¼ÐµÐ½Ð¸Ð» Ð´Ð»Ñ ÐºÐ¾Ð½Ñ‚Ñ€Ð°ÑÑ‚Ð° Ñ primary glow */
         --glow-secondary: 0 0 15px rgba(var(--rgb-secondary), 0.7), 0 0 30px rgba(var(--rgb-secondary), 0.5);
         --text-shadow-secondary: 0 0 10px rgba(var(--rgb-secondary), 0.8);
         --color-success: #22c55e;
@@ -119,28 +163,28 @@
     .app-button.danger, button.danger { background-color: transparent; border-color: var(--color-error); color: var(--color-error); box-shadow: 0 2px 5px rgba(var(--rgb-error),0.2); }
     .app-button.danger:hover, button.danger:hover { background-color: var(--color-error); color: var(--color-text-on-accent); border-color: var(--color-error-dark); box-shadow: var(--glow-error), 0 0 15px rgba(var(--rgb-error),0.3) inset; }
     .top-buttons { text-align: center; margin-bottom: var(--spacing-lg); display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; }
-    /* === КОНЕЦ ОСНОВНЫХ СТИЛЕЙ === */
+    /* === ÐšÐžÐÐ•Ð¦ ÐžÐ¡ÐÐžÐ’ÐÐ«Ð¥ Ð¡Ð¢Ð˜Ð›Ð•Ð™ === */
 
-    /* === Стили для сетки команд (макс. 6 колонок) === */
+    /* === Ð¡Ñ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ ÑÐµÑ‚ÐºÐ¸ ÐºÐ¾Ð¼Ð°Ð½Ð´ (Ð¼Ð°ÐºÑ. 6 ÐºÐ¾Ð»Ð¾Ð½Ð¾Ðº) === */
     .admin-teams-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-lg); }
     @media (min-width: 768px) { .admin-teams-grid { grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); } }
     @media (min-width: 992px) { .admin-teams-grid { grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); } }
     @media (min-width: 1400px) { .admin-teams-grid { grid-template-columns: repeat(6, 1fr); gap: var(--spacing-sm); } }
-    /* === Конец стилей для сетки === */
+    /* === ÐšÐ¾Ð½ÐµÑ† ÑÑ‚Ð¸Ð»ÐµÐ¹ Ð´Ð»Ñ ÑÐµÑ‚ÐºÐ¸ === */
 
-    /* === Компактные стили для карточки === */
+    /* === ÐšÐ¾Ð¼Ð¿Ð°ÐºÑ‚Ð½Ñ‹Ðµ ÑÑ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ ÐºÐ°Ñ€Ñ‚Ð¾Ñ‡ÐºÐ¸ === */
     .team-card { padding: var(--spacing-sm); }
-    .team-card h2 { font-size: 1.1rem; margin-bottom: var(--spacing-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Уменьшил margin-bottom */
+    .team-card h2 { font-size: 1.1rem; margin-bottom: var(--spacing-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Ð£Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð» margin-bottom */
     .team-logo { max-height: 60px; margin-bottom: var(--spacing-sm); object-fit: contain; }
     .team-card .no-logo-text { text-align:center; color: var(--color-text-muted); margin-bottom: var(--spacing-sm); font-style: italic; font-size: 0.9rem; }
-    /* НОВЫЙ СТИЛЬ: Информация для сортировки */
+    /* ÐÐžÐ’Ð«Ð™ Ð¡Ð¢Ð˜Ð›Ð¬: Ð˜Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð´Ð»Ñ ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸ */
     .team-info-sort { font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: var(--spacing-sm); line-height: 1.3; }
     .team-info-sort span { display: block; }
     .team-actions { gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex-shrink: 0; }
     .team-actions .app-button.small { font-size: 0.75rem; padding: var(--spacing-xs); }
-    /* === Конец компактных стилей === */
+    /* === ÐšÐ¾Ð½ÐµÑ† ÐºÐ¾Ð¼Ð¿Ð°ÐºÑ‚Ð½Ñ‹Ñ… ÑÑ‚Ð¸Ð»ÐµÐ¹ === */
 
-    /* === Стили для прокручиваемого списка игроков === */
+    /* === Ð¡Ñ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ Ð¿Ñ€Ð¾ÐºÑ€ÑƒÑ‡Ð¸Ð²Ð°ÐµÐ¼Ð¾Ð³Ð¾ ÑÐ¿Ð¸ÑÐºÐ° Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð² === */
     .team-card .player-list-wrapper { max-height: 190px; overflow-y: auto; margin-top: auto; padding-top: var(--spacing-sm); border-top: 1px solid var(--color-divider); padding-right: var(--spacing-xs); scrollbar-width: thin; scrollbar-color: var(--color-primary-base) var(--color-surface-secondary); }
     .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .team-card .player-list-wrapper.styled-scrollbar::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: var(--border-radius-sm); }
@@ -149,9 +193,9 @@
     .team-card .players-list { margin-top: 0; padding-top: 0; border-top: none; padding-bottom: var(--spacing-xs); }
     .player-row:last-child { margin-bottom: 0; }
     .team-card .player-list-wrapper .no-players { padding: var(--spacing-md) 0; text-align: center; color: var(--color-text-muted); font-style: italic; font-size: 0.85rem; }
-    /* === Конец стилей для прокрутки === */
+    /* === ÐšÐ¾Ð½ÐµÑ† ÑÑ‚Ð¸Ð»ÐµÐ¹ Ð´Ð»Ñ Ð¿Ñ€Ð¾ÐºÑ€ÑƒÑ‚ÐºÐ¸ === */
 
-    /* === Стили для строки игрока === */
+    /* === Ð¡Ñ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ ÑÑ‚Ñ€Ð¾ÐºÐ¸ Ð¸Ð³Ñ€Ð¾ÐºÐ° === */
     .player-row { padding: var(--spacing-xs) var(--spacing-sm); display: flex; align-items: center; background-color: var(--color-surface-secondary); border-radius: var(--border-radius-md); margin-bottom: var(--spacing-sm); border: 1px solid var(--color-border); transition: var(--transition-fast); }
     .player-row:hover { border-color: var(--color-primary-light); background-color: rgba(var(--rgb-primary), 0.05); }
     .player-photo img, .player-photo .no-photo-placeholder { max-height: 35px; width: 35px; height: 35px; font-size: 1rem; margin-right: var(--spacing-sm); border-radius: var(--border-radius-round); border: 1px solid var(--color-border-light); flex-shrink: 0; }
@@ -160,9 +204,9 @@
     .player-actions { gap: var(--spacing-sm); display: flex; flex-shrink: 0; }
     .player-actions .app-button.small i { margin-right: 0; }
     .player-actions .app-button.small { min-width: auto; padding: var(--spacing-xs); line-height: 1; }
-    /* === Конец стилей строки игрока === */
+    /* === ÐšÐ¾Ð½ÐµÑ† ÑÑ‚Ð¸Ð»ÐµÐ¹ ÑÑ‚Ñ€Ð¾ÐºÐ¸ Ð¸Ð³Ñ€Ð¾ÐºÐ° === */
 
-    /* === Стили модальных окон === */
+    /* === Ð¡Ñ‚Ð¸Ð»Ð¸ Ð¼Ð¾Ð´Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð¾ÐºÐ¾Ð½ === */
     .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(var(--rgb-primary), 0.1); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: var(--spacing-md); overflow-y: auto; }
     .modal { width: 500px; max-width: 95vw; position: relative; animation: fadeInModal 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; max-height: 90vh; display: flex; flex-direction: column; }
     .modal-content { overflow-y: auto; padding-right: var(--spacing-xs); flex-grow: 1; }
@@ -172,14 +216,14 @@
     .modal form { margin-top: var(--spacing-md); }
     .modal .form-actions { margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-divider); }
     .modal #uploadTeamLogoBtn, .modal #uploadPlayerPhotoBtn { width: 100%; margin-bottom: var(--spacing-sm); }
-    /* === Конец стилей модальных окон === */
+    /* === ÐšÐ¾Ð½ÐµÑ† ÑÑ‚Ð¸Ð»ÐµÐ¹ Ð¼Ð¾Ð´Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð¾ÐºÐ¾Ð½ === */
 
-    /* === Начало стилей для Select2 === */
-    .select2-container { width: 100% !important; margin-bottom: var(--spacing-sm) !important; } /* Добавлен margin-bottom */
-    .select2-container--default .select2-selection--single { background-color: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); height: calc(1.5em + var(--spacing-sm) * 2 + 2px); padding: 0 var(--spacing-md); /* Убрал верхний/нижний паддинг */ display: flex; align-items: center; }
+    /* === ÐÐ°Ñ‡Ð°Ð»Ð¾ ÑÑ‚Ð¸Ð»ÐµÐ¹ Ð´Ð»Ñ Select2 === */
+    .select2-container { width: 100% !important; margin-bottom: var(--spacing-sm) !important; } /* Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½ margin-bottom */
+    .select2-container--default .select2-selection--single { background-color: var(--color-surface-tertiary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); height: calc(1.5em + var(--spacing-sm) * 2 + 2px); padding: 0 var(--spacing-md); /* Ð£Ð±Ñ€Ð°Ð» Ð²ÐµÑ€Ñ…Ð½Ð¸Ð¹/Ð½Ð¸Ð¶Ð½Ð¸Ð¹ Ð¿Ð°Ð´Ð´Ð¸Ð½Ð³ */ display: flex; align-items: center; }
     .select2-container--default .select2-selection--single:focus,
     .select2-container--default.select2-container--open .select2-selection--single { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset); outline: none; }
-    .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--color-text-primary); line-height: 1.5; padding-left: 0; padding-right: 20px; /* Место для стрелки */ }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--color-text-primary); line-height: 1.5; padding-left: 0; padding-right: 20px; /* ÐœÐµÑÑ‚Ð¾ Ð´Ð»Ñ ÑÑ‚Ñ€ÐµÐ»ÐºÐ¸ */ }
     .select2-container--default .select2-selection--single .select2-selection__placeholder { color: var(--color-text-placeholder); }
     .select2-container--default .select2-selection--single .select2-selection__arrow { height: calc(1.5em + var(--spacing-sm) * 2); position: absolute; top: 1px; right: var(--spacing-sm); width: 20px; }
     .select2-container--default .select2-selection--single .select2-selection__arrow b { border-color: var(--color-text-muted) transparent transparent transparent; border-style: solid; border-width: 5px 4px 0 4px; height: 0; left: 50%; margin-left: -4px; margin-top: -2px; position: absolute; top: 50%; width: 0; }
@@ -191,25 +235,72 @@
     .select2-search--dropdown .select2-search__field { background-color: var(--color-surface-tertiary); border: 1px solid var(--color-border); color: var(--color-text-primary); border-radius: var(--border-radius-sm); padding: var(--spacing-sm); margin: var(--spacing-sm); width: calc(100% - var(--spacing-sm) * 2); }
     .select2-search--dropdown .select2-search__field:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.3), var(--shadow-inset); outline: none; }
     .select2-results__option .select2-results__group { color: var(--color-text-primary); font-weight: var(--font-weight-semibold); }
-    /* Убираем стандартную стрелку у оригинального селекта, когда используется Select2 */
+    /* Ð£Ð±Ð¸Ñ€Ð°ÐµÐ¼ ÑÑ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½ÑƒÑŽ ÑÑ‚Ñ€ÐµÐ»ÐºÑƒ Ñƒ Ð¾Ñ€Ð¸Ð³Ð¸Ð½Ð°Ð»ÑŒÐ½Ð¾Ð³Ð¾ ÑÐµÐ»ÐµÐºÑ‚Ð°, ÐºÐ¾Ð³Ð´Ð° Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Select2 */
     select.select2-hidden-accessible { background-image: none !important; }
-    /* === Конец стилей для Select2 === */
+    /* === ÐšÐ¾Ð½ÐµÑ† ÑÑ‚Ð¸Ð»ÐµÐ¹ Ð´Ð»Ñ Select2 === */
 
-    /* === НОВЫЕ СТИЛИ ДЛЯ СОРТИРОВКИ === */
+    /* === ÐÐžÐ’Ð«Ð• Ð¡Ð¢Ð˜Ð›Ð˜ Ð”Ð›Ð¯ Ð¡ÐžÐ Ð¢Ð˜Ð ÐžÐ’ÐšÐ˜ === */
     .sorting-controls-container {
         background-color: var(--color-surface-secondary);
         padding: var(--spacing-md);
         margin-bottom: var(--spacing-lg);
         border-radius: var(--border-radius-md);
         border: 1px solid var(--color-border);
+        text-align: left;
+        white-space: nowrap;
+        line-height: normal;
+        min-height: 60px;
         display: flex;
         align-items: center;
         gap: var(--spacing-md);
-        flex-wrap: wrap;
+    }
+    .sorting-controls-container * {
+        vertical-align: middle;
+        margin-bottom: 0 !important;
     }
     .sorting-controls-container label {
-        margin-bottom: 0; /* Убираем нижний отступ у label */
-        margin-top: 0; /* Убираем верхний отступ у label */
+        display: inline-block;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .sorting-controls-container select,
+    .sorting-controls-container input {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .search-input-wrapper {
+        position: relative;
+        display: inline-block;
+        min-width: 180px;
+        max-width: 220px;
+    }
+    .search-input-wrapper input {
+        padding-right: 35px;
+    }
+    .clear-search-btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        min-width: auto !important;
+        padding: 4px 8px !important;
+        background: transparent !important;
+        border: none !important;
+        color: var(--color-text-muted);
+        display: none;
+    }
+    .sorting-controls-container .control-group {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-sm);
+        min-width: 0;
+        flex: 0 1 auto;
+        white-space: nowrap;
+    }
+    .sorting-controls-container label {
+        margin-bottom: 0; /* Ð£Ð±Ð¸Ñ€Ð°ÐµÐ¼ Ð½Ð¸Ð¶Ð½Ð¸Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ñƒ label */
+        margin-top: 0; /* Ð£Ð±Ð¸Ñ€Ð°ÐµÐ¼ Ð²ÐµÑ€Ñ…Ð½Ð¸Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ñƒ label */
         color: var(--color-text-secondary);
         font-size: 0.9rem;
         font-weight: var(--font-weight-medium);
@@ -219,21 +310,21 @@
         color: var(--color-primary-light);
     }
     .sorting-controls-container .control-select {
-        width: auto; /* Автоматическая ширина для select */
+        width: auto; /* ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ°Ñ ÑˆÐ¸Ñ€Ð¸Ð½Ð° Ð´Ð»Ñ select */
         min-width: 200px;
-        margin-bottom: 0; /* Убираем нижний отступ у select */
+        margin-bottom: 0; /* Ð£Ð±Ð¸Ñ€Ð°ÐµÐ¼ Ð½Ð¸Ð¶Ð½Ð¸Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ñƒ select */
     }
-    /* === КОНЕЦ СТИЛЕЙ ДЛЯ СОРТИРОВКИ === */
+    /* === ÐšÐžÐÐ•Ð¦ Ð¡Ð¢Ð˜Ð›Ð•Ð™ Ð”Ð›Ð¯ Ð¡ÐžÐ Ð¢Ð˜Ð ÐžÐ’ÐšÐ˜ === */
 
 
-    /* === Адаптивность и Скроллбар === */
+    /* === ÐÐ´Ð°Ð¿Ñ‚Ð¸Ð²Ð½Ð¾ÑÑ‚ÑŒ Ð¸ Ð¡ÐºÑ€Ð¾Ð»Ð»Ð±Ð°Ñ€ === */
     @media (max-width: 768px) { h1 { font-size: 1.6rem; } .modal { width: 90vw; } .page-title-container { justify-content: center; text-align: center; } }
-    @media (max-width: 480px) { .container { padding: var(--spacing-md); } .top-buttons { flex-direction: column; gap: var(--spacing-sm); } .top-buttons .app-button { width: 100%; } .team-actions { flex-direction: column; gap: var(--spacing-sm); } .team-actions .app-button { width: 100%; } .modal .form-actions { flex-direction: column; } .modal .form-actions .app-button { width: 100%; } .page-title-container h1 { font-size: 1.5rem; } .modal .modal-title-text { font-size: 1.3rem; } .sorting-controls-container { flex-direction: column; align-items: stretch;} .sorting-controls-container .control-select { width: 100%;} }
+    @media (max-width: 480px) { .container { padding: var(--spacing-md); } .top-buttons { flex-direction: column; gap: var(--spacing-sm); } .top-buttons .app-button { width: 100%; } .team-actions { flex-direction: column; gap: var(--spacing-sm); } .team-actions .app-button { width: 100%; } .modal .form-actions { flex-direction: column; } .modal .form-actions .app-button { width: 100%; } .page-title-container h1 { font-size: 1.5rem; } .modal .modal-title-text { font-size: 1.3rem; } }
     .styled-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
     .styled-scrollbar::-webkit-scrollbar-track { background: var(--color-surface-secondary); border-radius: var(--border-radius-sm); }
     .styled-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-base); border-radius: var(--border-radius-sm); border: 1px solid var(--color-surface-secondary); }
     .styled-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
-    /* === Конец Адаптивности и Скроллбара === */
+    /* === ÐšÐ¾Ð½ÐµÑ† ÐÐ´Ð°Ð¿Ñ‚Ð¸Ð²Ð½Ð¾ÑÑ‚Ð¸ Ð¸ Ð¡ÐºÑ€Ð¾Ð»Ð»Ð±Ð°Ñ€Ð° === */
   </style>
 </head>
 <body>
@@ -275,13 +366,18 @@
               <option value="dateCreatedAsc">Created Date (Oldest)</option>
               <option value="dateCreatedDesc">Created Date (Newest)</option>
           </select>
+          <label for="teamSearchInput"><i class="fas fa-search"></i> Search Teams:</label>
+          <div class="search-input-wrapper">
+              <input type="text" id="teamSearchInput" class="header-input" placeholder="Enter team name to search...">
+              <button id="clearSearchBtn" class="app-button small clear-search-btn"><i class="fas fa-times"></i></button>
+          </div>
       </div>
 
       <div id="teamsGrid" class="admin-teams-grid">
         <%
-          // Предполагаем, что teams приходит как массив объектов
-          // И у каждого объекта team есть свойство createdAt (например, new Date().toISOString())
-          // Если createdAt нет, сортировка по дате не будет работать корректно
+          // ÐŸÑ€ÐµÐ´Ð¿Ð¾Ð»Ð°Ð³Ð°ÐµÐ¼, Ñ‡Ñ‚Ð¾ teams Ð¿Ñ€Ð¸Ñ…Ð¾Ð´Ð¸Ñ‚ ÐºÐ°Ðº Ð¼Ð°ÑÑÐ¸Ð² Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²
+          // Ð˜ Ñƒ ÐºÐ°Ð¶Ð´Ð¾Ð³Ð¾ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° team ÐµÑÑ‚ÑŒ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð¾ createdAt (Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, new Date().toISOString())
+          // Ð•ÑÐ»Ð¸ createdAt Ð½ÐµÑ‚, ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ° Ð¿Ð¾ Ð´Ð°Ñ‚Ðµ Ð½Ðµ Ð±ÑƒÐ´ÐµÑ‚ Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð¾
           teams.forEach(team => {
             const teamPlayers = players.filter(p => p.teamId === team.id);
             const creationDate = team.createdAt ? new Date(team.createdAt) : null;
@@ -404,7 +500,7 @@
   </div> <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <script>
-    // Функции модальных окон (остаются глобально доступными)
+    // Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð¼Ð¾Ð´Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð¾ÐºÐ¾Ð½ (Ð¾ÑÑ‚Ð°ÑŽÑ‚ÑÑ Ð³Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ð¾ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ð¼Ð¸)
     function showTeamModal(editMode = false, teamData = null) {$("#teamModalTitle").html(editMode ? '<i class="fas fa-edit"></i> Edit Team' : '<i class="fas fa-users-cog"></i> Create Team');$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');if (editMode && teamData) {$("#teamId").val(teamData.id);$("#teamName").val(teamData.name);$("#teamLogo").val(teamData.logo); }$("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);}
     function hideTeamModal() {$("#teamModalBackdrop").fadeOut(200, function() {$(this).hide();$("#teamForm")[0].reset();$("#teamId").val("");$("#teamLogoFile").val('');});}
     function showPlayerModal(editMode = false, playerData = null) {$("#playerModalTitle").html(editMode ? '<i class="fas fa-user-edit"></i> Edit Player' : '<i class="fas fa-user-plus"></i> Create Player');$("#playerForm")[0].reset();$("#playerId").val("");$("#playerPhotoFile").val(''); if (editMode && playerData) { $("#playerId").val(playerData.id); $("#playerName").val(playerData.name); $("#playerSteamId").val(playerData.steamId); $("#playerPhoto").val(playerData.photo); setTimeout(() => { $('#playerTeamId').val(playerData.teamId).trigger('change'); }, 50); } else { setTimeout(() => { $('#playerTeamId').val("").trigger('change'); }, 50); } $("#playerModalBackdrop").css("display","flex").hide().fadeIn(300);}
@@ -413,7 +509,7 @@
     // --- Login Logic ---
     const CORRECT_USERNAME = "God";
     const CORRECT_PASSWORD = "2007";
-    const STORAGE_KEY_LOGGED_IN = 'adminGalaxyTimerLoggedIn_v2'; // Немного измененный ключ для теста
+    const STORAGE_KEY_LOGGED_IN = 'adminGalaxyTimerLoggedIn_v2'; // ÐÐµÐ¼Ð½Ð¾Ð³Ð¾ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡ Ð´Ð»Ñ Ñ‚ÐµÑÑ‚Ð°
 
     $(document).ready(function(){
       console.log("Document ready. Checking login status...");
@@ -430,11 +526,11 @@
             console.log("Admin panel initialized and logout button added successfully from localStorage state.");
         } catch (e) {
             console.error("ERROR during post-login initialization from localStorage state:", e);
-            // Попытка отката, если что-то пошло не так при инициализации
-            localStorage.removeItem(STORAGE_KEY_LOGGED_IN); // Очищаем ошибочное состояние
+            // ÐŸÐ¾Ð¿Ñ‹Ñ‚ÐºÐ° Ð¾Ñ‚ÐºÐ°Ñ‚Ð°, ÐµÑÐ»Ð¸ Ñ‡Ñ‚Ð¾-Ñ‚Ð¾ Ð¿Ð¾ÑˆÐ»Ð¾ Ð½Ðµ Ñ‚Ð°Ðº Ð¿Ñ€Ð¸ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸
+            localStorage.removeItem(STORAGE_KEY_LOGGED_IN); // ÐžÑ‡Ð¸Ñ‰Ð°ÐµÐ¼ Ð¾ÑˆÐ¸Ð±Ð¾Ñ‡Ð½Ð¾Ðµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ
             $("#adminSection").hide();
             $("#loginSection").show();
-            alert("Произошла ошибка при загрузке панели администратора. Пожалуйста, попробуйте войти снова.");
+            alert("ÐŸÑ€Ð¾Ð¸Ð·Ð¾ÑˆÐ»Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐµ Ð¿Ð°Ð½ÐµÐ»Ð¸ Ð°Ð´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€Ð°. ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð¿Ð¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ Ð²Ð¾Ð¹Ñ‚Ð¸ ÑÐ½Ð¾Ð²Ð°.");
         }
       } else {
         console.log("User is NOT logged in (localStorage is '" + isLoggedIn + "'). Showing login form.");
@@ -463,14 +559,14 @@
                     console.log("Admin panel shown and initialized after login.");
                   } catch (initError) {
                     console.error("ERROR initializing admin panel after login:", initError);
-                    alert("Произошла ошибка при инициализации панели. Попробуйте обновить страницу.");
+                    alert("ÐŸÑ€Ð¾Ð¸Ð·Ð¾ÑˆÐ»Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸ Ð¿Ð°Ð½ÐµÐ»Ð¸. ÐŸÐ¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñƒ.");
                   }
                 });
               });
               $("#loginError").hide();
           } catch (storageError) {
               console.error("Error setting localStorage:", storageError);
-              alert("Не удалось сохранить сессию входа. Проверьте настройки браузера для localStorage/cookies.");
+              alert("ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ ÑÐ¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ ÑÐµÑÑÐ¸ÑŽ Ð²Ñ…Ð¾Ð´Ð°. ÐŸÑ€Ð¾Ð²ÐµÑ€ÑŒÑ‚Ðµ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð±Ñ€Ð°ÑƒÐ·ÐµÑ€Ð° Ð´Ð»Ñ localStorage/cookies.");
           }
         } else {
           console.log("Login failed. Credentials: user='" + username + "'. Clearing localStorage just in case.");
@@ -486,7 +582,7 @@
           if ($('.page-title-container .teams-link').length > 0) {
             $('.page-title-container .teams-link').after(logoutButton);
           } else {
-            $('.page-title-container').append(logoutButton); // Запасной вариант
+            $('.page-title-container').append(logoutButton); // Ð—Ð°Ð¿Ð°ÑÐ½Ð¾Ð¹ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚
           }
           console.log("Logout button added.");
 
@@ -494,9 +590,9 @@
             console.log("Logout button clicked.");
             localStorage.removeItem(STORAGE_KEY_LOGGED_IN);
             console.log("localStorage item '" + STORAGE_KEY_LOGGED_IN + "' removed. Value now:", localStorage.getItem(STORAGE_KEY_LOGGED_IN));
-            $('#username').val(''); // Очистка полей
+            $('#username').val(''); // ÐžÑ‡Ð¸ÑÑ‚ÐºÐ° Ð¿Ð¾Ð»ÐµÐ¹
             $('#password').val('');
-            location.reload(); // Перезагрузка для отображения формы входа
+            location.reload(); // ÐŸÐµÑ€ÐµÐ·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð´Ð»Ñ Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ Ñ„Ð¾Ñ€Ð¼Ñ‹ Ð²Ñ…Ð¾Ð´Ð°
           });
         } else {
             console.log("Logout button already exists.");
@@ -505,7 +601,7 @@
 
       function initializeAdminPanel() {
         console.log("Initializing Admin Panel...");
-        // === Начало Инициализация Select2 ===
+        // === ÐÐ°Ñ‡Ð°Ð»Ð¾ Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Select2 ===
         function formatTeamOption (team) {
           if (!team.id || team.id === "") { return team.text; }
           var $team = $('<span style="display: flex; align-items: center;" title="' + team.text + '"></span>');
@@ -528,7 +624,7 @@
                 templateResult: formatTeamOption,
                 templateSelection: formatTeamOption,
                 width: 'style',
-                dropdownParent: $('#playerModalBackdrop'), // Убедитесь, что этот элемент существует, когда это вызывается
+                dropdownParent: $('#playerModalBackdrop'), // Ð£Ð±ÐµÐ´Ð¸Ñ‚ÐµÑÑŒ, Ñ‡Ñ‚Ð¾ ÑÑ‚Ð¾Ñ‚ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚, ÐºÐ¾Ð³Ð´Ð° ÑÑ‚Ð¾ Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ
                 placeholder: "-- Select a Team --",
                 allowClear: true
             });
@@ -538,9 +634,9 @@
         } catch(e) {
           console.error("Select2 initialization failed for #playerTeamId:", e);
         }
-        // === Конец Инициализация Select2 ===
+        // === ÐšÐ¾Ð½ÐµÑ† Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Select2 ===
 
-        // Обработчики кнопок и событий
+        // ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸ÐºÐ¸ ÐºÐ½Ð¾Ð¿Ð¾Ðº Ð¸ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ð¹
         console.log("Setting up event handlers...");
         $("#btn-show-team-modal").off('click').on('click', function(){ console.log("Create Team button clicked"); showTeamModal(false); });
         $("#btn-show-player-modal").off('click').on('click', function(){
@@ -577,13 +673,13 @@
         $("#closePlayerModal").off('click').on('click', function(){ hidePlayerModal(); });
         $(document).off("click", ".modal-backdrop").on("click", ".modal-backdrop", function(event) { if ($(event.target).is(".modal-backdrop")) { if ($("#teamModalBackdrop").is(":visible")) { hideTeamModal(); } if ($("#playerModalBackdrop").is(":visible")) { hidePlayerModal(); } } });
 
-        // AJAX Запросы
+        // AJAX Ð—Ð°Ð¿Ñ€Ð¾ÑÑ‹
         $("#uploadTeamLogoBtn").off('click').on('click', function(){ const fileInput = $("#teamLogoFile")[0]; if (!fileInput.files.length) { alert("Please select a logo file first."); return; } const formData = new FormData(); formData.append('logoFile', fileInput.files[0]); $.ajax({ url: '/api/teams/uploadLogo', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#teamLogo").val(response.path); alert("Logo uploaded. Path: " + response.path + "\nClick 'Save Team' to apply changes."); }, error: function() { alert("Error uploading logo. Please try again or enter URL manually."); } }); });
         $("#uploadPlayerPhotoBtn").off('click').on('click', function(){ const fileInput = $("#playerPhotoFile")[0]; if (!fileInput.files.length) { alert("Please select a photo file first."); return; } const formData = new FormData(); formData.append('photoFile', fileInput.files[0]); $.ajax({ url: '/api/players/uploadPhoto', type: 'POST', data: formData, contentType: false, processData: false, success: function(response) { $("#playerPhoto").val(response.path); alert("Photo uploaded. Path: " + response.path + "\nClick 'Save Player' to apply changes."); }, error: function() { alert("Error uploading photo. Please try again or enter URL manually."); } }); });
         $("#teamForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#teamId").val(); const name = $("#teamName").val(); const logo = $("#teamLogo").val(); const url = id ? "/api/teams/" + id : "/api/teams"; const type = id ? "PUT" : "POST"; const data = { name, logo }; $.ajax({ url: url, type: type, data: data, success: function(){ hideTeamModal(); location.reload(); }, error: function(xhr) { alert("Error saving team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
         $("#playerForm").off('submit').on('submit', function(e){ e.preventDefault(); const id = $("#playerId").val(); const name = $("#playerName").val(); const steamId = $("#playerSteamId").val(); const photo = $("#playerPhoto").val(); const teamId = $("#playerTeamId").val() || null; const url = id ? "/api/players/" + id : "/api/players"; const type = id ? "PUT" : "POST"; $.ajax({ url: url, type: type, data: { name, steamId, photo, teamId }, success: function(){ hidePlayerModal(); location.reload(); }, error: function(xhr) { alert("Error saving player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); });
 
-        // Редактирование и удаление
+        // Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¸ ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Ðµ
         $(document).off("click", ".editTeam").on("click", ".editTeam", function(){ const teamId = $(this).closest(".team-card").data("id"); $.get("/api/teams/" + teamId, function(team){ if(team){ showTeamModal(true, team); } else { alert("Team data not found."); } }).fail(function(){ alert("Could not fetch team data for editing."); }); });
         $(document).off("click", ".deleteTeam").on("click", ".deleteTeam", function(){ const card = $(this).closest(".team-card"); const teamName = card.find("h2").text(); const teamId = card.data("id"); if(confirm("Are you sure you want to delete team '" + teamName + "'? This will also unassign its players.")){ $.ajax({ url: "/api/teams/" + teamId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting team: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
         $(document).off("click", ".editPlayer").on("click", ".editPlayer", function(){
@@ -611,13 +707,40 @@
         });
         $(document).off("click", ".deletePlayer").on("click", ".deletePlayer", function(){ const row = $(this).closest(".player-row"); const playerName = row.find(".player-name").text(); const playerId = row.data("id"); if(confirm("Are you sure you want to delete player '" + playerName + "'?")){ $.ajax({ url: "/api/players/" + playerId, type: "DELETE", success: function(){ location.reload(); }, error: function(xhr) { alert("Error deleting player: " + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));} }); } });
 
-        // === Начало: Логика сортировки команд ===
+        // === ÐÐ°Ñ‡Ð°Ð»Ð¾: Ð›Ð¾Ð³Ð¸ÐºÐ° ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸ ÐºÐ¾Ð¼Ð°Ð½Ð´ ===
         console.log("Setting up sorting logic...");
+        
+        // Сохраняем оригинальные карточки команд при первой загрузке
+        let originalTeamCards = null;
+        
+        function initializeTeamCards() {
+            if (!originalTeamCards) {
+                const teamsGrid = $('#teamsGrid');
+                originalTeamCards = teamsGrid.find('.team-card').clone(true, true).get();
+                console.log("Original team cards saved:", originalTeamCards.length);
+            }
+        }
+        
         function sortAndDisplayTeams() {
             console.log("Sorting teams...");
+            initializeTeamCards();
+            
             const sortBy = $('#sortTeamsBy').val();
+            const searchTerm = $('#teamSearchInput').val().toLowerCase().trim();
             const teamsGrid = $('#teamsGrid');
-            let teamCards = teamsGrid.find('.team-card').get();
+            
+            // Работаем с копиями оригинальных карточек
+            let teamCards = originalTeamCards.slice();
+            
+            // Фильтрация по поиску
+            if (searchTerm) {
+                teamCards = teamCards.filter(function(card) {
+                    const teamName = $(card).data('name');
+                    return teamName.includes(searchTerm);
+                });
+            }
+            
+            // Сортировка
             teamCards.sort(function(a, b) {
                 let valA, valB;
                 const nameA = $(a).data('name'); const nameB = $(b).data('name');
@@ -633,15 +756,38 @@
                     default: return 0;
                 }
             });
+            
             teamsGrid.empty();
-            $.each(teamCards, function(i, card) { teamsGrid.append(card); });
+            
+            // Показываем отфильтрованные команды или сообщение о том, что ничего не найдено
+            if (teamCards.length > 0) {
+                $.each(teamCards, function(i, card) { teamsGrid.append($(card).clone(true, true)); });
+            } else if (searchTerm) {
+                teamsGrid.append('<p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams found matching "' + searchTerm + '".</p>');
+            } else if (originalTeamCards && originalTeamCards.length === 0) {
+                teamsGrid.append('<p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-xl) 0;">No teams created yet. Use the \'Create Team\' button above.</p>');
+            }
+            
+            // Управление кнопкой очистки
+            const clearBtn = $('#clearSearchBtn');
+            if (searchTerm) {
+                clearBtn.show();
+            } else {
+                clearBtn.hide();
+            }
         }
         $('#sortTeamsBy').off('change').on('change', function() { sortAndDisplayTeams(); });
+        $('#teamSearchInput').off('input').on('input', function() { sortAndDisplayTeams(); });
+        $('#clearSearchBtn').off('click').on('click', function() { 
+            $('#teamSearchInput').val(''); 
+            sortAndDisplayTeams(); 
+        });
         if ($('#teamsGrid .team-card').length > 0) { sortAndDisplayTeams(); }
-        // === Конец: Логика сортировки команд ===
+        // === ÐšÐ¾Ð½ÐµÑ†: Ð›Ð¾Ð³Ð¸ÐºÐ° ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸ ÐºÐ¾Ð¼Ð°Ð½Ð´ ===
         console.log("Admin Panel Initialized.");
-      } // Конец initializeAdminPanel
-    }); // Конец document.ready
+      } // ÐšÐ¾Ð½ÐµÑ† initializeAdminPanel
+    }); // ÐšÐ¾Ð½ÐµÑ† document.ready
   </script>
 </body>
 </html>
+

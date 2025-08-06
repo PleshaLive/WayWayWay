@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Fixed</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      color: #4f46e5;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat {
+      background: #2a2a2a;
+      padding: 15px 20px;
+      border-radius: 8px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #4f46e5;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .section {
+      background: #1a1a1a;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #333;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px 15px 10px 40px;
+      color: #ffffff;
+      font-size: 14px;
+      width: 250px;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+    }
+
+    .select {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px 15px;
+      color: #ffffff;
+      font-size: 14px;
+      min-width: 150px;
+    }
+
+    .btn {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: #4338ca;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .btn-success {
+      background: #10b981;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid #333;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: #4f46e5;
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .card-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: #888;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1a1a1a;
+      border-radius: 10px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #333;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .close-btn:hover {
+      color: #ffffff;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #ffffff;
+    }
+
+    .form-input {
+      width: 100%;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 12px 15px;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+      margin-top: 30px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      z-index: 2000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.error {
+      background: #ef4444;
+    }
+
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-input {
+        width: 100%;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .stats {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Данные с сервера -->
+  <script type="application/json" id="teams-data"><%- JSON.stringify(teams || []) %></script>
+  <script type="application/json" id="players-data"><%- JSON.stringify(players || []) %></script>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-number" id="teams-count"><%= teams.length %></div>
+          <div class="stat-label">Teams</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" id="players-count"><%= players.length %></div>
+          <div class="stat-label">Players</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teams Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Teams Management</h2>
+        <div class="controls">
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="teamSearch" class="search-input" placeholder="Search teams...">
+          </div>
+          <select id="sortTeams" class="select">
+            <option value="name">Name (A-Z)</option>
+            <option value="players">Most Players</option>
+            <option value="newest">Newest First</option>
+          </select>
+          <button class="btn" onclick="openTeamModal()">
+            <i class="fas fa-plus"></i> Add Team
+          </button>
+        </div>
+      </div>
+      
+      <div id="teamsGrid" class="grid">
+        <!-- Teams will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Players Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Players Management</h2>
+        <div class="controls">
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="playerSearch" class="search-input" placeholder="Search players...">
+          </div>
+          <select id="sortPlayers" class="select">
+            <option value="name">Name (A-Z)</option>
+            <option value="team">By Team</option>
+            <option value="newest">Newest First</option>
+          </select>
+          <button class="btn" onclick="openPlayerModal()">
+            <i class="fas fa-plus"></i> Add Player
+          </button>
+        </div>
+      </div>
+      
+      <div id="playersGrid" class="grid">
+        <!-- Players will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Modal -->
+  <div id="teamModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="teamModalTitle">Add Team</h3>
+        <button class="close-btn" onclick="closeTeamModal()">&times;</button>
+      </div>
+      <form id="teamForm">
+        <input type="hidden" id="teamId" name="id">
+        <div class="form-group">
+          <label class="form-label">Team Name</label>
+          <input type="text" id="teamName" name="name" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team Logo</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" id="teamLogoFile" accept="image/*" class="form-input" style="flex: 1;">
+            <span style="color: #888;">or</span>
+            <input type="text" id="teamLogo" name="logo" class="form-input" placeholder="Logo URL" style="flex: 1;">
+          </div>
+          <div id="logoPreview" style="margin-top: 10px; display: none;">
+            <img id="previewImage" style="max-width: 100px; max-height: 100px; border-radius: 8px; border: 1px solid #444;">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeTeamModal()">Cancel</button>
+          <button type="submit" class="btn btn-success">Save Team</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Player Modal -->
+  <div id="playerModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="playerModalTitle">Add Player</h3>
+        <button class="close-btn" onclick="closePlayerModal()">&times;</button>
+      </div>
+      <form id="playerForm">
+        <input type="hidden" id="playerId" name="id">
+        <div class="form-group">
+          <label class="form-label">Player Name</label>
+          <input type="text" id="playerName" name="name" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team</label>
+          <select id="playerTeam" name="team" class="form-input" required>
+            <option value="">Select Team</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Steam ID</label>
+          <input type="text" id="playerSteamId" name="steamId" class="form-input">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closePlayerModal()">Cancel</button>
+          <button type="submit" class="btn btn-success">Save Player</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Глобальные переменные
+    let allTeams = [];
+    let allPlayers = [];
+
+    // Загрузка данных
+    $(document).ready(function() {
+      try {
+        allTeams = JSON.parse(document.getElementById('teams-data').textContent || '[]');
+        allPlayers = JSON.parse(document.getElementById('players-data').textContent || '[]');
+        
+        console.log('Loaded:', allTeams.length, 'teams,', allPlayers.length, 'players');
+        
+        initializeApp();
+      } catch (error) {
+        console.error('Error loading data:', error);
+        showNotification('Error loading data', 'error');
+      }
+    });
+
+    function initializeApp() {
+      renderTeams();
+      renderPlayers();
+      setupEventHandlers();
+      populateTeamOptions();
+    }
+
+    function setupEventHandlers() {
+      // Team search
+      $('#teamSearch').on('input', function() {
+        renderTeams($(this).val());
+      });
+
+      // Team sort
+      $('#sortTeams').on('change', function() {
+        renderTeams($('#teamSearch').val());
+      });
+
+      // Player search
+      $('#playerSearch').on('input', function() {
+        renderPlayers($(this).val());
+      });
+
+      // Player sort
+      $('#sortPlayers').on('change', function() {
+        renderPlayers($('#playerSearch').val());
+      });
+
+      // Team form
+      $('#teamForm').on('submit', function(e) {
+        e.preventDefault();
+        saveTeam();
+      });
+
+      // Player form
+      $('#playerForm').on('submit', function(e) {
+        e.preventDefault();
+        savePlayer();
+      });
+
+      // Logo file upload handler
+      $('#teamLogoFile').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          // Clear URL input when file is selected
+          $('#teamLogo').val('');
+          
+          // Show preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            $('#previewImage').attr('src', e.target.result);
+            $('#logoPreview').show();
+          };
+          reader.readAsDataURL(file);
+        } else {
+          $('#logoPreview').hide();
+        }
+      });
+
+      // Logo URL input handler
+      $('#teamLogo').on('input', function() {
+        const url = $(this).val();
+        if (url) {
+          // Clear file input when URL is entered
+          $('#teamLogoFile').val('');
+          
+          // Show preview
+          $('#previewImage').attr('src', url);
+          $('#logoPreview').show();
+        } else {
+          $('#logoPreview').hide();
+        }
+      });
+    }
+
+    function renderTeams(searchTerm = '') {
+      const container = $('#teamsGrid');
+      const sortBy = $('#sortTeams').val();
+      
+      let filteredTeams = allTeams.filter(team => 
+        team.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      // Sort teams
+      filteredTeams.sort((a, b) => {
+        switch (sortBy) {
+          case 'name':
+            return a.name.localeCompare(b.name);
+          case 'players':
+            const aPlayers = allPlayers.filter(p => p.team === a.name).length;
+            const bPlayers = allPlayers.filter(p => p.team === b.name).length;
+            return bPlayers - aPlayers;
+          case 'newest':
+            return new Date(b.created || 0) - new Date(a.created || 0);
+          default:
+            return a.name.localeCompare(b.name);
+        }
+      });
+
+      if (filteredTeams.length === 0) {
+        container.html(`
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-users"></i></div>
+            <div>No teams found</div>
+          </div>
+        `);
+        return;
+      }
+
+      const html = filteredTeams.map(team => {
+        const playersCount = allPlayers.filter(p => p.team === team.name).length;
+        const logoUrl = team.logo || '/public/none.png';
+        
+        return `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-logo">
+                <img src="${logoUrl}" alt="${team.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #333; border-radius: 8px;">
+                  <i class="fas fa-users"></i>
+                </div>
+              </div>
+              <div>
+                <div class="card-title">${team.name}</div>
+                <div class="card-subtitle">${playersCount} players</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-secondary" onclick="editTeam('${team.id}')">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="btn btn-danger" onclick="deleteTeam('${team.id}')">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.html(html);
+    }
+
+    function renderPlayers(searchTerm = '') {
+      const container = $('#playersGrid');
+      const sortBy = $('#sortPlayers').val();
+      
+      let filteredPlayers = allPlayers.filter(player => 
+        player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (player.team && player.team.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+
+      // Sort players
+      filteredPlayers.sort((a, b) => {
+        switch (sortBy) {
+          case 'name':
+            return a.name.localeCompare(b.name);
+          case 'team':
+            return (a.team || '').localeCompare(b.team || '');
+          case 'newest':
+            return new Date(b.created || 0) - new Date(a.created || 0);
+          default:
+            return a.name.localeCompare(b.name);
+        }
+      });
+
+      if (filteredPlayers.length === 0) {
+        container.html(`
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-user"></i></div>
+            <div>No players found</div>
+          </div>
+        `);
+        return;
+      }
+
+      const html = filteredPlayers.map(player => `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-logo">
+              <i class="fas fa-user"></i>
+            </div>
+            <div>
+              <div class="card-title">${player.name}</div>
+              <div class="card-subtitle">${player.team || 'No Team'}</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-secondary" onclick="editPlayer('${player.id}')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-danger" onclick="deletePlayer('${player.id}')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      container.html(html);
+    }
+
+    function populateTeamOptions() {
+      const select = $('#playerTeam');
+      const options = allTeams.map(team => 
+        `<option value="${team.name}">${team.name}</option>`
+      ).join('');
+      select.html('<option value="">Select Team</option>' + options);
+    }
+
+    // Modal functions
+    function openTeamModal(teamId = null) {
+      const modal = $('#teamModal');
+      const form = $('#teamForm')[0];
+      
+      if (teamId) {
+        const team = allTeams.find(t => t.id === teamId);
+        if (team) {
+          $('#teamModalTitle').text('Edit Team');
+          $('#teamId').val(team.id);
+          $('#teamName').val(team.name);
+          $('#teamLogo').val(team.logo || '');
+          $('#teamLogoFile').val('');
+          
+          // Show logo preview if exists
+          if (team.logo) {
+            $('#previewImage').attr('src', team.logo);
+            $('#logoPreview').show();
+          } else {
+            $('#logoPreview').hide();
+          }
+        }
+      } else {
+        $('#teamModalTitle').text('Add Team');
+        form.reset();
+        $('#teamId').val('');
+        $('#logoPreview').hide();
+      }
+      
+      modal.addClass('show');
+    }
+
+    function closeTeamModal() {
+      $('#teamModal').removeClass('show');
+    }
+
+    function openPlayerModal(playerId = null) {
+      const modal = $('#playerModal');
+      const form = $('#playerForm')[0];
+      
+      if (playerId) {
+        const player = allPlayers.find(p => p.id === playerId);
+        if (player) {
+          $('#playerModalTitle').text('Edit Player');
+          $('#playerId').val(player.id);
+          $('#playerName').val(player.name);
+          $('#playerTeam').val(player.team || '');
+          $('#playerSteamId').val(player.steamId || '');
+        }
+      } else {
+        $('#playerModalTitle').text('Add Player');
+        form.reset();
+        $('#playerId').val('');
+      }
+      
+      modal.addClass('show');
+    }
+
+    function closePlayerModal() {
+      $('#playerModal').removeClass('show');
+    }
+
+    // CRUD functions
+    function saveTeam() {
+      const teamId = $('#teamId').val();
+      const teamName = $('#teamName').val();
+      const logoUrl = $('#teamLogo').val();
+      const logoFile = $('#teamLogoFile')[0].files[0];
+      
+      const isEdit = teamId;
+      
+      // Create FormData for file upload
+      const formData = new FormData();
+      if (teamId) formData.append('id', teamId);
+      formData.append('name', teamName);
+      
+      if (logoFile) {
+        formData.append('logo', logoFile);
+      } else if (logoUrl) {
+        formData.append('logoUrl', logoUrl);
+      }
+
+      const url = isEdit ? `/api/teams/${teamId}` : '/api/teams';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      $.ajax({
+        url: url,
+        method: method,
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          if (isEdit) {
+            const index = allTeams.findIndex(t => t.id === teamId);
+            if (index !== -1) {
+              allTeams[index] = { 
+                ...allTeams[index], 
+                name: teamName, 
+                logo: response.logo || logoUrl 
+              };
+            }
+          } else {
+            allTeams.push({ 
+              id: response.id || Date.now().toString(),
+              name: teamName,
+              logo: response.logo || logoUrl
+            });
+          }
+          
+          renderTeams();
+          populateTeamOptions();
+          closeTeamModal();
+          showNotification(`Team ${isEdit ? 'updated' : 'created'} successfully!`);
+          updateStats();
+        },
+        error: function(xhr) {
+          console.error('Error saving team:', xhr);
+          const message = xhr.responseJSON ? xhr.responseJSON.message : 'Unknown error';
+          showNotification(`Error ${isEdit ? 'updating' : 'creating'} team: ${message}`, 'error');
+        }
+      });
+    }
+
+    function savePlayer() {
+      const formData = {
+        id: $('#playerId').val(),
+        name: $('#playerName').val(),
+        team: $('#playerTeam').val(),
+        steamId: $('#playerSteamId').val()
+      };
+
+      const isEdit = formData.id;
+      const url = isEdit ? `/api/players/${formData.id}` : '/api/players';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      $.ajax({
+        url: url,
+        method: method,
+        data: formData,
+        success: function(response) {
+          if (isEdit) {
+            const index = allPlayers.findIndex(p => p.id === formData.id);
+            if (index !== -1) {
+              allPlayers[index] = { ...allPlayers[index], ...formData };
+            }
+          } else {
+            allPlayers.push({ ...formData, id: response.id || Date.now().toString() });
+          }
+          
+          renderPlayers();
+          renderTeams(); // Update team player counts
+          closePlayerModal();
+          showNotification(`Player ${isEdit ? 'updated' : 'created'} successfully!`);
+          updateStats();
+        },
+        error: function(xhr) {
+          showNotification(`Error ${isEdit ? 'updating' : 'creating'} player`, 'error');
+        }
+      });
+    }
+
+    function editTeam(teamId) {
+      openTeamModal(teamId);
+    }
+
+    function editPlayer(playerId) {
+      openPlayerModal(playerId);
+    }
+
+    function deleteTeam(teamId) {
+      if (!confirm('Are you sure you want to delete this team?')) return;
+
+      $.ajax({
+        url: `/api/teams/${teamId}`,
+        method: 'DELETE',
+        success: function() {
+          allTeams = allTeams.filter(t => t.id !== teamId);
+          renderTeams();
+          populateTeamOptions();
+          showNotification('Team deleted successfully!');
+          updateStats();
+        },
+        error: function(xhr) {
+          showNotification('Error deleting team', 'error');
+        }
+      });
+    }
+
+    function deletePlayer(playerId) {
+      if (!confirm('Are you sure you want to delete this player?')) return;
+
+      $.ajax({
+        url: `/api/players/${playerId}`,
+        method: 'DELETE',
+        success: function() {
+          allPlayers = allPlayers.filter(p => p.id !== playerId);
+          renderPlayers();
+          renderTeams(); // Update team player counts
+          showNotification('Player deleted successfully!');
+          updateStats();
+        },
+        error: function(xhr) {
+          showNotification('Error deleting player', 'error');
+        }
+      });
+    }
+
+    function updateStats() {
+      $('#teams-count').text(allTeams.length);
+      $('#players-count').text(allPlayers.length);
+    }
+
+    function showNotification(message, type = 'success') {
+      const notification = $(`
+        <div class="notification ${type}">
+          ${message}
+        </div>
+      `);
+      
+      $('body').append(notification);
+      
+      setTimeout(() => notification.addClass('show'), 100);
+      setTimeout(() => {
+        notification.removeClass('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Close modals when clicking outside
+    $('.modal').on('click', function(e) {
+      if (e.target === this) {
+        $(this).removeClass('show');
+      }
+    });
+  </script>
+</body>
+</html>
