@@ -610,17 +610,19 @@ app.get('/teams', (req, res) => {
       team: "CT", teamName: registeredTeamCT?.name || teamCTFromGSI.name, 
       score: teamCTFromGSI.score, timeoutsRemaining: teamCTFromGSI.timeouts_remaining,
       logo: registeredTeamCT?.logo ? `${baseUrl}${registeredTeamCT.logo}` : defaultImage,
-      mapName: mapName
+      mapName: mapName,
+      mapLogo: mapUrl
     },
     { 
       team: "T", teamName: registeredTeamT?.name || teamTFromGSI.name, 
       score: teamTFromGSI.score, timeoutsRemaining: teamTFromGSI.timeouts_remaining,
       logo: registeredTeamT?.logo ? `${baseUrl}${registeredTeamT.logo}` : defaultImage,
-      mapName: mapName
+      mapName: mapName,
+      mapLogo: mapUrl
     }
   ];
-  // teamsData.push({ map: mapUrl }); // ╨Æ╨░╤ê╨░ ╨╛╤Ç╨╕╨│╨╕╨╜╨░╨╗╤î╨╜╨░╤Å ╨╖╨░╨║╨╛╨╝╨╝╨╡╨╜╤é╨╕╤Ç╨╛╨▓╨░╨╜╨╜╨░╤Å ╤ü╤é╤Ç╨╛╨║╨░
-  res.json({ teams: teamsData, currentMapImage: mapUrl }); // ╨ö╨╛╨▒╨░╨▓╨╕╨╗ currentMapImage ╨╛╤é╨┤╨╡╨╗╤î╨╜╨╛
+  
+  res.json({ teams: teamsData, currentMapImage: mapUrl });
 });
 
 app.get('/rounds', (req, res) => {
