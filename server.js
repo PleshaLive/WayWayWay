@@ -603,7 +603,25 @@ app.get('/teams', (req, res) => {
   const registeredTeamT  = teams.find(t => t.name.toLowerCase() === teamTFromGSI.name.toLowerCase());
 
   let mapName = scoreboard.map?.name?.replace(/^de_/, '') || "Unknown";
-  const mapUrl = `${baseUrl}/map/${mapName}.png`;
+  
+  // Функция для поиска файла карты независимо от регистра
+  function findMapImage(mapName) {
+    const mapDir = path.join(__dirname, 'public', 'map');
+    try {
+      const files = fs.readdirSync(mapDir);
+      // Ищем файл, игнорируя регистр
+      const foundFile = files.find(file => 
+        file.toLowerCase() === `${mapName.toLowerCase()}.png`
+      );
+      return foundFile || `${mapName}.png`; // Возвращаем найденный файл или исходное имя
+    } catch (error) {
+      console.log('Error reading map directory:', error);
+      return `${mapName}.png`; // Возвращаем исходное имя при ошибке
+    }
+  }
+  
+  const mapFileName = findMapImage(mapName);
+  const mapUrl = `${baseUrl}/map/${mapFileName}`;
 
   let teamsData = [
     { 
