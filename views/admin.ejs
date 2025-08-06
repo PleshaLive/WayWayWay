@@ -1,4 +1,8 @@
 ﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Galaxy Battle Panel - Manage Teams & Players</title>TYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -12,8 +16,13 @@
         margin-bottom: 0 !important;
         margin-right: var(--spacing-sm);
         flex-shrink: 0;
-    }tainer label {
-        margin-bottom: 0 !important;
+    }      function initializeAdminPanel() {
+        console.log("Initializing Galaxy Battle Panel...");
+        // === ÐÐ°Ñ‡Ð°Ð»Ð¾ Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Select2 ===ner label {
+              if ($('#teamsGrid .team-card').length > 0) { sortAndDisplayTeams(); }
+        // === ÐšÐ¾Ð½ÐµÑ†: Ð›Ð¾Ð³Ð¸ÐºÐ° ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸ ÐºÐ¾Ð¼Ð°Ð½Ð´ ===
+        console.log("Galaxy Battle Panel Initialized.");
+      } // ÐšÐ¾Ð½ÐµÑ† initializeAdminPanelrgin-bottom: 0 !important;
         margin-top: 0 !important;
         color: var(--color-text-secondary);
         font-size: 0.9rem;
@@ -347,7 +356,7 @@
   <div id="adminSection" style="display: none;">
     <div class="container">
       <div class="page-title-container">
-          <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
+          <h1><i class="fas fa-shield-alt"></i> Galaxy Battle Panel</h1>
           <a href="https://galaxytimer-production.up.railway.app" class="teams-link app-button tertiary"><i class="fas fa-users"></i> OVERLAYS</a>
           </div>
 
@@ -517,13 +526,13 @@
       console.log("localStorage status for '" + STORAGE_KEY_LOGGED_IN + "':", isLoggedIn);
 
       if (isLoggedIn === 'true') {
-        console.log("User is logged in according to localStorage. Attempting to show admin panel.");
+        console.log("User is logged in according to localStorage. Attempting to show galaxy battle panel.");
         $("#loginSection").hide();
         $("#adminSection").show();
         try {
             initializeAdminPanel();
             addLogoutButton();
-            console.log("Admin panel initialized and logout button added successfully from localStorage state.");
+            console.log("Galaxy battle panel initialized and logout button added successfully from localStorage state.");
         } catch (e) {
             console.error("ERROR during post-login initialization from localStorage state:", e);
             // ÐŸÐ¾Ð¿Ñ‹Ñ‚ÐºÐ° Ð¾Ñ‚ÐºÐ°Ñ‚Ð°, ÐµÑÐ»Ð¸ Ñ‡Ñ‚Ð¾-Ñ‚Ð¾ Ð¿Ð¾ÑˆÐ»Ð¾ Ð½Ðµ Ñ‚Ð°Ðº Ð¿Ñ€Ð¸ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸
@@ -556,9 +565,9 @@
                   try {
                     initializeAdminPanel();
                     addLogoutButton();
-                    console.log("Admin panel shown and initialized after login.");
+                    console.log("Galaxy battle panel shown and initialized after login.");
                   } catch (initError) {
-                    console.error("ERROR initializing admin panel after login:", initError);
+                    console.error("ERROR initializing galaxy battle panel after login:", initError);
                     alert("ÐŸÑ€Ð¾Ð¸Ð·Ð¾ÑˆÐ»Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸ Ð¿Ð°Ð½ÐµÐ»Ð¸. ÐŸÐ¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñƒ.");
                   }
                 });
