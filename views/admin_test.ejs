@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Galaxy Battle Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      padding: 20px;
+    }
+    .header {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .stats {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚀 Galaxy Battle Panel - TEST</h1>
+    <p>Проверка работы сервера...</p>
+  </div>
+  
+  <div class="stats">
+    <h2>📊 Статистика:</h2>
+    <p><strong>Команд:</strong> <%= teams.length %></p>
+    <p><strong>Игроков:</strong> <%= players.length %></p>
+  </div>
+
+  <div class="stats">
+    <h2>👥 Команды:</h2>
+    <% teams.slice(0, 5).forEach(team => { %>
+      <p>• <%= team.name %></p>
+    <% }); %>
+    <% if (teams.length > 5) { %>
+      <p>... и еще <%= teams.length - 5 %> команд</p>
+    <% } %>
+  </div>
+
+  <div class="stats">
+    <h2>🎮 Игроки:</h2>
+    <% players.slice(0, 5).forEach(player => { %>
+      <p>• <%= player.name %> <%= player.team ? '(' + player.team + ')' : '' %></p>
+    <% }); %>
+    <% if (players.length > 5) { %>
+      <p>... и еще <%= players.length - 5 %> игроков</p>
+    <% } %>
+  </div>
+
+  <div class="stats">
+    <p><strong>✅ Если вы видите эту страницу - сервер работает правильно!</strong></p>
+    <p>📅 Время: <%= new Date().toLocaleString('ru-RU') %></p>
+  </div>
+
+  <script>
+    console.log('Test page loaded successfully!');
+    console.log('Teams:', <%= teams.length %>);
+    console.log('Players:', <%= players.length %>);
+  </script>
+</body>
+</html>

@@ -14,6 +14,7 @@ const port = process.env.PORT || 2727;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // ╨Æ╨║╨╗╤Ä╤ç╨╕╤é╨╡ CORS ╨┤╨╗╤Å ╨▓╤ü╨╡╤à ╨╝╨░╤Ç╤ê╤Ç╤â╤é╨╛╨▓
 app.use(cors()); // <--- ╨ú╨▒╨╡╨┤╨╕╤é╨╡╤ü╤î, ╤ç╤é╨╛ ╤ì╤é╨░ ╤ü╤é╤Ç╨╛╨║╨░ ╨╡╤ü╤é╤î
@@ -743,7 +744,48 @@ app.get('/observer', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-  res.render('admin', { teams, players });
+  console.log('Admin page requested');
+  console.log('Teams:', teams.length);
+  console.log('Players:', players.length);
+  try {
+    res.render('admin', { teams, players });
+  } catch (error) {
+    console.error('Error rendering admin page:', error);
+    res.status(500).send('Error rendering admin page: ' + error.message);
+  }
+});
+
+// Тестовая страница админки
+app.get('/admin-test', (req, res) => {
+  console.log('Test admin page requested');
+  try {
+    res.render('admin_test', { teams, players });
+  } catch (error) {
+    console.error('Error rendering test admin page:', error);
+    res.status(500).send('Error rendering test admin page: ' + error.message);
+  }
+});
+
+// Простая страница админки
+app.get('/admin-simple', (req, res) => {
+  console.log('Simple admin page requested');
+  try {
+    res.render('admin_simple', { teams, players });
+  } catch (error) {
+    console.error('Error rendering simple admin page:', error);
+    res.status(500).send('Error rendering simple admin page: ' + error.message);
+  }
+});
+
+// Исправленная страница админки
+app.get('/admin-fixed', (req, res) => {
+  console.log('Fixed admin page requested');
+  try {
+    res.render('admin_fixed', { teams, players });
+  } catch (error) {
+    console.error('Error rendering fixed admin page:', error);
+    res.status(500).send('Error rendering fixed admin page: ' + error.message);
+  }
 });
 
 // ==================================
