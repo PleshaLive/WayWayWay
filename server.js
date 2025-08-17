@@ -42,6 +42,17 @@ let roundsHistory = [];
 // ╨ô╨╗╨╛╨▒╨░╨╗╤î╨╜╨╛╨╡ ╤à╤Ç╨░╨╜╨╕╨╗╨╕╤ë╨╡ ╨┤╨╗╤Å ╨┤╨░╨╜╨╜╤ï╤à ╨╛ ╨▓╤ï╨╢╨╕╨▓╤ê╨╕╤à ╨╕╨│╤Ç╨╛╨║╨░╤à ╨┐╨╛ ╤Ç╨░╤â╨╜╨┤╨░╨╝
 let roundsAlive = [];
 
+// Трекер текущего матча (по именам команд, независимо от сторон), чтобы сбрасывать историю при смене матчапа на той же карте
+let currentMatchKey = null;
+
+function buildMatchKey(mapObj) {
+  if (!mapObj) return null;
+  const ctName = (mapObj.team_ct?.name || 'CT').toLowerCase();
+  const tName = (mapObj.team_t?.name || 'T').toLowerCase();
+  // Сортируем, чтобы не зависеть от сторон после смены половин
+  return [ctName, tName].sort().join(' vs ');
+}
+
 // ------------------------------
 // ╨ñ╤â╨╜╨║╤å╨╕╤Å ╨╖╨░╨│╤Ç╤â╨╖╨║╨╕ ╨┤╨░╨╜╨╜╤ï╤à ╨╕╨╖ data.json
 // ------------------------------
@@ -428,6 +439,8 @@ app.post('/', (req, res) => {
     scoreboard.players = {};
     roundsHistory = [];
     roundsAlive = [];
+    // Обновим ключ матча, если уже знаем имена команд
+    currentMatchKey = buildMatchKey(data.map);
     // scoreboard.map = {}; // ╨¡╤é╨╛ ╨╝╨╛╨╢╨╡╤é ╨▒╤ï╤é╤î ╤ü╨╗╨╕╤ê╨║╨╛╨╝ ╤Ç╨░╨╜╨╛, ╨╡╤ü╨╗╨╕ ╨╡╤ë╨╡ ╨╜╤â╨╢╨╜╤ï original_team_ct/t
   }
   
@@ -448,12 +461,35 @@ app.post('/', (req, res) => {
         original_team_ct: data.map.team_ct ? {...data.map.team_ct} : null, // ╨Ü╨╛╨┐╨╕╤Ç╤â╨╡╨╝ ╨╛╨▒╤è╨╡╨║╤é╤ï
         original_team_t: data.map.team_t ? {...data.map.team_t} : null
       };
+      currentMatchKey = buildMatchKey(data.map);
     } else {
-      // ╨ƒ╤Ç╨╛╤ü╤é╨╛ ╨╛╨▒╨╜╨╛╨▓╨╗╤Å╨╡╨╝ ╤é╨╡╨║╤â╤ë╨╕╨╡ ╨┤╨░╨╜╨╜╤ï╨╡ ╨║╨░╤Ç╤é╤ï, ╨╜╨╡ ╤é╤Ç╨╛╨│╨░╤Å original_team_ct/t
-      scoreboard.map = {
-        ...scoreboard.map, // ╨í╨╛╤à╤Ç╨░╨╜╤Å╨╡╨╝ original_team_ct/t ╨╕ ╨┤╤Ç╤â╨│╨╕╨╡ ╤ü╤é╨░╤Ç╤ï╨╡ ╨┤╨░╨╜╨╜╤ï╨╡
-        ...data.map      // ╨₧╨▒╨╜╨╛╨▓╨╗╤Å╨╡╨╝ ╨╛╤ü╤é╨░╨╗╤î╨╜╨╛╨╡
-      };
+      // Та же карта. Проверим смену матчапа (имена команд).
+      const incomingMatchKey = buildMatchKey(data.map);
+      if (incomingMatchKey && currentMatchKey && incomingMatchKey !== currentMatchKey) {
+        console.log(`Матч изменился при той же карте: ${currentMatchKey} -> ${incomingMatchKey}. Сбрасываем историю раундов и игроков.`);
+        const finalStats = computeFinalADR();
+        console.log("Финальная ADR перед сбросом:", finalStats);
+        scoreboard.players = {};
+        roundsHistory = [];
+        roundsAlive = [];
+        // Перезапишем карту и зафиксируем новые оригинальные команды
+        scoreboard.map = {
+          ...data.map,
+          original_team_ct: data.map.team_ct ? {...data.map.team_ct} : null,
+          original_team_t: data.map.team_t ? {...data.map.team_t} : null
+        };
+        currentMatchKey = incomingMatchKey;
+      } else {
+        // Обычное обновление полей карты без потери original_team_ct/t
+        scoreboard.map = {
+          ...scoreboard.map,
+          ...data.map
+        };
+        // При первом заходе зафиксируем ключ
+        if (!currentMatchKey && incomingMatchKey) {
+          currentMatchKey = incomingMatchKey;
+        }
+      }
     }
   }
   
