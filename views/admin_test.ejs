@@ -61,10 +61,18 @@
     <p>📅 Время: <%= new Date().toLocaleString('ru-RU') %></p>
   </div>
 
+  <!-- Переносим данные в дата-атрибуты, чтобы избежать EJS в <script> и подсветки ошибок в редакторе -->
+  <div id="stats-data" data-teams="<%= teams.length %>" data-players="<%= players.length %>" style="display:none"></div>
+
   <script>
     console.log('Test page loaded successfully!');
-    console.log('Teams:', <%= teams.length %>);
-    console.log('Players:', <%= players.length %>);
+    (function(){
+      const el = document.getElementById('stats-data');
+      const teamsCount = el ? parseInt(el.dataset.teams || '0', 10) : 0;
+      const playersCount = el ? parseInt(el.dataset.players || '0', 10) : 0;
+      console.log('Teams:', teamsCount);
+      console.log('Players:', playersCount);
+    })();
   </script>
 </body>
 </html>
