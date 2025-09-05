@@ -38,8 +38,6 @@ let scoreboard = {
 
 // ╨ô╨╗╨╛╨▒╨░╨╗╤î╨╜╨░╤Å ╨┐╨╡╤Ç╨╡╨╝╨╡╨╜╨╜╨░╤Å ╨┤╨╗╤Å ╤à╤Ç╨░╨╜╨╡╨╜╨╕╤Å ╨╕╤ü╤é╨╛╤Ç╨╕╨╕ ╤Ç╨░╤â╨╜╨┤╨╛╨▓
 let roundsHistory = [];
-
-// ╨ô╨╗╨╛╨▒╨░╨╗╤î╨╜╨╛╨╡ ╤à╤Ç╨░╨╜╨╕╨╗╨╕╤ë╨╡ ╨┤╨╗╤Å ╨┤╨░╨╜╨╜╤ï╤à ╨╛ ╨▓╤ï╨╢╨╕╨▓╤ê╨╕╤à ╨╕╨│╤Ç╨╛╨║╨░╤à ╨┐╨╛ ╤Ç╨░╤â╨╜╨┤╨░╨╝
 let roundsAlive = [];
 
 // Трекер текущего матча (по именам команд, независимо от сторон), чтобы сбрасывать историю при смене матчапа на той же карте
@@ -89,10 +87,10 @@ loadData();
 // ------------------------------
 const storageTeams = multer.diskStorage({
   destination: function (req, file, cb) {
-    // ╨ú╨▒╨╡╨┤╨╕╨╝╤ü╤Å, ╤ç╤é╨╛ ╨┐╨░╨┐╨║╨░ ╤ü╤â╤ë╨╡╤ü╤é╨▓╤â╨╡╤é
+    // Папка для логотипов команд
     const dir = 'public/logos/';
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
     cb(null, dir);
   },
@@ -108,10 +106,10 @@ const uploadTeams = multer({ storage: storageTeams });
 // ------------------------------
 const storagePlayers = multer.diskStorage({
   destination: function (req, file, cb) {
-    // ╨ú╨▒╨╡╨┤╨╕╨╝╤ü╤Å, ╤ç╤é╨╛ ╨┐╨░╨┐╨║╨░ ╤ü╤â╤ë╨╡╤ü╤é╨▓╤â╨╡╤é
+    // Папка для фото игроков
     const dir = 'public/players/';
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
     cb(null, dir);
   },
@@ -231,80 +229,67 @@ function getTeamLogo(playerData) {
 // ------------------------------
 function getObserverData() {
   let observedData = null;
-  
+
+  // 1) Если API /player прислал текущего игрока
   if (scoreboard.player && scoreboard.player.steamid) {
-    let playerData = { ...scoreboard.player };
-    const regPlayer = players.find(p => p.steamId?.toLowerCase() === playerData.steamid?.toLowerCase());
-    if (regPlayer) {
-      if (regPlayer.name) playerData.name = regPlayer.name;
-      if (!playerData.photo && regPlayer.photo) {
-        playerData.photo = regPlayer.photo;
-      }
+    let p = { ...scoreboard.player };
+    const reg = players.find(pl => pl.steamId?.toLowerCase() === p.steamid?.toLowerCase());
+    if (reg) {
+      if (reg.name) p.name = reg.name;
+      if (!p.photo && reg.photo) p.photo = reg.photo;
     }
-    const kills = playerData.match_stats ? playerData.match_stats.kills : 0;
-    const deaths = playerData.match_stats ? playerData.match_stats.deaths : 0;
-    const adr = getAverageDamage(playerData.steamid);
-    // ╨Æ╨╝╨╡╤ü╤é╨╛ ╤ä╨╛╤é╨╛ ╨╕╨│╤Ç╨╛╨║╨░ ╨┐╨╛╨┤╤ü╤é╨░╨▓╨╗╤Å╨╡╨╝ ╨╗╨╛╨│╨╛╤é╨╕╨┐ ╨╡╨│╨╛ ╨║╨╛╨╝╨░╨╜╨┤╤ï
-    const teamLogo = getTeamLogo(playerData);
-    
     observedData = {
-      steamId: playerData.steamid,
-      name: playerData.name,
-      kills,
-      deaths,
-      adr,
-      team: playerData.team,
-      photo: teamLogo,
-      observer_slot: playerData.observer_slot
+      steamId: p.steamid,
+      name: p.name,
+      kills: p.match_stats ? p.match_stats.kills : 0,
+      deaths: p.match_stats ? p.match_stats.deaths : 0,
+      adr: getAverageDamage(p.steamid),
+      team: p.team,
+      photo: getTeamLogo(p),
+      observer_slot: p.observer_slot
     };
   }
-  
+
+  // 2) Если нет, пробуем вычислить по observer_slot
   if (!observedData) {
-    let observerSlot = scoreboard.player?.observer_slot ?? "0"; // ╨ò╤ü╨╗╨╕ scoreboard.player ╨╜╨╡ ╨╛╨┐╤Ç╨╡╨┤╨╡╨╗╨╡╨╜, ╨╕╤ë╨╡╨╝ ╤ü╨╗╨╛╤é 0
+    const slot = scoreboard.player?.observer_slot ?? "0";
     for (const steamId in scoreboard.players) {
-      const player = scoreboard.players[steamId];
-      if (player.observer_slot !== undefined && String(player.observer_slot) === observerSlot) {
-        let playerData = { ...player };
-        const regPlayer = players.find(p => p.steamId?.toLowerCase() === steamId.toLowerCase());
-        if (regPlayer) {
-          if (regPlayer.name) playerData.name = regPlayer.name;
-          if (!playerData.photo && regPlayer.photo) {
-            playerData.photo = regPlayer.photo;
-          }
+      const p = scoreboard.players[steamId];
+      if (p.observer_slot !== undefined && String(p.observer_slot) === String(slot)) {
+        let pd = { ...p };
+        const reg = players.find(pl => pl.steamId?.toLowerCase() === steamId.toLowerCase());
+        if (reg) {
+          if (reg.name) pd.name = reg.name;
+          if (!pd.photo && reg.photo) pd.photo = reg.photo;
         }
-        const kills = playerData.match_stats ? playerData.match_stats.kills : 0;
-        const deaths = playerData.match_stats ? playerData.match_stats.deaths : 0;
-        const adr = getAverageDamage(steamId);
-        const teamLogo = getTeamLogo(playerData);
-      
         observedData = {
           steamId,
-          name: playerData.name,
-          kills,
-          deaths,
-          adr,
-          team: playerData.team,
-          photo: teamLogo,
-          observer_slot: playerData.observer_slot
+          name: pd.name,
+          kills: pd.match_stats ? pd.match_stats.kills : 0,
+          deaths: pd.match_stats ? pd.match_stats.deaths : 0,
+          adr: getAverageDamage(steamId),
+          team: pd.team,
+          photo: getTeamLogo(pd),
+          observer_slot: pd.observer_slot
         };
         break;
       }
     }
   }
-  
+
+  // 3) Заглушка
   if (!observedData) {
     observedData = {
       steamId: "",
       name: "",
       kills: 0,
       deaths: 0,
-      adr: "0.0", // ╨▒╤ï╨╗╨╛ 0, ╨╕╨╖╨╝╨╡╨╜╨╕╨╗ ╨╜╨░ ╤ü╤é╤Ç╨╛╨║╤â ╨┤╨╗╤Å ╨║╨╛╨╜╤ü╨╕╤ü╤é╨╡╨╜╤é╨╜╨╛╤ü╤é╨╕ ╤ü getAverageDamage
+      adr: "0.0",
       team: "",
       photo: defaultImage,
       observer_slot: ""
     };
   }
-  
   return observedData;
 }
 
@@ -792,35 +777,46 @@ app.get('/admin', (req, res) => {
 });
 
 // Тестовая страница админки
-app.get('/admin-test', (req, res) => {
-  console.log('Test admin page requested');
-  try {
-    res.render('admin_test', { teams, players });
-  } catch (error) {
-    console.error('Error rendering test admin page:', error);
-    res.status(500).send('Error rendering test admin page: ' + error.message);
-  }
-});
+// Legacy route: redirect to main admin
+app.get('/admin-test', (req, res) => res.redirect(302, '/admin'));
 
 // Простая страница админки
-app.get('/admin-simple', (req, res) => {
-  console.log('Simple admin page requested');
-  try {
-    res.render('admin_simple', { teams, players });
-  } catch (error) {
-    console.error('Error rendering simple admin page:', error);
-    res.status(500).send('Error rendering simple admin page: ' + error.message);
-  }
-});
+// Legacy route: redirect to main admin
+app.get('/admin-simple', (req, res) => res.redirect(302, '/admin'));
 
 // Исправленная страница админки
-app.get('/admin-fixed', (req, res) => {
-  console.log('Fixed admin page requested');
+// Legacy route: redirect to main admin
+app.get('/admin-fixed', (req, res) => res.redirect(302, '/admin'));
+
+// Страница со списком доступных карт (рендерит изображения из public/map)
+app.get('/maps', (req, res) => {
   try {
-    res.render('admin_fixed', { teams, players });
+    const mapDir = path.join(__dirname, 'public', 'map');
+    let files = [];
+    try {
+      files = fs.readdirSync(mapDir)
+        .filter(f => /(\.png|\.jpg|\.jpeg|\.webp|\.svg)$/i.test(f))
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    } catch (e) {
+      console.error('Error reading map directory:', e);
+      files = [];
+    }
+
+    const maps = files.map(f => ({
+      name: path.parse(f).name,
+      file: f,
+      url: `/map/${f}` // статическая раздача уже настроена app.use(express.static('public'))
+    }));
+
+    // Опционально отдаём JSON, если запрошено ?format=json
+    if ((req.query.format || '').toLowerCase() === 'json') {
+      return res.json({ maps });
+    }
+
+    res.render('maps', { maps });
   } catch (error) {
-    console.error('Error rendering fixed admin page:', error);
-    res.status(500).send('Error rendering fixed admin page: ' + error.message);
+    console.error('Error rendering /maps:', error);
+    res.status(500).send('Error rendering /maps: ' + error.message);
   }
 });
 
