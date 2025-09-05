@@ -805,18 +805,14 @@ app.get('/maps', (req, res) => {
     const maps = files.map(f => ({
       name: path.parse(f).name,
       file: f,
-      url: `/map/${f}` // статическая раздача уже настроена app.use(express.static('public'))
+      url: `/map/${f}`
     }));
 
-    // Опционально отдаём JSON, если запрошено ?format=json
-    if ((req.query.format || '').toLowerCase() === 'json') {
-      return res.json({ maps });
-    }
-
-    res.render('maps', { maps });
+    // Всегда отдаём JSON статистику
+    res.json({ maps });
   } catch (error) {
-    console.error('Error rendering /maps:', error);
-    res.status(500).send('Error rendering /maps: ' + error.message);
+    console.error('Error handling /maps:', error);
+    res.status(500).json({ error: 'Error handling /maps', message: error.message });
   }
 });
 
