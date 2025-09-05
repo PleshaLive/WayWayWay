@@ -791,25 +791,72 @@ app.get('/admin-fixed', (req, res) => res.redirect(302, '/admin'));
 // Страница со списком доступных карт (рендерит изображения из public/map)
 app.get('/maps', (req, res) => {
   try {
-    const mapDir = path.join(__dirname, 'public', 'map');
-    let files = [];
-    try {
-      files = fs.readdirSync(mapDir)
-        .filter(f => /(\.png|\.jpg|\.jpeg|\.webp|\.svg)$/i.test(f))
-        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-    } catch (e) {
-      console.error('Error reading map directory:', e);
-      files = [];
+    // Текущее имя карты без префикса de_
+    let mapName = scoreboard.map?.name?.replace(/^de_/, '') || 'Unknown';
+
+    // Поиск изображения карты без учета регистра, поддержка public/map и public/maps
+    function findMapImage(name) {
+      const candidateDirs = [
+        path.join(__dirname, 'public', 'map'),
+        path.join(__dirname, 'public', 'maps')
+      ];
+      const lower = String(name || '').toLowerCase();
+      for (const dir of candidateDirs) {
+        try {
+          const files = fs.readdirSync(dir);
+          const match = files.find(f => f.toLowerCase() === `${lower}.png`);
+          if (match) {
+            return { file: match, dirName: path.basename(dir) };
+          }
+        } catch (e) {
+          // ignore and try next
+        }
+      }
+      // Фолбэк: предполагаем public/map
+      return { file: `${name}.png`, dirName: 'map' };
     }
 
-    const maps = files.map(f => ({
-      name: path.parse(f).name,
-      file: f,
-      url: `/map/${f}`
-    }));
+    const { file: mapFileName, dirName: mapDirName } = findMapImage(mapName);
+    const mapImagePath = `/${mapDirName}/${mapFileName}`; // относительный путь для статической раздачи
+    const mapUrl = `${baseUrl}${mapImagePath}`;            // абсолютный URL
 
-    // Всегда отдаём JSON статистику
-    res.json({ maps });
+    const teamCTFromGSI = scoreboard.map?.team_ct || { name: 'CT', score: 0, timeouts_remaining: 0 };
+    const teamTFromGSI  = scoreboard.map?.team_t  || { name: 'T',  score: 0, timeouts_remaining: 0 };
+
+    const registeredTeamCT = teams.find(t => t.name.toLowerCase() === (teamCTFromGSI.name || 'CT').toLowerCase());
+    const registeredTeamT  = teams.find(t => t.name.toLowerCase() === (teamTFromGSI.name  || 'T').toLowerCase());
+
+    const response = {
+      map: {
+        name: scoreboard.map?.name || 'Unknown',
+        round: scoreboard.map?.round || 0,
+        phase: scoreboard.map?.phase || '',
+        round_wins: scoreboard.map?.round_wins || {}
+      },
+      teams: {
+        CT: {
+          name: registeredTeamCT?.name || teamCTFromGSI.name,
+          score: teamCTFromGSI.score,
+          timeoutsRemaining: teamCTFromGSI.timeouts_remaining,
+          logo: registeredTeamCT?.logo ? `${baseUrl}${registeredTeamCT.logo}` : defaultImage
+        },
+        T: {
+          name: registeredTeamT?.name || teamTFromGSI.name,
+          score: teamTFromGSI.score,
+          timeoutsRemaining: teamTFromGSI.timeouts_remaining,
+          logo: registeredTeamT?.logo ? `${baseUrl}${registeredTeamT.logo}` : defaultImage
+        }
+      },
+  // Совместимость и явные поля с путями к изображению карты
+  currentMapImage: mapUrl,         // абсолютный URL (как раньше)
+  mapImageFile: mapFileName,       // имя файла, напр. overpass.png
+  mapImagePath,                    // относительный путь, напр. /map/overpass.png
+  mapImageUrl: mapUrl,             // абсолютный URL, напр. http://.../map/overpass.png
+      roundsHistory,
+      roundsAlive
+    };
+
+    res.json(response);
   } catch (error) {
     console.error('Error handling /maps:', error);
     res.status(500).json({ error: 'Error handling /maps', message: error.message });
