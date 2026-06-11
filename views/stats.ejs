@@ -598,14 +598,8 @@ function renderMatchTab(data) {
   if (data.teamT?.logo)  { tLogoEl.src  = data.teamT.logo;  tLogoEl.style.display  = ''; }
 
   const players = Object.values(data.players || {});
-  const ctPlayers = players.filter(p => {
-    const raw = (data._raw || {})[p.steamId];
-    return raw?.team === 'CT' || p._team === 'CT';
-  });
-  const tPlayers = players.filter(p => {
-    const raw = (data._raw || {})[p.steamId];
-    return raw?.team === 'T' || p._team === 'T';
-  });
+  const ctPlayers = players.filter(p => p._team === 'CT');
+  const tPlayers  = players.filter(p => p._team === 'T');
 
   // fallback: split by kills if teams not available
   const sorted = [...players].sort((a,b) => b.kills - a.kills);

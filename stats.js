@@ -23,6 +23,8 @@ function emptyPlayerStats() {
     // per-round scratch for KAST detection
     _roundKills: 0, _roundAssists: 0, _survived: false, _traded: false,
     _lastRoundSeen: -1,
+    _team: '',       // 'CT' or 'T'
+    _name: '',       // player name from GSI
   };
 }
 
@@ -154,6 +156,8 @@ function _processGsi(data, playersDb, teamsDb) {
   const roundWins  = map.round_wins  || {};
   const roundCount = Object.keys(roundWins).length;
 
+  console.log(`[stats] GSI: map=${mapName || '(none)'} phase=${mapPhase || '(none)'} players=${Object.keys(allplayers).length} roundCount=${roundCount} currentMatch=${currentMatch ? currentMatch.mapName : 'null'}`);
+
   // ── 1. Detect new match / map change ─────────────────────────────────────
   if (!currentMatch || currentMatch.mapName !== mapName) {
     if (currentMatch && currentMatch.mapName) {
@@ -202,11 +206,16 @@ function _processGsi(data, playersDb, teamsDb) {
     const ps = currentMatch.players[steamId];
     const ms = gp.match_stats || {};
 
+    // Store team and name from GSI
+    if (gp.team)  ps._team = gp.team;
+    if (gp.name)  ps._name = gp.name;
+
     // Direct match_stats from GSI (cumulative over the whole match)
-    ps.kills    = ms.kills    || ps.kills;
-    ps.deaths   = ms.deaths   || ps.deaths;
-    ps.assists  = ms.assists  || ps.assists;
-    ps.headshots = ms.headshots || ps.headshots;
+    // Use explicit check to avoid || operator bug (0 is falsy)
+    if (ms.kills     !== undefined) ps.kills     = ms.kills;
+    if (ms.deaths    !== undefined) ps.deaths    = ms.deaths;
+    if (ms.assists   !== undefined) ps.assists   = ms.assists;
+    if (ms.headshots !== undefined) ps.headshots = ms.headshots;
 
     // Damage: we track accumulated via round_totaldmg resets (per-round)
     const roundDmg = (gp.state && gp.state.round_totaldmg) || 0;
@@ -371,8 +380,13 @@ function getCurrentMatchStats() {
     const ps  = currentMatch.players[steamId];
     const dmg = ps.damage + (ps._prevRoundDmg || 0);
     const r   = ps.rounds || rounds;
+    // Resolve name/photo from playersDb if available
+    const db  = playersDb ? playersDb.find(p => p.steamId && p.steamId.toLowerCase() === steamId.toLowerCase()) : null;
     players[steamId] = {
       steamId,
+      name:  db?.name  || ps._name || '',
+      photo: db?.photo || null,
+      _team: ps._team || '',
       kills: ps.kills, deaths: ps.deaths, assists: ps.assists,
       headshots: ps.headshots, damage: dmg, rounds: r,
       kastRounds: ps.kastRounds,
