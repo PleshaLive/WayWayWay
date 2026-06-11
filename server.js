@@ -884,7 +884,11 @@ app.get('/maps', (req, res) => {
 // ==================================
 
 // --- API ╨┤╨╗╤Å ╨║╨╛╨╝╨░╨╜╨┤ ---
-app.get('/api/teams', (req, res) => res.json(teams));
+app.get('/api/teams', (req, res) => {
+  const base = req.protocol + '://' + req.get('host');
+  const result = teams.map(t => ({ ...t, logo: t.logo && t.logo.startsWith('/') ? base + t.logo : t.logo }));
+  res.json(result);
+});
 
 // ╨ö╨₧╨æ╨É╨Æ╨¢╨ò╨¥╨¥╨½╨Ö ╨£╨É╨á╨¿╨á╨ú╨ó ╨ö╨¢╨» ╨ƒ╨₧╨¢╨ú╨º╨ò╨¥╨ÿ╨» ╨₧╨ö╨¥╨₧╨Ö ╨Ü╨₧╨£╨É╨¥╨ö╨½
 app.get('/api/teams/:id', (req, res) => {
@@ -939,7 +943,11 @@ app.post('/api/teams/uploadLogo', uploadTeams.single('logoFile'), (req, res) => 
 });
 
 // --- API ╨┤╨╗╤Å ╨╕╨│╤Ç╨╛╨║╨╛╨▓ ---
-app.get('/api/players', (req, res) => res.json(players));
+app.get('/api/players', (req, res) => {
+  const base = req.protocol + '://' + req.get('host');
+  const result = players.map(p => ({ ...p, photo: p.photo && p.photo.startsWith('/') ? base + p.photo : p.photo }));
+  res.json(result);
+});
 
 // ╨ö╨₧╨æ╨É╨Æ╨¢╨ò╨¥╨¥╨½╨Ö ╨£╨É╨á╨¿╨á╨ú╨ó ╨ö╨¢╨» ╨ƒ╨₧╨¢╨ú╨º╨ò╨¥╨ÿ╨» ╨₧╨ö╨¥╨₧╨ô╨₧ ╨ÿ╨ô╨á╨₧╨Ü╨É
 app.get('/api/players/:id', (req, res) => {
