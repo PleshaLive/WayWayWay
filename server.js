@@ -908,23 +908,25 @@ app.get('/api/teams/:id', (req, res) => {
 });
 
 app.post('/api/teams', (req, res) => {
-  const { name, logo, score } = req.body; // ╨₧╤ü╤é╨░╨▓╨╕╨╗ score, ╨║╨░╨║ ╨▓ ╨▓╨░╤ê╨╡╨╝ ╨╛╤Ç╨╕╨│╨╕╨╜╨░╨╗╨╡
+  const { name, logo, score, vrsPoints, vrsPeak } = req.body;
   if (!name) return res.status(400).json({error: "Team name is required"});
-  const newTeam = { id: Date.now().toString(), name, logo: logo || null, score: score || 0 }; // score || 0
+  const newTeam = { id: Date.now().toString(), name, logo: logo || null, score: score || 0, vrsPoints: vrsPoints !== undefined ? Number(vrsPoints) : null, vrsPeak: vrsPeak !== undefined ? Number(vrsPeak) : null };
   teams.push(newTeam);
   saveData();
-  res.status(201).json(newTeam); // ╨í╤é╨░╤é╤â╤ü 201 ╨┤╨╗╤Å ╤ü╨╛╨╖╨┤╨░╨╜╨╕╤Å
+  res.status(201).json(newTeam);
 });
 
 app.put('/api/teams/:id', (req, res) => {
   const { id } = req.params;
-  const { name, logo, score } = req.body; // ╨₧╤ü╤é╨░╨▓╨╕╨╗ score
-  const teamIndex = teams.findIndex(t => t.id === id); // ╨ÿ╤ü╨┐╨╛╨╗╤î╨╖╤â╨╡╨╝ findIndex ╨┤╨╗╤Å ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╤Å
+  const { name, logo, score, vrsPoints, vrsPeak } = req.body;
+  const teamIndex = teams.findIndex(t => t.id === id);
   if (teamIndex === -1) return res.status(404).json({ error: "Team not found" });
   
-  teams[teamIndex].name = name !== undefined ? name : teams[teamIndex].name;
-  teams[teamIndex].logo = logo !== undefined ? logo : teams[teamIndex].logo;
-  teams[teamIndex].score = score !== undefined ? (score || 0) : teams[teamIndex].score; // score || 0
+  teams[teamIndex].name  = name  !== undefined ? name  : teams[teamIndex].name;
+  teams[teamIndex].logo  = logo  !== undefined ? logo  : teams[teamIndex].logo;
+  teams[teamIndex].score = score !== undefined ? (score || 0) : teams[teamIndex].score;
+  if (vrsPoints !== undefined) teams[teamIndex].vrsPoints = vrsPoints === '' ? null : Number(vrsPoints);
+  if (vrsPeak   !== undefined) teams[teamIndex].vrsPeak   = vrsPeak   === '' ? null : Number(vrsPeak);
   saveData();
   res.json(teams[teamIndex]);
 });
@@ -1015,6 +1017,125 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
 // ================================
 // === STATS API ===
 // ================================
+
+// ======================================
+// === EXPORT JSON API ===
+// ======================================
+
+// GET /api/export/teams — все команды + статистика + матчи + VRS
+app.get('/api/export/teams', (req, res) => {
+  const history = stats.getMatchHistory();
+  const teamRatings = stats.getGlobalTeamRatings(teams);
+
+  const result = teams.map(t => {
+    const rating = teamRatings.find(r => r.name === t.name) || {};
+
+    // Все матчи этой команды
+    const teamMatches = history.filter(m =>
+      (m.teamCT?.name||'').toLowerCase() === t.name.toLowerCase() ||
+      (m.teamT?.name||'').toLowerCase()  === t.name.toLowerCase()
+    ).map(m => {
+      const isHome = (m.teamCT?.name||'').toLowerCase() === t.name.toLowerCase();
+      const opp = isHome ? m.teamT : m.teamCT;
+      const myScore  = isHome ? (m.teamCT?.score ?? 0) : (m.teamT?.score ?? 0);
+      const oppScore = isHome ? (m.teamT?.score  ?? 0) : (m.teamCT?.score ?? 0);
+      const result   = !m.winner ? 'draw'
+        : m.winner.toLowerCase() === t.name.toLowerCase() ? 'win' : 'loss';
+      return {
+        matchId:   m.id,
+        date:      m.finishedAt || m.startedAt,
+        map:       m.mapName || null,
+        opponent:  opp?.name || null,
+        score:     `${myScore}:${oppScore}`,
+        result,
+        rounds:    m.roundCount || 0,
+      };
+    });
+
+    // Победы на картах (все матчи)
+    const mapWinrates = {};
+    teamMatches.forEach(tm => {
+      const key = (tm.map || 'unknown').replace('de_', '');
+      if (!mapWinrates[key]) mapWinrates[key] = { map: key, played: 0, won: 0, lost: 0, winRate: 0 };
+      mapWinrates[key].played++;
+      if (tm.result === 'win') mapWinrates[key].won++;
+      else if (tm.result === 'loss') mapWinrates[key].lost++;
+    });
+    Object.values(mapWinrates).forEach(m => {
+      m.winRate = m.played ? +(m.won / m.played * 100).toFixed(1) : 0;
+    });
+
+    return {
+      id:            t.id,
+      name:          t.name,
+      logo:          t.logo || null,
+      vrs: {
+        currentPoints: t.vrsPoints ?? null,
+        peakPoints:    t.vrsPeak   ?? null,
+      },
+      stats: {
+        matchesPlayed: rating.matchesPlayed || 0,
+        matchesWon:    rating.matchesWon    || 0,
+        matchesLost:   rating.matchesLost   || 0,
+        winRate:       rating.winRate       || 0,
+        roundsWon:     rating.roundsWon     || 0,
+        roundsLost:    rating.roundsLost    || 0,
+        roundWinRate:  rating.roundWinRate  || 0,
+      },
+      mapWinrates: Object.values(mapWinrates).sort((a,b) => b.played - a.played),
+      matches: teamMatches.sort((a,b) => new Date(b.date) - new Date(a.date)),
+    };
+  });
+
+  res.json(result);
+});
+
+// GET /api/export/players — все игроки + полная статистика
+app.get('/api/export/players', (req, res) => {
+  const ratings = stats.getGlobalPlayerRatings(players);
+
+  const result = players.map(p => {
+    const r = ratings.find(x => x.steamId === p.steamId) || {};
+    const mkr = r.rounds
+      ? +(((r.threeKills||0)*3 + (r.fourKills||0)*4 + (r.fiveKills||0)*5) / r.rounds).toFixed(4)
+      : 0;
+
+    return {
+      id:       p.id,
+      name:     p.name   || null,
+      steamId:  p.steamId || null,
+      photo:    p.photo  || null,
+      team:     p.teamId || null,
+      stats: r.matchesPlayed ? {
+        matchesPlayed:   r.matchesPlayed,
+        galaxyRating:    r.galaxyRating,
+        killsPerRound:   +r.kpr,
+        deathsPerRound:  +r.dpr,
+        kastPercent:     r.kast,
+        adr:             r.adr,
+        kdRatio:         +r.kd,
+        heatShotPercent: r.hsRate,
+        multikillRating: mkr,
+        kills:           r.kills,
+        deaths:          r.deaths,
+        assists:         r.assists,
+        rounds:          r.rounds,
+        mvps:            r.mvps    || 0,
+        firstKills:      r.firstKills  || 0,
+        firstDeaths:     r.firstDeaths || 0,
+        threeKillRounds: r.threeKills  || 0,
+        fourKillRounds:  r.fourKills   || 0,
+        aces:            r.fiveKills   || 0,
+        bombPlants:      r.bombPlants  || 0,
+        bombDefuses:     r.bombDefuses || 0,
+      } : null,
+    };
+  });
+
+  res.json(result);
+});
+
+// ======================================
 
 // GET /api/stats/match — текущий матч
 app.get('/api/stats/match', (req, res) => {

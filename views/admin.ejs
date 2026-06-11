@@ -1258,6 +1258,16 @@
       <button type="button" id="uploadTeamLogoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Logo</button>
       <label for="teamLogo"><i class="fas fa-link"></i> Or Logo URL:</label>
       <input type="text" name="logo" id="teamLogo" class="header-input" placeholder="Enter logo URL (overrides file if both set)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.6rem">
+        <div>
+          <label for="teamVrsPoints" style="margin-bottom:0.3rem;display:block;font-size:0.78rem"><i class="fas fa-star" style="color:#fbbf24"></i> VRS Current Points:</label>
+          <input type="number" name="vrsPoints" id="teamVrsPoints" class="header-input" placeholder="e.g. 990" min="0">
+        </div>
+        <div>
+          <label for="teamVrsPeak" style="margin-bottom:0.3rem;display:block;font-size:0.78rem"><i class="fas fa-trophy" style="color:#f59e0b"></i> VRS Peak Points:</label>
+          <input type="number" name="vrsPeak" id="teamVrsPeak" class="header-input" placeholder="e.g. 1200" min="0">
+        </div>
+      </div>
       <div class="form-actions">
       <button type="button" class="app-button tertiary" onclick="hideTeamModal()">Cancel</button>
       <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Team</button>
@@ -1331,10 +1341,14 @@
     $("#teamForm")[0].reset();
     $("#teamId").val("");
     $("#teamLogoFile").val('');
+    $("#teamVrsPoints").val('');
+    $("#teamVrsPeak").val('');
     if (editMode && teamData) {
       $("#teamId").val(teamData.id);
       $("#teamName").val(teamData.name);
-      $("#teamLogo").val(teamData.logo); 
+      $("#teamLogo").val(teamData.logo);
+      if (teamData.vrsPoints != null) $("#teamVrsPoints").val(teamData.vrsPoints);
+      if (teamData.vrsPeak   != null) $("#teamVrsPeak").val(teamData.vrsPeak);
     }
     $("#teamModalBackdrop").css("display","flex").hide().fadeIn(300);
   }
@@ -1567,12 +1581,14 @@
     // Сохранение команды
     $("#teamForm").on('submit', function(e){ 
       e.preventDefault(); 
-      const id = $("#teamId").val(); 
+      const id   = $("#teamId").val(); 
       const name = $("#teamName").val(); 
-      const logo = $("#teamLogo").val(); 
-      const url = id ? "/api/teams/" + id : "/api/teams"; 
+      const logo = $("#teamLogo").val();
+      const vrsPoints = $("#teamVrsPoints").val();
+      const vrsPeak   = $("#teamVrsPeak").val();
+      const url  = id ? "/api/teams/" + id : "/api/teams"; 
       const type = id ? "PUT" : "POST"; 
-      const data = { name, logo }; 
+      const data = { name, logo, vrsPoints, vrsPeak }; 
           
       $.ajax({ 
         url: url, 
