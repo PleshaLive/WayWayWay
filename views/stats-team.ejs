@@ -116,8 +116,90 @@
   .player-name-link { font-weight: 600; color: var(--text); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .player-name-link:hover { color: var(--primary); }
 
-  /* History */
-  .hist-item {
+  /* Last-5 matches strip */
+  .last5-strip {
+    background: rgba(22,18,40,0.7); border: 1px solid var(--border);
+    border-radius: var(--r); margin-bottom: 1rem;
+    padding: 1rem 1.4rem;
+  }
+  .last5-title {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text2); margin-bottom: 0.9rem;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .last5-title i { color: var(--primary); }
+  .last5-list { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .last5-item {
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    min-width: 60px;
+  }
+  .last5-logo-wrap {
+    width: 52px; height: 52px; border-radius: 10px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .last5-logo { width: 40px; height: 40px; object-fit: contain; }
+  .last5-opp  { font-size: 0.62rem; font-weight: 700; color: var(--text2); max-width: 58px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .last5-tag {
+    font-size: 0.6rem; font-weight: 800; padding: 0.12rem 0.55rem;
+    border-radius: 50px; letter-spacing: 0.06em;
+  }
+  .last5-tag.W { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+  .last5-tag.L { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #f87171; }
+  .last5-tag.D { background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.2); color: #94a3b8; }
+  .last5-score { font-size: 0.65rem; color: var(--muted); }
+
+  /* Map win stats past 3 months */
+  .mapwin-card {
+    background: rgba(22,18,40,0.7); border: 1px solid var(--border);
+    border-radius: var(--r); margin-bottom: 1rem; overflow: hidden;
+  }
+  .mapwin-head {
+    padding: 0.75rem 1rem; border-bottom: 1px solid var(--border2);
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text2);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .mapwin-head i { color: var(--primary); margin-right: 0.4rem; }
+  .mapwin-row {
+    display: flex; align-items: center; gap: 0; position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.025);
+    overflow: hidden; min-height: 42px;
+  }
+  .mapwin-row:last-child { border-bottom: none; }
+  .mapwin-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0.1; pointer-events: none;
+  }
+  .mapwin-name {
+    position: relative; z-index: 1;
+    width: 100px; padding: 0 1rem;
+    font-size: 0.8rem; font-weight: 900;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .mapwin-bar-wrap {
+    position: relative; z-index: 1;
+    flex: 1; height: 8px;
+    background: rgba(255,255,255,0.06); border-radius: 4px;
+    overflow: hidden; margin: 0 0.8rem 0 0;
+  }
+  .mapwin-bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  .mapwin-pct {
+    position: relative; z-index: 1;
+    width: 56px; text-align: right; padding-right: 1rem;
+    font-size: 0.85rem; font-weight: 900; flex-shrink: 0;
+  }
+  .mapwin-record {
+    position: relative; z-index: 1;
+    width: 56px; text-align: right; padding-right: 1rem;
+    font-size: 0.65rem; color: var(--muted); flex-shrink: 0;
+  }
     display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
     padding: 0.55rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03);
     transition: background 0.15s;
@@ -211,6 +293,88 @@ function render(t) {
        <div class="team-logo-ph" style="display:none"><i class="fas fa-shield-alt"></i></div>`
     : `<div class="team-logo-ph"><i class="fas fa-shield-alt"></i></div>`;
 
+  const MAP_COLORS = {
+    de_mirage:   'linear-gradient(90deg,#6366f1,#4f46e5)',
+    de_inferno:  'linear-gradient(90deg,#f59e0b,#ef4444)',
+    de_dust2:    'linear-gradient(90deg,#d97706,#92400e)',
+    de_nuke:     'linear-gradient(90deg,#22c55e,#15803d)',
+    de_overpass: 'linear-gradient(90deg,#059669,#065f46)',
+    de_anubis:   'linear-gradient(90deg,#eab308,#ca8a04)',
+    de_ancient:  'linear-gradient(90deg,#0d9488,#134e4a)',
+    de_vertigo:  'linear-gradient(90deg,#3b82f6,#1e40af)',
+    de_train:    'linear-gradient(90deg,#64748b,#334155)',
+    de_cache:    'linear-gradient(90deg,#84cc16,#3f6212)',
+  };
+  function mapGradient(mapName) {
+    return MAP_COLORS[mapName] || MAP_COLORS[(mapName||'').toLowerCase()] || 'linear-gradient(90deg,#6366f1,#4f46e5)';
+  }
+
+  // last 5 matches strip
+  const last5 = t.recentMatches.slice(0, 5);
+  const last5Html = last5.length ? `
+    <div class="last5-strip">
+      <div class="last5-title"><i class="fas fa-clock"></i> Last ${last5.length} Matches</div>
+      <div class="last5-list">${last5.map(m => {
+        const isHome = (m.teamCT?.name||'').toLowerCase() === t.name.toLowerCase();
+        const opp = isHome ? m.teamT : m.teamCT;
+        const myScore = isHome ? (m.teamCT?.score??0) : (m.teamT?.score??0);
+        const oppScore = isHome ? (m.teamT?.score??0) : (m.teamCT?.score??0);
+        const res = !m.winner ? 'D' : m.winner.toLowerCase() === t.name.toLowerCase() ? 'W' : 'L';
+        const resLabel = res === 'W' ? 'WON' : res === 'L' ? 'LOST' : 'DRAW';
+        const oppName = opp?.name || 'Unknown';
+        const map = (m.mapName||'').replace('de_','').toUpperCase();
+        return `<div class="last5-item">
+          <div class="last5-logo-wrap">
+            ${opp?.logo
+              ? `<img class="last5-logo" src="${opp.logo}" alt="${oppName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div style="display:none;align-items:center;justify-content:center;width:40px;height:40px;color:var(--muted);font-size:1.2rem"><i class='fas fa-shield-alt'></i></div>`
+              : `<i class="fas fa-shield-alt" style="color:var(--muted);font-size:1.2rem"></i>`}
+          </div>
+          <div class="last5-opp">${oppName}</div>
+          <div class="last5-score">${myScore}:${oppScore}</div>
+          <div class="last5-tag ${res}">${resLabel}</div>
+          <div style="font-size:0.58rem;color:var(--muted)">${map}</div>
+        </div>`;
+      }).join('')}</div>
+    </div>` : '';
+
+  // Map win stats past 3 months
+  const now = Date.now();
+  const ms3 = 90 * 24 * 60 * 60 * 1000;
+  const recent3m = t.recentMatches.filter(m => {
+    const ts = new Date(m.finishedAt || m.startedAt).getTime();
+    return (now - ts) <= ms3;
+  });
+  const mapWin3m = {};
+  recent3m.forEach(m => {
+    const key = m.mapName || 'unknown';
+    if (!mapWin3m[key]) mapWin3m[key] = { name: key, display: key.replace('de_','').toUpperCase(), played: 0, won: 0 };
+    mapWin3m[key].played++;
+    if (m.winner && m.winner.toLowerCase() === t.name.toLowerCase()) mapWin3m[key].won++;
+  });
+  const mapWin3mList = Object.values(mapWin3m).sort((a,b) => {
+    const pctA = a.played ? a.won/a.played : 0;
+    const pctB = b.played ? b.won/b.played : 0;
+    return pctB - pctA;
+  });
+  const mapWinHtml = mapWin3mList.length ? `
+    <div class="mapwin-card">
+      <div class="mapwin-head"><span><i class="fas fa-chart-bar"></i> Map Win Statistics — Past 3 Months</span><span style="color:var(--muted);font-size:0.62rem">${recent3m.length} match${recent3m.length!==1?'es':''}</span></div>
+      ${mapWin3mList.map(m => {
+        const pct = m.played ? Math.round((m.won / m.played) * 100) : 0;
+        const grad = mapGradient(m.name);
+        const col  = pct >= 60 ? '#4ade80' : pct >= 40 ? '#fbbf24' : '#f87171';
+        return `<div class="mapwin-row">
+          <div class="mapwin-bg" style="background:${grad};opacity:0.08"></div>
+          <div class="mapwin-name" style="color:${col}">${m.display}</div>
+          <div class="mapwin-bar-wrap">
+            <div class="mapwin-bar-fill" style="width:${pct}%;background:${grad}"></div>
+          </div>
+          <div class="mapwin-pct" style="color:${col}">${pct}%</div>
+          <div class="mapwin-record">${m.won}W ${m.played-m.won}L</div>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
   const html = `
     <!-- Hero -->
     <div class="hero">
@@ -231,7 +395,8 @@ function render(t) {
       </div>
     </div>
 
-    <!-- Stats row -->
+    ${last5Html}
+    ${mapWinHtml}
     <div class="stat-grid">
       <div class="stat-box"><div class="stat-box-val">${t.matchesPlayed}</div><div class="stat-box-label">Matches</div></div>
       <div class="stat-box"><div class="stat-box-val ${t.winRate >= 50 ? 'val-good':'val-bad'}">${t.winRate}%</div><div class="stat-box-label">Win Rate</div></div>
