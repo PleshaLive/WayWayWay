@@ -5,8 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
-const cors = require('cors'); // <--- ╨ú╨▒╨╡╨┤╨╕╤é╨╡╤ü╤î, ╤ç╤é╨╛ ╤ì╤é╨░ ╤ü╤é╤Ç╨╛╨║╨░ ╨╡╤ü╤é╤î
+const cors = require('cors');
 const xlsx = require('xlsx');
+const stats = require('./stats');
 
 const app = express();
 const port = process.env.PORT || 2727;
@@ -577,6 +578,7 @@ app.post('/', (req, res) => {
   }
   
   broadcastObserverUpdate();
+  stats.onGsiUpdate(data, players, teams);
   res.status(200).json({ message: "╨ö╨░╨╜╨╜╤ï╨╡ ╨┐╨╛╨╗╤â╤ç╨╡╨╜╤ï" });
 });
 
@@ -1004,6 +1006,52 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   const filePath = '/players/' + req.file.filename;
   res.json({ path: filePath });
+});
+
+// ================================
+// === STATS API ===
+// ================================
+
+// GET /api/stats/match — текущий матч
+app.get('/api/stats/match', (req, res) => {
+  const match = stats.getCurrentMatchStats();
+  if (!match) return res.json({ status: 'no_match', data: null });
+  res.json({ status: 'live', data: match });
+});
+
+// GET /api/stats/players — глобальный рейтинг игроков
+app.get('/api/stats/players', (req, res) => {
+  res.json(stats.getGlobalPlayerRatings(players));
+});
+
+// GET /api/stats/teams — глобальный рейтинг команд
+app.get('/api/stats/teams', (req, res) => {
+  res.json(stats.getGlobalTeamRatings(teams));
+});
+
+// GET /api/stats/history — история матчей
+app.get('/api/stats/history', (req, res) => {
+  const page  = Math.max(1, parseInt(req.query.page  || '1'));
+  const limit = Math.min(50, parseInt(req.query.limit || '20'));
+  const all   = stats.getMatchHistory();
+  res.json({
+    total: all.length,
+    page,
+    limit,
+    data: all.slice((page - 1) * limit, page * limit),
+  });
+});
+
+// GET /api/stats/history/:id — один матч из истории
+app.get('/api/stats/history/:id', (req, res) => {
+  const match = stats.getMatchHistory().find(m => m.id === req.params.id);
+  if (!match) return res.status(404).json({ error: 'Match not found' });
+  res.json(match);
+});
+
+// GET /api/stats/global — сырые накопленные данные
+app.get('/api/stats/global', (req, res) => {
+  res.json(stats.getGlobalStats());
 });
 
 // ================================
