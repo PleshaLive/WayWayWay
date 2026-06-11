@@ -180,8 +180,10 @@ function _processGsi(data, playersDb, teamsDb) {
     if (currentMatch && currentMatch.mapName) {
       _finalizeMatch(currentMatch, playersDb, teamsDb, 'map_change');
     }
-    if (mapName && mapPhase !== 'gameover') {
+    // Only start tracking when the match is actually live (not warmup / no map)
+    if (mapName && mapPhase === 'live' || mapName && mapPhase === 'intermission') {
       currentMatch = freshMatch(mapName, teamCT, teamT);
+      console.log(`[stats] New match started: ${mapName}`);
     } else {
       currentMatch = null;
       return;
@@ -623,6 +625,104 @@ function getMapStats() {
     .sort((a, b) => b.matchCount - a.matchCount);
 }
 
+// ─── Delete match from history ──────────────────────────────────────────────
+
+function deleteMatch(id) {
+  const idx = statsData.matchHistory.findIndex(m => m.id === id);
+  if (idx === -1) return false;
+  statsData.matchHistory.splice(idx, 1);
+  // Rebuild global stats from scratch
+  statsData.global.players = {};
+  statsData.global.teams   = {};
+  statsData.global.maps    = {};
+  for (const m of statsData.matchHistory) {
+    _mergeSnapshotToGlobal(m);
+  }
+  saveStats();
+  return true;
+}
+
+function _mergeSnapshotToGlobal(snapshot) {
+  const ctScore = snapshot.teamCT?.score || 0;
+  const tScore  = snapshot.teamT?.score  || 0;
+  const winner  = snapshot.winner;
+  for (const steamId in snapshot.players) {
+    const sp = snapshot.players[steamId];
+    if (!statsData.global.players[steamId]) {
+      statsData.global.players[steamId] = {
+        steamId, name: sp.name, photo: sp.photo, teamId: sp.teamId,
+        kills: 0, deaths: 0, assists: 0, headshots: 0,
+        damage: 0, rounds: 0, kastRounds: 0, matchesPlayed: 0,
+        mvps: 0, firstKills: 0, firstDeaths: 0,
+        threeKills: 0, fourKills: 0, fiveKills: 0,
+        bombPlants: 0, bombDefuses: 0,
+      };
+    }
+    const g = statsData.global.players[steamId];
+    if (sp.name)   g.name   = sp.name;
+    if (sp.photo)  g.photo  = sp.photo;
+    if (sp.teamId) g.teamId = sp.teamId;
+    g.kills       += sp.kills       || 0;
+    g.deaths      += sp.deaths      || 0;
+    g.assists     += sp.assists     || 0;
+    g.headshots   += sp.headshots   || 0;
+    g.damage      += sp.damage      || 0;
+    g.rounds      += sp.rounds      || 0;
+    g.kastRounds  += sp.kastRounds  || 0;
+    g.matchesPlayed++;
+    g.mvps        += sp.mvps        || 0;
+    g.firstKills  += sp.firstKills  || 0;
+    g.firstDeaths += sp.firstDeaths || 0;
+    g.threeKills  += sp.threeKills  || 0;
+    g.fourKills   += sp.fourKills   || 0;
+    g.fiveKills   += sp.fiveKills   || 0;
+    g.bombPlants  += sp.bombPlants  || 0;
+    g.bombDefuses += sp.bombDefuses || 0;
+  }
+  const teamsInMatch = [
+    { info: snapshot.teamCT, isWinner: snapshot.teamCT?.name === winner, score: ctScore, oppScore: tScore },
+    { info: snapshot.teamT,  isWinner: snapshot.teamT?.name  === winner, score: tScore,  oppScore: ctScore },
+  ];
+  for (const { info, isWinner, score, oppScore } of teamsInMatch) {
+    const key = info?.name?.toLowerCase();
+    if (!key) continue;
+    if (!statsData.global.teams[key]) {
+      statsData.global.teams[key] = { name: info.name, logo: info.logo, matchesPlayed: 0, matchesWon: 0, roundsWon: 0, roundsLost: 0, mapStats: {} };
+    }
+    const gt = statsData.global.teams[key];
+    if (info.logo && !gt.logo) gt.logo = info.logo;
+    if (!gt.mapStats) gt.mapStats = {};
+    gt.matchesPlayed++;
+    if (isWinner) gt.matchesWon++;
+    gt.roundsWon  += score;
+    gt.roundsLost += oppScore;
+    const mk = snapshot.mapName?.toLowerCase();
+    if (mk) {
+      if (!gt.mapStats[mk]) gt.mapStats[mk] = { played: 0, won: 0 };
+      gt.mapStats[mk].played++;
+      if (isWinner) gt.mapStats[mk].won++;
+    }
+  }
+  if (!statsData.global.maps) statsData.global.maps = {};
+  const mapKey = snapshot.mapName?.toLowerCase();
+  if (mapKey) {
+    if (!statsData.global.maps[mapKey]) {
+      statsData.global.maps[mapKey] = { name: snapshot.mapName, matchCount: 0, ctWins: 0, tWins: 0, draws: 0, totalRounds: 0,
+        roundOutcomes: { ct_win_elimination: 0, ct_win_time: 0, ct_win_defuse: 0, t_win_elimination: 0, t_win_bomb: 0 } };
+    }
+    const gm = statsData.global.maps[mapKey];
+    gm.matchCount++;
+    if (winner === snapshot.teamCT?.name) gm.ctWins++;
+    else if (winner === snapshot.teamT?.name) gm.tWins++;
+    else gm.draws = (gm.draws || 0) + 1;
+    gm.totalRounds += snapshot.roundCount || 0;
+    for (const rNum in (snapshot.roundOutcomes || {})) {
+      const outcome = snapshot.roundOutcomes[rNum];
+      if (gm.roundOutcomes[outcome] !== undefined) gm.roundOutcomes[outcome]++;
+    }
+  }
+}
+
 // ─── Per-entity getters ───────────────────────────────────────────────────────
 
 function getPlayerStats(steamId, playersDb) {
@@ -787,6 +887,7 @@ module.exports = {
   getMapStats,
   getPlayerStats,
   getTeamStats,
+  deleteMatch,
   getMatchHistory:  () => statsData.matchHistory,
   getGlobalStats:   () => statsData.global,
   statsData,

@@ -292,6 +292,34 @@
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
+
+  /* delete match button */
+  .del-match-btn {
+    background: transparent; border: 1px solid rgba(239,68,68,0.25); color: rgba(239,68,68,0.5);
+    border-radius: 5px; padding: 0.2rem 0.45rem; cursor: pointer; font-size: 0.7rem;
+    transition: all 0.15s; flex-shrink: 0; margin-left: auto;
+  }
+  .del-match-btn:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.6); color: #ef4444; }
+
+  /* confirm dialog */
+  .confirm-dialog-bg {
+    display: none; position: fixed; inset: 0; background: rgba(5,3,12,0.85);
+    backdrop-filter: blur(8px); z-index: 1100; align-items: center; justify-content: center;
+  }
+  .confirm-dialog-bg.open { display: flex; }
+  .confirm-dialog {
+    background: var(--surface); border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 12px; padding: 1.6rem; max-width: 400px; width: 90%;
+    text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    animation: fadeIn 0.2s ease;
+  }
+  .confirm-dialog h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; color: #f87171; }
+  .confirm-dialog p  { font-size: 0.82rem; color: var(--text2); margin-bottom: 1.2rem; }
+  .confirm-btns { display: flex; gap: 0.6rem; justify-content: center; }
+  .confirm-btns .btn-danger  { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #f87171; padding: 0.45rem 1.2rem; border-radius: 7px; cursor: pointer; font-weight: 600; font-size: 0.82rem; transition: all 0.15s; }
+  .confirm-btns .btn-danger:hover { background: rgba(239,68,68,0.25); }
+  .confirm-btns .btn-cancel { background: transparent; border: 1px solid var(--border2); color: var(--text2); padding: 0.45rem 1.2rem; border-radius: 7px; cursor: pointer; font-size: 0.82rem; transition: all 0.15s; }
+  .confirm-btns .btn-cancel:hover { border-color: var(--border); color: var(--text); }
   </style>
 </head>
 <body>
@@ -519,6 +547,18 @@
       <button class="modal-close" id="modal-close">&times;</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════ Confirm delete dialog ══════════════════════════════════════════ -->
+<div class="confirm-dialog-bg" id="confirm-delete-bg">
+  <div class="confirm-dialog">
+    <h3><i class="fas fa-trash"></i> Delete Match?</h3>
+    <p>This will permanently remove the match from history and recalculate all global statistics.</p>
+    <div class="confirm-btns">
+      <button class="btn-danger" id="confirm-delete-ok">Delete</button>
+      <button class="btn-cancel" id="confirm-delete-cancel">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -759,6 +799,9 @@ function renderHistory(data) {
       ${m.winner ? `<span class="winner-tag">🏆 ${m.winner}</span>` : ''}
       <span class="rounds-tag">${m.roundCount||0}r</span>
       <span class="history-date">${ago(m.finishedAt || m.startedAt)}</span>
+      <button class="del-match-btn" data-id="${m.id}" title="Delete match" onclick="event.stopPropagation();deleteMatchConfirm('${m.id}')">
+        <i class="fas fa-trash"></i>
+      </button>
     </div>
   `).join('');
   list.querySelectorAll('.history-item').forEach(el => {
@@ -984,6 +1027,39 @@ async function fetchAll() {
     console.error('Stats fetch error:', e);
   }
 }
+
+// ─── Delete match ──────────────────────────────────────────────────────────
+let _deleteTargetId = null;
+
+function deleteMatchConfirm(id) {
+  _deleteTargetId = id;
+  document.getElementById('confirm-delete-bg').classList.add('open');
+}
+
+document.getElementById('confirm-delete-ok').addEventListener('click', async () => {
+  if (!_deleteTargetId) return;
+  document.getElementById('confirm-delete-bg').classList.remove('open');
+  try {
+    const res = await fetch('/api/stats/history/' + _deleteTargetId, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Server error');
+    _deleteTargetId = null;
+    await fetchAll();
+  } catch(e) {
+    alert('Failed to delete match: ' + e.message);
+  }
+});
+
+document.getElementById('confirm-delete-cancel').addEventListener('click', () => {
+  _deleteTargetId = null;
+  document.getElementById('confirm-delete-bg').classList.remove('open');
+});
+
+document.getElementById('confirm-delete-bg').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-delete-bg')) {
+    _deleteTargetId = null;
+    document.getElementById('confirm-delete-bg').classList.remove('open');
+  }
+});
 
 fetchAll();
 // Auto-refresh match tab every 3s, everything else every 15s

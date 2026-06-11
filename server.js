@@ -1053,6 +1053,13 @@ app.get('/api/stats/history/:id', (req, res) => {
   res.json(match);
 });
 
+// DELETE /api/stats/history/:id — удалить матч и пересчитать глобальную статистику
+app.delete('/api/stats/history/:id', (req, res) => {
+  const ok = stats.deleteMatch(req.params.id);
+  if (!ok) return res.status(404).json({ error: 'Match not found' });
+  res.json({ ok: true });
+});
+
 // GET /api/stats/global — сырые накопленные данные
 app.get('/api/stats/global', (req, res) => {
   res.json(stats.getGlobalStats());
