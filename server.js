@@ -794,6 +794,10 @@ app.get('/admin', (req, res) => {
   }
 });
 
+app.get('/stats', (req, res) => {
+  res.render('stats');
+});
+
 // Тестовая страница админки
 // Legacy route: redirect to main admin
 app.get('/admin-test', (req, res) => res.redirect(302, '/admin'));
