@@ -607,9 +607,12 @@ function playerMatchRow(p, allPlayers) {
   const mkStr  = p.fiveKills ? `<span class="val-good">${p.fiveKills}×5K</span>` :
                  p.fourKills ? `<span style="color:#a78bfa">${p.fourKills}×4K</span>` :
                  p.threeKills ? `<span style="color:#60a5fa">${p.threeKills}×3K</span>` : '—';
+  const nameHtml = p.steamId
+    ? `<a href="/stats/player?id=${encodeURIComponent(p.steamId)}" style="color:inherit;text-decoration:none;font-weight:600" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color=''"> ${p.name || p.steamId || '—'}</a>`
+    : `<span style="font-weight:600">${p.name || '—'}</span>`;
   return `<tr>
     <td><div class="player-cell">${avatar(p.photo, p.name)}
-      <div><div class="player-name-text">${p.name || p.steamId || '—'}</div></div>
+      <div><div class="player-name-text">${nameHtml}</div></div>
     </div></td>
     <td class="r val-hi">${fmt(p.kills)}</td>
     <td class="r">${fmt(p.deaths)}</td>
@@ -680,7 +683,7 @@ function renderGlobalPlayersTable(data) {
       <td class="c">${rank}</td>
       <td><div class="player-cell">${avatar(p.photo, p.name)}
         <div>
-          <div class="player-name-text">${p.name || p.steamId || '—'}</div>
+          <div class="player-name-text"><a href="/stats/player?id=${encodeURIComponent(p.steamId)}" style="color:inherit;text-decoration:none;font-weight:600" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color=''">${p.name || p.steamId || '—'}</a></div>
           <div class="player-team-tag">${p.matchesPlayed} match${p.matchesPlayed !== 1 ? 'es' : ''}</div>
         </div>
       </div></td>
@@ -722,7 +725,7 @@ function renderTeamsGrid(data) {
       <div class="team-stat-card-header">
         ${teamLogo(t.logo, t.name)}
         <div>
-          <div class="team-stat-name">${t.name}</div>
+          <div class="team-stat-name"><a href="/stats/team?name=${encodeURIComponent(t.name)}" style="color:inherit;text-decoration:none" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color=''">${t.name}</a></div>
           <div style="font-size:0.68rem;color:var(--muted)">${t.matchesPlayed} match${t.matchesPlayed !== 1 ? 'es' : ''}</div>
         </div>
         <div style="margin-left:auto;font-size:0.85rem;font-weight:800;color:${t.winRate>=50?'#4ade80':'#f87171'}">${t.winRate}%</div>
@@ -748,9 +751,9 @@ function renderHistory(data) {
       <div class="history-map-badge">${(m.mapName||'?').replace('de_','').toUpperCase()}</div>
       <div class="history-teams">
         ${teamLogo(m.teamCT?.logo, m.teamCT?.name)}
-        <span>${m.teamCT?.name || 'CT'}</span>
+        <span><a href="/stats/team?name=${encodeURIComponent(m.teamCT?.name||'')}" style="color:inherit;text-decoration:none" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color=''">${m.teamCT?.name || 'CT'}</a></span>
         <span class="history-score"><span class="ct-score">${m.teamCT?.score??0}</span> : <span class="t-score">${m.teamT?.score??0}</span></span>
-        <span>${m.teamT?.name || 'T'}</span>
+        <span><a href="/stats/team?name=${encodeURIComponent(m.teamT?.name||'')}" style="color:inherit;text-decoration:none" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color=''">${m.teamT?.name || 'T'}</a></span>
         ${teamLogo(m.teamT?.logo, m.teamT?.name)}
       </div>
       ${m.winner ? `<span class="winner-tag">🏆 ${m.winner}</span>` : ''}

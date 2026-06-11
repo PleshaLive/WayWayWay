@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Profile — Galaxy Stats</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+  :root {
+    --bg:      #0E0A1C; --surface: #161228; --surface2: #1e1836;
+    --border:  rgba(99,102,241,0.14); --border2: rgba(255,255,255,0.06);
+    --text:    #e0e7ff; --text2: #a0aec0; --muted: #5a667a;
+    --primary: #6366f1; --primary2: #4f46e5;
+    --success: #22c55e; --danger: #ef4444; --gold: #fbbf24;
+    --r: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body {
+    background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif;
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(79,70,229,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(122,100,185,0.04) 0%, transparent 50%);
+  }
+  .site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(14,10,28,0.9); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .header-left { display: flex; align-items: center; gap: 0.7rem; }
+  .header-nav  { display: flex; gap: 0.4rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.38rem 0.9rem; font-size: 0.76rem; font-weight: 600;
+    border-radius: 7px; border: 1px solid transparent;
+    cursor: pointer; text-decoration: none; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-ghost { background: transparent; border-color: rgba(99,102,241,0.3); color: #9b8fd0; }
+  .btn-ghost:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.55); color: var(--primary); }
+  .container { max-width: 1200px; margin: 0 auto; padding: 1.4rem; }
+
+  /* Hero */
+  .hero {
+    display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap;
+    background: rgba(22,18,40,0.7); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.4rem 1.6rem; margin-bottom: 1rem;
+  }
+  .team-logo-hero { width: 88px; height: 88px; object-fit: contain; flex-shrink: 0; }
+  .team-logo-ph {
+    width: 88px; height: 88px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(79,70,229,0.1); border: 1px solid rgba(99,102,241,0.2);
+    display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--muted);
+  }
+  .hero-info { flex: 1; min-width: 0; }
+  .hero-name { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+  .hero-record { font-size: 0.82rem; color: var(--text2); margin-top: 0.4rem; }
+  .record-nums { display: flex; align-items: baseline; gap: 0.6rem; margin-top: 0.25rem; }
+  .record-w { font-size: 2rem; font-weight: 900; color: #4ade80; }
+  .record-d { font-size: 1rem; font-weight: 700; color: var(--muted); }
+  .record-l { font-size: 2rem; font-weight: 900; color: #f87171; }
+  .winrate-block { text-align: center; flex-shrink: 0; }
+  .winrate-val   { font-size: 2.4rem; font-weight: 900; line-height: 1; }
+  .winrate-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+
+  /* Stat grid */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 0.6rem; margin-bottom: 1rem; }
+  .stat-box {
+    background: rgba(22,18,40,0.7); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 0.75rem 0.9rem; text-align: center;
+  }
+  .stat-box-val   { font-size: 1.4rem; font-weight: 800; }
+  .stat-box-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.15rem; }
+
+  /* Card */
+  .card { background: rgba(22,18,40,0.7); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 1rem; }
+  .card-header {
+    padding: 0.75rem 1rem; border-bottom: 1px solid var(--border2);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .card-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--primary); }
+
+  /* Table */
+  .stats-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .stats-table th {
+    padding: 0.45rem 0.7rem; text-align: left; font-size: 0.63rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+    border-bottom: 1px solid var(--border2); white-space: nowrap;
+  }
+  .stats-table td { padding: 0.45rem 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+  .stats-table tr:last-child td { border-bottom: none; }
+  .stats-table tr:hover td { background: rgba(99,102,241,0.05); }
+  .stats-table th.r, .stats-table td.r { text-align: right; }
+
+  /* Side bar for map CT/T rates */
+  .side-bar-wrap { display: flex; align-items: center; gap: 0.35rem; }
+  .side-bar { width: 60px; height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+  .side-bar-fill { height: 100%; border-radius: 3px; }
+  .side-pct { font-size: 0.72rem; font-weight: 700; min-width: 34px; }
+
+  /* Player row */
+  .player-cell { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+  .player-avatar {
+    width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+    border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; background: rgba(0,0,0,0.3);
+  }
+  .player-avatar-ph {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(79,70,229,0.15); border: 1px solid rgba(99,102,241,0.2);
+    display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.7rem;
+  }
+  .player-name-link { font-weight: 600; color: var(--text); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .player-name-link:hover { color: var(--primary); }
+
+  /* History */
+  .hist-item {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    padding: 0.55rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.15s;
+  }
+  .hist-item:last-child { border-bottom: none; }
+  .hist-item:hover { background: rgba(99,102,241,0.05); }
+  .map-badge {
+    background: rgba(99,102,241,0.1); border: 1px solid var(--border);
+    border-radius: 5px; padding: 0.1rem 0.45rem; font-size: 0.66rem; font-weight: 700;
+    color: var(--primary); letter-spacing: 0.05em; flex-shrink: 0;
+  }
+  .hist-vs   { flex: 1; font-size: 0.8rem; font-weight: 600; min-width: 0; display: flex; align-items: center; gap: 0.4rem; }
+  .hist-score { font-weight: 800; }
+  .ct-col { color: #38bdf8; }
+  .t-col  { color: #fbbf24; }
+  .win-tag  { font-size: 0.62rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 4px; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #4ade80; }
+  .loss-tag { font-size: 0.62rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 4px; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.2); color: #f87171; }
+  .hist-date { font-size: 0.65rem; color: var(--muted); white-space: nowrap; }
+  .draw-tag  { font-size: 0.62rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 4px; background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.2); color: #94a3b8; }
+
+  .no-data { text-align: center; padding: 2.5rem; color: var(--muted); font-style: italic; font-size: 0.85rem; }
+  .val-good { color: #4ade80; }
+  .val-bad  { color: #f87171; }
+
+  /* Rating bar */
+  .rb { display: flex; align-items: center; gap: 0.45rem; min-width: 80px; }
+  .rb-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+  .rb-fill { height: 100%; border-radius: 2px; }
+  .rb-val  { font-size: 0.78rem; font-weight: 700; min-width: 34px; text-align: right; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-left">
+    <a href="javascript:history.back()" class="btn btn-ghost"><i class="fas fa-arrow-left"></i></a>
+    <span style="font-size:0.9rem;font-weight:700;color:var(--primary)" id="pg-title">Team Profile</span>
+  </div>
+  <nav class="header-nav">
+    <a href="/stats" class="btn btn-ghost"><i class="fas fa-chart-bar"></i> Stats</a>
+    <a href="/admin" class="btn btn-ghost"><i class="fas fa-shield-alt"></i> Admin</a>
+  </nav>
+</header>
+
+<div class="container" id="main">
+  <div class="no-data"><i class="fas fa-spinner fa-spin" style="font-size:1.5rem;display:block;margin-bottom:0.5rem"></i>Loading...</div>
+</div>
+
+<script>
+const teamName = new URLSearchParams(location.search).get('name');
+if (!teamName) {
+  document.getElementById('main').innerHTML = '<div class="no-data">No team name specified in URL (?name=TEAMNAME)</div>';
+} else {
+  fetch('/api/stats/team/' + encodeURIComponent(teamName))
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(render)
+    .catch(() => document.getElementById('main').innerHTML = `<div class="no-data">Team not found or no stats yet.<br><small style="color:var(--muted)">${teamName}</small></div>`);
+}
+
+function ratingColor(r) {
+  if (r >= 1.15) return '#4ade80';
+  if (r >= 1.0)  return '#a3e635';
+  if (r >= 0.85) return '#fbbf24';
+  return '#f87171';
+}
+function ratingBar(val, max) {
+  const pct = Math.min(100, (val / (max || 2)) * 100);
+  const c = ratingColor(val);
+  return `<div class="rb"><div class="rb-bar"><div class="rb-fill" style="width:${pct}%;background:${c}"></div></div><div class="rb-val" style="color:${c}">${(val||0).toFixed(2)}</div></div>`;
+}
+function ago(iso) {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+  if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+  return new Date(iso).toLocaleDateString();
+}
+
+function render(t) {
+  document.title = t.name + ' — Galaxy Stats';
+  document.getElementById('pg-title').textContent = t.name;
+
+  const winColor = t.winRate >= 50 ? '#4ade80' : '#f87171';
+  const logoHtml = t.logo
+    ? `<img class="team-logo-hero" src="${t.logo}" alt="${t.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+       <div class="team-logo-ph" style="display:none"><i class="fas fa-shield-alt"></i></div>`
+    : `<div class="team-logo-ph"><i class="fas fa-shield-alt"></i></div>`;
+
+  const html = `
+    <!-- Hero -->
+    <div class="hero">
+      ${logoHtml}
+      <div class="hero-info">
+        <div class="hero-name">${t.name}</div>
+        <div class="hero-record">Match Record</div>
+        <div class="record-nums">
+          <span class="record-w">${t.matchesWon}</span>
+          <span class="record-d">—</span>
+          <span class="record-l">${t.matchesLost}</span>
+          <span style="font-size:0.75rem;color:var(--muted);align-self:flex-end;margin-bottom:0.25rem">(${t.matchesPlayed} total)</span>
+        </div>
+      </div>
+      <div class="winrate-block">
+        <div class="winrate-val" style="color:${winColor}">${t.winRate}%</div>
+        <div class="winrate-label">Win Rate</div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-box-val">${t.matchesPlayed}</div><div class="stat-box-label">Matches</div></div>
+      <div class="stat-box"><div class="stat-box-val ${t.winRate >= 50 ? 'val-good':'val-bad'}">${t.winRate}%</div><div class="stat-box-label">Win Rate</div></div>
+      <div class="stat-box"><div class="stat-box-val">${t.roundsWon}</div><div class="stat-box-label">Rounds Won</div></div>
+      <div class="stat-box"><div class="stat-box-val">${t.roundsLost}</div><div class="stat-box-label">Rounds Lost</div></div>
+      <div class="stat-box"><div class="stat-box-val ${t.roundWinRate >= 50 ? 'val-good':'val-bad'}">${t.roundWinRate}%</div><div class="stat-box-label">Round Win%</div></div>
+    </div>
+
+    <!-- Map stats -->
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-map"></i> Performance by Map</div></div>
+      ${t.mapStats.length ? `
+        <table class="stats-table">
+          <thead><tr>
+            <th>Map</th>
+            <th class="r">Played</th>
+            <th class="r">W</th>
+            <th class="r">L</th>
+            <th class="r">Win%</th>
+            <th>CT Side Rounds</th>
+            <th>T Side Rounds</th>
+          </tr></thead>
+          <tbody>${t.mapStats.map(m => {
+            const ctTotal = m.ctRoundsWon;
+            const tTotal  = m.tRoundsWon;
+            const ctPct = (ctTotal + tTotal) > 0 ? Math.round(ctTotal / (ctTotal + tTotal) * 100) : 50;
+            const tPct  = 100 - ctPct;
+            return `<tr>
+              <td><span style="font-weight:700;color:var(--primary)">${m.displayName}</span></td>
+              <td class="r">${m.played}</td>
+              <td class="r val-good">${m.won}</td>
+              <td class="r val-bad">${m.lost}</td>
+              <td class="r ${m.winRate >= 50 ? 'val-good':'val-bad'}" style="font-weight:700">${m.winRate}%</td>
+              <td>
+                <div class="side-bar-wrap">
+                  <span class="side-pct" style="color:#38bdf8">${ctTotal}</span>
+                  <div class="side-bar"><div class="side-bar-fill" style="width:${ctPct}%;background:#38bdf8"></div></div>
+                </div>
+              </td>
+              <td>
+                <div class="side-bar-wrap">
+                  <span class="side-pct" style="color:#fbbf24">${tTotal}</span>
+                  <div class="side-bar"><div class="side-bar-fill" style="width:${tPct}%;background:#fbbf24"></div></div>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>` : '<div class="no-data">No map data yet</div>'}
+    </div>
+
+    <!-- Roster -->
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-users"></i> Roster</div></div>
+      ${t.roster.length ? `
+        <table class="stats-table">
+          <thead><tr>
+            <th>Player</th>
+            <th class="r">M</th>
+            <th class="r">K/D</th>
+            <th class="r">ADR</th>
+            <th class="r">KAST%</th>
+            <th class="r">HS%</th>
+            <th class="r">MVP</th>
+            <th class="r" style="min-width:100px">Rating</th>
+          </tr></thead>
+          <tbody>${t.roster.map(p => `<tr>
+            <td><div class="player-cell">
+              ${p.photo
+                ? `<img class="player-avatar" src="${p.photo}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                   <div class="player-avatar-ph" style="display:none"><i class="fas fa-user"></i></div>`
+                : `<div class="player-avatar-ph"><i class="fas fa-user"></i></div>`}
+              <a class="player-name-link" href="/stats/player?id=${encodeURIComponent(p.steamId)}">${p.name || p.steamId}</a>
+            </div></td>
+            <td class="r">${p.matchesPlayed}</td>
+            <td class="r ${(p.kd||0) >= 1 ? 'val-good':'val-bad'}">${p.kd || '—'}</td>
+            <td class="r">${p.adr || '—'}</td>
+            <td class="r">${p.kast !== undefined ? p.kast + '%' : '—'}</td>
+            <td class="r">${p.hsRate !== undefined ? p.hsRate + '%' : '—'}</td>
+            <td class="r" style="color:var(--gold)">${p.mvps || 0}</td>
+            <td class="r">${ratingBar(p.galaxyRating || 0, 2)}</td>
+          </tr>`).join('')}</tbody>
+        </table>` : '<div class="no-data">No roster data found (players may not be linked to this team)</div>'}
+    </div>
+
+    <!-- Recent matches -->
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-history"></i> Recent Matches</div></div>
+      ${t.recentMatches.length ? t.recentMatches.map(m => {
+        const teamWon  = m.winner && m.winner.toLowerCase() === t.name.toLowerCase();
+        const teamLost = m.winner && m.winner.toLowerCase() !== t.name.toLowerCase();
+        const tag = !m.winner ? '<span class="draw-tag">DRAW</span>'
+                  : teamWon   ? '<span class="win-tag">WIN</span>'
+                  :             '<span class="loss-tag">LOSS</span>';
+        return `<div class="hist-item">
+          <div class="map-badge">${(m.mapName||'?').replace('de_','').toUpperCase()}</div>
+          <div class="hist-vs">
+            <span>${m.teamCT?.name||'CT'}</span>
+            <span class="hist-score"><span class="ct-col">${m.teamCT?.score??0}</span> : <span class="t-col">${m.teamT?.score??0}</span></span>
+            <span>${m.teamT?.name||'T'}</span>
+          </div>
+          ${tag}
+          <span style="font-size:0.68rem;color:var(--muted)">${m.roundCount||0}r</span>
+          <span class="hist-date">${ago(m.finishedAt)}</span>
+        </div>`;
+      }).join('') : '<div class="no-data">No match history yet</div>'}
+    </div>
+  `;
+  document.getElementById('main').innerHTML = html;
+}
+</script>
+</body>
+</html>

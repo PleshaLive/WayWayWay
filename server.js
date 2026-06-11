@@ -1063,6 +1063,24 @@ app.get('/api/stats/maps', (req, res) => {
   res.json(stats.getMapStats());
 });
 
+// GET /api/stats/player/:steamId — профиль игрока
+app.get('/api/stats/player/:steamId', (req, res) => {
+  const data = stats.getPlayerStats(req.params.steamId, players);
+  if (!data) return res.status(404).json({ error: 'Player not found' });
+  res.json(data);
+});
+
+// GET /api/stats/team/:name — профиль команды
+app.get('/api/stats/team/:name', (req, res) => {
+  const data = stats.getTeamStats(req.params.name, teams, players);
+  if (!data) return res.status(404).json({ error: 'Team not found' });
+  res.json(data);
+});
+
+// Pages for player/team profiles
+app.get('/stats/player', (req, res) => res.render('stats-player'));
+app.get('/stats/team',   (req, res) => res.render('stats-team'));
+
 // ================================
 // === ИМПОРТ ИЗ XLSX ФАЙЛОВ ===
 // ================================

@@ -623,6 +623,160 @@ function getMapStats() {
     .sort((a, b) => b.matchCount - a.matchCount);
 }
 
+// ─── Per-entity getters ───────────────────────────────────────────────────────
+
+function getPlayerStats(steamId, playersDb) {
+  const actualKey = Object.keys(statsData.global.players).find(k => k.toLowerCase() === steamId.toLowerCase()) || steamId;
+  const g  = statsData.global.players[actualKey];
+  const db = playersDb.find(p => p.steamId && p.steamId.toLowerCase() === steamId.toLowerCase());
+  if (!g && !db) return null;
+
+  const r = Math.max(g?.rounds || 0, 1);
+
+  // Per-map aggregation from match history
+  const matchHistory = statsData.matchHistory.filter(m => m.players && (m.players[actualKey] || m.players[steamId]));
+  const mapRaw = {};
+  matchHistory.forEach(m => {
+    const p = m.players[actualKey] || m.players[steamId];
+    if (!p) return;
+    const mk = (m.mapName || 'unknown').toLowerCase();
+    if (!mapRaw[mk]) mapRaw[mk] = { map: m.mapName, matches: 0, wins: 0, kills: 0, deaths: 0, assists: 0, damage: 0, rounds: 0, kastRounds: 0, headshots: 0, mvps: 0, threeKills: 0, fourKills: 0, fiveKills: 0 };
+    const ms = mapRaw[mk];
+    ms.matches++;
+    ms.kills      += p.kills      || 0;
+    ms.deaths     += p.deaths     || 0;
+    ms.assists    += p.assists    || 0;
+    ms.damage     += p.damage     || 0;
+    ms.rounds     += p.rounds     || 0;
+    ms.kastRounds += p.kastRounds || 0;
+    ms.headshots  += p.headshots  || 0;
+    ms.mvps       += p.mvps       || 0;
+    ms.threeKills += p.threeKills || 0;
+    ms.fourKills  += p.fourKills  || 0;
+    ms.fiveKills  += p.fiveKills  || 0;
+    if (m.winner && p._team) {
+      const playerTeam = p._team === 'CT' ? m.teamCT?.name : m.teamT?.name;
+      if (playerTeam && playerTeam === m.winner) ms.wins++;
+    }
+  });
+
+  const mapStats = Object.values(mapRaw).map(ms => {
+    const rr = Math.max(ms.rounds, 1);
+    return {
+      map: ms.map,
+      displayName: (ms.map || '').replace('de_', '').toUpperCase(),
+      matches: ms.matches, wins: ms.wins,
+      winRate: ms.matches > 0 ? parseFloat(((ms.wins / ms.matches) * 100).toFixed(1)) : 0,
+      kills: ms.kills, deaths: ms.deaths, assists: ms.assists,
+      headshots: ms.headshots, mvps: ms.mvps,
+      threeKills: ms.threeKills, fourKills: ms.fourKills, fiveKills: ms.fiveKills,
+      adr:    parseFloat((ms.damage / rr).toFixed(1)),
+      kd:     ms.deaths > 0 ? parseFloat((ms.kills / ms.deaths).toFixed(2)) : ms.kills,
+      kast:   rr > 0 ? parseFloat(((ms.kastRounds / rr) * 100).toFixed(1)) : 0,
+      hsRate: ms.kills > 0 ? parseFloat(((ms.headshots / ms.kills) * 100).toFixed(1)) : 0,
+      galaxyRating: calcGalaxyRating({ kills: ms.kills, deaths: ms.deaths, assists: ms.assists, damage: ms.damage, kastRounds: ms.kastRounds, rounds: rr }),
+    };
+  }).sort((a, b) => b.matches - a.matches);
+
+  return {
+    steamId: actualKey,
+    name:    db?.name  || g?.name  || actualKey,
+    photo:   db?.photo || g?.photo || null,
+    teamId:  db?.teamId|| g?.teamId|| null,
+    matchesPlayed: g?.matchesPlayed || 0,
+    kills: g?.kills || 0, deaths: g?.deaths || 0, assists: g?.assists || 0,
+    headshots: g?.headshots || 0, damage: g?.damage || 0, rounds: r,
+    kastRounds: g?.kastRounds || 0,
+    mvps:        g?.mvps        || 0,
+    firstKills:  g?.firstKills  || 0,
+    firstDeaths: g?.firstDeaths || 0,
+    threeKills:  g?.threeKills  || 0,
+    fourKills:   g?.fourKills   || 0,
+    fiveKills:   g?.fiveKills   || 0,
+    bombPlants:  g?.bombPlants  || 0,
+    bombDefuses: g?.bombDefuses || 0,
+    adr:    parseFloat(((g?.damage || 0) / r).toFixed(1)),
+    kd:     (g?.deaths || 0) > 0 ? parseFloat(((g?.kills || 0) / g.deaths).toFixed(2)) : (g?.kills || 0),
+    kpr:    parseFloat(((g?.kills   || 0) / r).toFixed(3)),
+    dpr:    parseFloat(((g?.deaths  || 0) / r).toFixed(3)),
+    kast:   parseFloat((((g?.kastRounds || 0) / r) * 100).toFixed(1)),
+    hsRate: (g?.kills || 0) > 0 ? parseFloat((((g?.headshots || 0) / g.kills) * 100).toFixed(1)) : 0,
+    galaxyRating: g ? calcGalaxyRating(g) : 0,
+    mapStats,
+    recentMatches: matchHistory.slice(0, 20).map(m => {
+      const p = m.players[actualKey] || m.players[steamId];
+      return { id: m.id, mapName: m.mapName, teamCT: m.teamCT, teamT: m.teamT, winner: m.winner, roundCount: m.roundCount, finishedAt: m.finishedAt || m.startedAt, playerStats: p };
+    }),
+  };
+}
+
+function getTeamStats(teamName, teamsDb, playersDb) {
+  const key = teamName.toLowerCase();
+  const actualKey = Object.keys(statsData.global.teams).find(k => k.toLowerCase() === key) || key;
+  const g  = statsData.global.teams[actualKey];
+  if (!g) return null;
+  const db = teamsDb.find(t => t.name.toLowerCase() === key);
+
+  const matches = statsData.matchHistory.filter(m =>
+    m.teamCT?.name?.toLowerCase() === key || m.teamT?.name?.toLowerCase() === key
+  );
+
+  // Per-map with CT/T round breakdown (side switch at round 13)
+  const mapStats = Object.entries(g.mapStats || {}).map(([mk, ms]) => {
+    let ctRoundsWon = 0, tRoundsWon = 0;
+    matches.filter(m => m.mapName?.toLowerCase() === mk).forEach(m => {
+      const isCT = m.teamCT?.name?.toLowerCase() === key;
+      Object.entries(m.roundOutcomes || {}).forEach(([rn, outcome]) => {
+        const n = parseInt(rn);
+        const thisTeamIsCT = isCT ? (n <= 12) : (n > 12);
+        if (thisTeamIsCT && outcome.startsWith('ct_win')) ctRoundsWon++;
+        else if (!thisTeamIsCT && outcome.startsWith('t_win')) tRoundsWon++;
+      });
+    });
+    return {
+      map: mk, displayName: mk.replace('de_', '').toUpperCase(),
+      played: ms.played, won: ms.won, lost: ms.played - ms.won,
+      winRate: ms.played > 0 ? parseFloat(((ms.won / ms.played) * 100).toFixed(1)) : 0,
+      ctRoundsWon, tRoundsWon,
+    };
+  }).sort((a, b) => b.played - a.played);
+
+  // Roster (linked by teamId)
+  const roster = playersDb
+    .filter(p => db && String(p.teamId) === String(db.id))
+    .map(p => {
+      const gr = statsData.global.players[p.steamId] ||
+                 Object.values(statsData.global.players).find(x => x.steamId?.toLowerCase() === p.steamId?.toLowerCase());
+      if (!gr) return { steamId: p.steamId, name: p.name, photo: p.photo, matchesPlayed: 0, galaxyRating: 0, kills: 0, deaths: 0 };
+      const rr = Math.max(gr.rounds || 0, 1);
+      return {
+        steamId: p.steamId, name: p.name, photo: p.photo,
+        matchesPlayed: gr.matchesPlayed,
+        kills: gr.kills, deaths: gr.deaths, mvps: gr.mvps || 0,
+        adr:  parseFloat((gr.damage / rr).toFixed(1)),
+        kd:   gr.deaths > 0 ? parseFloat((gr.kills / gr.deaths).toFixed(2)) : gr.kills,
+        kast: parseFloat(((gr.kastRounds / rr) * 100).toFixed(1)),
+        hsRate: gr.kills > 0 ? parseFloat(((gr.headshots / gr.kills) * 100).toFixed(1)) : 0,
+        galaxyRating: calcGalaxyRating(gr),
+      };
+    })
+    .sort((a, b) => (b.galaxyRating || 0) - (a.galaxyRating || 0));
+
+  const total = g.roundsWon + g.roundsLost;
+  return {
+    name: g.name, logo: db?.logo || g.logo || null,
+    matchesPlayed: g.matchesPlayed, matchesWon: g.matchesWon, matchesLost: g.matchesPlayed - g.matchesWon,
+    winRate: g.matchesPlayed > 0 ? parseFloat(((g.matchesWon / g.matchesPlayed) * 100).toFixed(1)) : 0,
+    roundsWon: g.roundsWon, roundsLost: g.roundsLost,
+    roundWinRate: total > 0 ? parseFloat(((g.roundsWon / total) * 100).toFixed(1)) : 0,
+    mapStats, roster,
+    recentMatches: matches.slice(0, 20).map(m => ({
+      id: m.id, mapName: m.mapName, teamCT: m.teamCT, teamT: m.teamT,
+      winner: m.winner, roundCount: m.roundCount, finishedAt: m.finishedAt || m.startedAt,
+    })),
+  };
+}
+
 // ─── Exports ─────────────────────────────────────────────────────────────────
 
 module.exports = {
@@ -631,6 +785,8 @@ module.exports = {
   getGlobalPlayerRatings,
   getGlobalTeamRatings,
   getMapStats,
+  getPlayerStats,
+  getTeamStats,
   getMatchHistory:  () => statsData.matchHistory,
   getGlobalStats:   () => statsData.global,
   statsData,
