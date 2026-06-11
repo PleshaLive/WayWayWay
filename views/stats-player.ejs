@@ -46,28 +46,44 @@
 
   /* Hero */
   .hero {
-    display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap;
-    background: rgba(22,18,40,0.7); border: 1px solid var(--border);
-    border-radius: 12px; padding: 1.4rem 1.6rem; margin-bottom: 1rem;
+    position: relative; overflow: hidden;
+    background: rgba(22,18,40,0.85); border: 1px solid var(--border);
+    border-radius: 16px; margin-bottom: 1rem;
   }
+  .hero-inner {
+    display: flex; align-items: flex-end; gap: 2rem; flex-wrap: wrap;
+    padding: 1.8rem 2rem 1.6rem;
+    position: relative; z-index: 1;
+  }
+  .hero-avatar-wrap { position: relative; flex-shrink: 0; }
   .hero-avatar {
-    width: 80px; height: 80px; border-radius: 50%;
-    object-fit: cover; border: 2px solid rgba(99,102,241,0.3);
-    background: rgba(0,0,0,0.3); flex-shrink: 0;
+    width: 140px; height: 140px; border-radius: 16px;
+    object-fit: cover;
+    border: 3px solid rgba(99,102,241,0.4);
+    background: rgba(0,0,0,0.4);
+    display: block;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.1);
   }
   .hero-avatar-ph {
-    width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
-    background: rgba(79,70,229,0.15); border: 2px solid rgba(99,102,241,0.2);
-    display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--muted);
+    width: 140px; height: 140px; border-radius: 16px; flex-shrink: 0;
+    background: rgba(79,70,229,0.15); border: 3px solid rgba(99,102,241,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem; color: var(--muted);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
   }
-  .hero-info { flex: 1; min-width: 0; }
-  .hero-name  { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
-  .hero-team  { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; color: var(--text2); font-size: 0.82rem; }
+  .hero-bg-blur {
+    position: absolute; inset: 0; z-index: 0;
+    filter: blur(60px) saturate(1.4); opacity: 0.18;
+    background-size: cover; background-position: center;
+  }
+  .hero-info { flex: 1; min-width: 0; padding-bottom: 0.3rem; }
+  .hero-name  { font-size: 2rem; font-weight: 900; line-height: 1.1; letter-spacing: -0.01em; }
+  .hero-team  { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; color: var(--text2); font-size: 0.85rem; }
   .hero-team-logo { width: 18px; height: 18px; object-fit: contain; }
-  .hero-steam { font-size: 0.65rem; color: var(--muted); margin-top: 0.2rem; font-family: monospace; }
-  .rating-big { text-align: center; flex-shrink: 0; }
-  .rating-big-val { font-size: 2.4rem; font-weight: 900; line-height: 1; }
-  .rating-big-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+  .hero-steam { font-size: 0.63rem; color: var(--muted); margin-top: 0.25rem; font-family: monospace; }
+  .rating-big { text-align: center; flex-shrink: 0; padding-bottom: 0.3rem; }
+  .rating-big-val { font-size: 3rem; font-weight: 900; line-height: 1; }
+  .rating-big-label { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.25rem; }
 
   /* Stat grid */
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 0.6rem; margin-bottom: 1rem; }
@@ -202,25 +218,31 @@ function render(p) {
 
   const ratingColor_ = ratingColor(p.galaxyRating);
   const avatarHtml = p.photo
-    ? `<img class="hero-avatar" src="${p.photo}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-      + `<div class="hero-avatar-ph" style="display:none"><i class="fas fa-user"></i></div>`
+    ? `<div class="hero-avatar-wrap">
+         <img class="hero-avatar" src="${p.photo}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <div class="hero-avatar-ph" style="display:none"><i class="fas fa-user"></i></div>
+       </div>`
     : `<div class="hero-avatar-ph"><i class="fas fa-user"></i></div>`;
+  const bgStyle = p.photo ? `style="background-image:url('${p.photo}')"` : '';
 
   const html = `
     <!-- Hero -->
     <div class="hero">
-      ${avatarHtml}
-      <div class="hero-info">
-        <div class="hero-name">${p.name || p.steamId}</div>
-        <div class="hero-team">
-          <i class="fas fa-users" style="font-size:0.7rem"></i>
-          ${p.teamId ? `<span>${p.teamId}</span>` : '<span style="color:var(--muted)">No team</span>'}
+      <div class="hero-bg-blur" ${bgStyle}></div>
+      <div class="hero-inner">
+        ${avatarHtml}
+        <div class="hero-info">
+          <div class="hero-name">${p.name || p.steamId}</div>
+          <div class="hero-team">
+            <i class="fas fa-users" style="font-size:0.7rem"></i>
+            ${p.teamId ? `<span>${p.teamId}</span>` : '<span style="color:var(--muted)">No team</span>'}
+          </div>
+          <div class="hero-steam">${p.steamId}</div>
         </div>
-        <div class="hero-steam">${p.steamId}</div>
-      </div>
-      <div class="rating-big">
-        <div class="rating-big-val" style="color:${ratingColor_}">${p.galaxyRating.toFixed(2)}</div>
-        <div class="rating-big-label">Galaxy Rating</div>
+        <div class="rating-big">
+          <div class="rating-big-val" style="color:${ratingColor_}">${p.galaxyRating.toFixed(2)}</div>
+          <div class="rating-big-label">Galaxy Rating</div>
+        </div>
       </div>
     </div>
 

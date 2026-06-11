@@ -1507,10 +1507,60 @@ document.getElementById('h2h-go').addEventListener('click', () => {
       </div>
     </div>
 
+    <!-- MAP WINRATE BREAKDOWN -->
+    ${h2hMatches.length ? (() => {
+      // group by map
+      const mapGroups = {};
+      h2hMatches.forEach(m => {
+        const mapKey = m.mapName || 'unknown';
+        if (!mapGroups[mapKey]) mapGroups[mapKey] = { name: mapKey, display: (mapKey).replace('de_','').toUpperCase(), matches: 0, w1: 0, w2: 0, d: 0 };
+        const g = mapGroups[mapKey];
+        g.matches++;
+        const res = matchResultFor(m, t1);
+        if (res === 'W') g.w1++;
+        else if (res === 'L') g.w2++;
+        else g.d++;
+      });
+      const mapList = Object.values(mapGroups).sort((a,b) => b.matches - a.matches);
+      return `
+    <div class="h2h-encounters" style="margin-bottom:1rem">
+      <div class="h2h-enc-header"><i class="fas fa-map"></i> Winrate by Map</div>
+      <div style="padding:0.75rem 1rem;display:flex;flex-direction:column;gap:0.6rem">
+        ${mapList.map(g => {
+          const pct1 = g.matches ? Math.round((g.w1 / g.matches) * 100) : 0;
+          const pct2 = g.matches ? Math.round((g.w2 / g.matches) * 100) : 0;
+          const c1 = pct1 > pct2 ? '#34d399' : pct1 < pct2 ? '#f87171' : '#a5b4fc';
+          const c2 = pct2 > pct1 ? '#34d399' : pct2 < pct1 ? '#f87171' : '#a5b4fc';
+          return `<div style="display:grid;grid-template-columns:80px 1fr auto 1fr 80px;align-items:center;gap:0.6rem">
+            <div style="text-align:right;font-size:0.78rem;font-weight:800;color:${c1}">${pct1}% <span style="font-weight:400;color:var(--muted);font-size:0.65rem">(${g.w1}W)</span></div>
+            <div style="height:6px;border-radius:3px;background:rgba(255,255,255,0.06);overflow:hidden;display:flex;justify-content:flex-end">
+              <div style="width:${pct1}%;background:${c1};border-radius:3px"></div>
+            </div>
+            <div style="text-align:center;min-width:64px">
+              <div style="font-size:0.72rem;font-weight:900;color:var(--primary)">${g.display}</div>
+              <div style="font-size:0.6rem;color:var(--muted)">${g.matches} match${g.matches!==1?'es':''}</div>
+            </div>
+            <div style="height:6px;border-radius:3px;background:rgba(255,255,255,0.06);overflow:hidden">
+              <div style="width:${pct2}%;background:${c2};border-radius:3px"></div>
+            </div>
+            <div style="text-align:left;font-size:0.78rem;font-weight:800;color:${c2}"><span style="font-weight:400;color:var(--muted);font-size:0.65rem">(${g.w2}W)</span> ${pct2}%</div>
+          </div>`;
+        }).join('')}
+        <div style="display:grid;grid-template-columns:80px 1fr auto 1fr 80px;gap:0.6rem;margin-top:0.2rem;padding-top:0.5rem;border-top:1px solid var(--border2)">
+          <div style="text-align:right;font-size:0.7rem;font-weight:700;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t1}</div>
+          <div></div>
+          <div style="text-align:center;font-size:0.62rem;color:var(--muted)">Team</div>
+          <div></div>
+          <div style="text-align:left;font-size:0.7rem;font-weight:700;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t2}</div>
+        </div>
+      </div>
+    </div>`;
+    })() : ''}
+
     <!-- DIRECT ENCOUNTERS -->
     ${h2hMatches.length ? `
     <div class="h2h-encounters">
-      <div class="h2h-enc-header"><i class="fas fa-swords"></i> Direct Encounters (${h2hMatches.length})</div>
+      <div class="h2h-enc-header"><i class="fas fa-list"></i> Direct Encounters (${h2hMatches.length})</div>
       ${h2hMatches.map(m => {
         const ctN = m.teamCT?.name||'CT';
         const tN  = m.teamT?.name||'T';
