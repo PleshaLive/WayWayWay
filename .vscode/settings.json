@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    "**/*unzipped*": true,
+    "**/*_unzipped": true
+  }
+}
