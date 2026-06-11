@@ -1002,6 +1002,54 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
 // === ИМПОРТ ИЗ XLSX ФАЙЛОВ ===
 // ================================
 
+/**
+ * Извлекает встроенные изображения из xlsx-буфера.
+ * Возвращает объект { rowIndex: { data: Buffer, ext: string } },
+ * где rowIndex — 0-based индекс строки в drawing (0 = заголовок, 1 = первая строка данных).
+ */
+function extractXlsxImageMap(buffer) {
+  try {
+    const AdmZip = require('adm-zip');
+    const zip = new AdmZip(buffer);
+    const relsEntry = zip.getEntry('xl/drawings/_rels/drawing1.xml.rels');
+    const drawingEntry = zip.getEntry('xl/drawings/drawing1.xml');
+    if (!relsEntry || !drawingEntry) return {};
+
+    // rId → имя файла в xl/media/
+    const ridToFile = {};
+    const relsXml = relsEntry.getData().toString('utf8');
+    for (const m of relsXml.matchAll(/Id="(rId\d+)"[^>]+Target="[^"]*\/([^"/]+)"/g)) {
+      ridToFile[m[1]] = m[2];
+    }
+
+    // строка drawing (0-based) → данные изображения
+    const drawingXml = drawingEntry.getData().toString('utf8');
+    const rowToImage = {};
+    for (const anchor of drawingXml.split(/<xdr:(?:one|two)CellAnchor/).slice(1)) {
+      const rowM = anchor.match(/<xdr:row>(\d+)<\/xdr:row>/);
+      const rIdM = anchor.match(/r:embed="(rId\d+)"/);
+      if (!rowM || !rIdM) continue;
+      const mediaFile = ridToFile[rIdM[1]];
+      if (!mediaFile) continue;
+      const entry = zip.getEntry('xl/media/' + mediaFile);
+      if (!entry) continue;
+      rowToImage[parseInt(rowM[1])] = {
+        data: entry.getData(),
+        ext: path.extname(mediaFile) || '.png'
+      };
+    }
+    return rowToImage;
+  } catch (e) {
+    console.error('extractXlsxImageMap:', e.message);
+    return {};
+  }
+}
+
+/** Sanitize a string for use in filenames */
+function safeFilename(name) {
+  return name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase();
+}
+
 // POST /api/import/teams — импорт команд из xlsx
 app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Файл не загружен' });
@@ -1015,8 +1063,13 @@ app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
 
     const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
     const teamNameIdx = headers.findIndex(h => h === 'team name');
+    const logoIdx = headers.findIndex(h => ['logo', 'team logo', 'avatar'].includes(h));
 
     if (teamNameIdx === -1) return res.status(400).json({ error: 'Колонка "Team name" не найдена в файле' });
+
+    const imageMap = extractXlsxImageMap(req.file.buffer);
+    const logosDir = path.join(__dirname, 'public', 'logos');
+    if (!fs.existsSync(logosDir)) fs.mkdirSync(logosDir, { recursive: true });
 
     let created = 0, skipped = 0;
 
@@ -1031,7 +1084,21 @@ app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
         continue;
       }
 
-      const newTeam = { id: Date.now().toString() + '_' + i, name, logo: null, score: 0 };
+      // Определяем логотип: сначала из колонки, потом из встроенного изображения
+      let logo = null;
+      if (logoIdx !== -1 && row[logoIdx]) {
+        const val = String(row[logoIdx]).trim();
+        if (/^https?:\/\//i.test(val) || val.startsWith('/')) {
+          logo = val;
+        }
+      }
+      if (!logo && imageMap[i]) {
+        const fname = safeFilename(name) + imageMap[i].ext;
+        fs.writeFileSync(path.join(logosDir, fname), imageMap[i].data);
+        logo = '/logos/' + fname;
+      }
+
+      const newTeam = { id: Date.now().toString() + '_' + i, name, logo, score: 0 };
       teams.push(newTeam);
       created++;
     }
@@ -1063,8 +1130,13 @@ app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
     const usernameIdx = headers.findIndex(h => h === 'username');
     const steamIdIdx = headers.findIndex(h => h === 'steamid');
     const teamNameIdx = headers.findIndex(h => h === 'team name');
+    const photoIdx = headers.findIndex(h => ['avatar', 'photo'].includes(h));
 
     if (usernameIdx === -1) return res.status(400).json({ error: 'Колонка "Username" не найдена в файле' });
+
+    const imageMap = extractXlsxImageMap(req.file.buffer);
+    const playersDir = path.join(__dirname, 'public', 'players');
+    if (!fs.existsSync(playersDir)) fs.mkdirSync(playersDir, { recursive: true });
 
     let created = 0, skipped = 0;
 
@@ -1096,11 +1168,25 @@ app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
         if (teamObj) teamId = teamObj.id;
       }
 
+      // Определяем фото: сначала из колонки, потом из встроенного изображения
+      let photo = null;
+      if (photoIdx !== -1 && row[photoIdx]) {
+        const val = String(row[photoIdx]).trim();
+        if (/^https?:\/\//i.test(val) || val.startsWith('/')) {
+          photo = val;
+        }
+      }
+      if (!photo && imageMap[i]) {
+        const fname = safeFilename(name) + imageMap[i].ext;
+        fs.writeFileSync(path.join(playersDir, fname), imageMap[i].data);
+        photo = '/players/' + fname;
+      }
+
       const newPlayer = {
         id: Date.now().toString() + '_' + i,
         name,
         steamId: steamId || null,
-        photo: null,
+        photo,
         teamId,
         match_stats: {}
       };
