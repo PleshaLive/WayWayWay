@@ -707,6 +707,8 @@
   <div class="top-buttons">
     <button id="btn-show-team-modal" class="app-button primary"><i class="fas fa-users-cog"></i> Create Team</button>
     <button id="btn-show-player-modal" class="app-button primary"><i class="fas fa-user-plus"></i> Create Player</button>
+    <button id="btn-import-teams" class="app-button tertiary"><i class="fas fa-file-excel"></i> Import Teams (xlsx)</button>
+    <button id="btn-import-players" class="app-button tertiary"><i class="fas fa-file-excel"></i> Import Players (xlsx)</button>
   </div>
 
   <div class="sorting-controls-container card-style">
@@ -838,6 +840,24 @@
       <button type="submit" class="app-button primary"><i class="fas fa-save"></i> Save Player</button>
       </div>
     </form>
+    </div>
+  </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div id="importModalBackdrop" class="modal-backdrop">
+  <div class="modal card-style">
+    <button class="close-modal" id="closeImportModal" aria-label="Close modal">&times;</button>
+    <h2 id="importModalTitle" class="modal-title-text"><i class="fas fa-file-excel"></i> Import from Excel</h2>
+    <div class="modal-content styled-scrollbar">
+      <p id="importModalDesc" style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);"></p>
+      <label for="importXlsxFile"><i class="fas fa-upload"></i> Select .xlsx file:</label>
+      <input type="file" id="importXlsxFile" accept=".xlsx,.xls" class="header-input">
+      <div id="importResult" style="display:none; margin-top: var(--spacing-md); padding: var(--spacing-md); border-radius: var(--border-radius-md); font-size: 0.95em;"></div>
+      <div class="form-actions" style="margin-top: var(--spacing-lg);">
+        <button type="button" class="app-button tertiary" onclick="hideImportModal()">Cancel</button>
+        <button type="button" id="importXlsxBtn" class="app-button primary"><i class="fas fa-cloud-upload-alt"></i> Import</button>
+      </div>
     </div>
   </div>
   </div>
@@ -1210,6 +1230,80 @@
       
     console.log("🎮 All event handlers set up successfully!");
     console.log("📈 Admin Panel fully loaded and functional!");
+
+    // === ИМПОРТ ИЗ XLSX ===
+    let importEndpoint = '';
+
+    function showImportModal(type) {
+      importEndpoint = type === 'teams' ? '/api/import/teams' : '/api/import/players';
+      const label = type === 'teams' ? 'команд' : 'игроков';
+      const desc = type === 'teams'
+        ? 'Файл должен содержать колонку <b>Team name</b>. Дубликаты по названию будут пропущены.'
+        : 'Файл должен содержать колонки <b>Username</b>, <b>SteamID</b>, <b>Team Name</b>. Дубликаты по SteamID или нику будут пропущены.';
+      $('#importModalTitle').html('<i class="fas fa-file-excel"></i> Импорт ' + label);
+      $('#importModalDesc').html(desc);
+      $('#importXlsxFile').val('');
+      $('#importResult').hide().removeClass('success error').html('');
+      $('#importModalBackdrop').css('display','flex').hide().fadeIn(300);
+    }
+
+    function hideImportModal() {
+      $('#importModalBackdrop').fadeOut(200, function() {
+        $(this).hide();
+        $('#importXlsxFile').val('');
+        $('#importResult').hide().html('');
+      });
+    }
+
+    $('#btn-import-teams').on('click', function() { showImportModal('teams'); });
+    $('#btn-import-players').on('click', function() { showImportModal('players'); });
+    $('#closeImportModal').on('click', function() { hideImportModal(); });
+
+    $(document).on('click', '#importModalBackdrop', function(event) {
+      if ($(event.target).is('#importModalBackdrop')) hideImportModal();
+    });
+
+    $('#importXlsxBtn').on('click', function() {
+      const fileInput = $('#importXlsxFile')[0];
+      if (!fileInput.files.length) {
+        alert('Выберите файл .xlsx для импорта.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('xlsxFile', fileInput.files[0]);
+
+      $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Importing...');
+
+      $.ajax({
+        url: importEndpoint,
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+          const msg = response.message || 'Импорт завершён';
+          $('#importResult')
+            .removeClass('error')
+            .css({ background: 'rgba(34,197,94,0.1)', border: '1px solid #22c55e', color: '#22c55e' })
+            .html('<i class="fas fa-check-circle"></i> ' + msg)
+            .show();
+          setTimeout(function() {
+            hideImportModal();
+            location.reload();
+          }, 1800);
+        },
+        error: function(xhr) {
+          const err = xhr.responseJSON ? xhr.responseJSON.error : xhr.statusText;
+          $('#importResult')
+            .css({ background: 'rgba(239,68,68,0.1)', border: '1px solid #ef4444', color: '#ef4444' })
+            .html('<i class="fas fa-exclamation-circle"></i> Ошибка: ' + err)
+            .show();
+        },
+        complete: function() {
+          $('#importXlsxBtn').prop('disabled', false).html('<i class="fas fa-cloud-upload-alt"></i> Import');
+        }
+      });
+    });
   });
   </script>
 </body>

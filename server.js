@@ -6,6 +6,7 @@ const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
 const cors = require('cors'); // <--- ╨ú╨▒╨╡╨┤╨╕╤é╨╡╤ü╤î, ╤ç╤é╨╛ ╤ì╤é╨░ ╤ü╤é╤Ç╨╛╨║╨░ ╨╡╤ü╤é╤î
+const xlsx = require('xlsx');
 
 const app = express();
 const port = process.env.PORT || 2727;
@@ -119,6 +120,21 @@ const storagePlayers = multer.diskStorage({
   }
 });
 const uploadPlayers = multer({ storage: storagePlayers });
+
+// ------------------------------
+// Настройка Multer для импорта xlsx файлов (в памяти)
+// ------------------------------
+const uploadXlsx = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.xlsx' || ext === '.xls') {
+      cb(null, true);
+    } else {
+      cb(new Error('Разрешены только файлы .xlsx и .xls'), false);
+    }
+  }
+});
 
 function fixUrl(url) {
   if (!url) return url; // ╨ò╤ü╨╗╨╕ URL ╨┐╤â╤ü╤é╨╛╨╣, ╨▓╨╛╨╖╨▓╤Ç╨░╤ë╨░╨╡╨╝ ╨║╨░╨║ ╨╡╤ü╤é╤î
@@ -980,6 +996,128 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   const filePath = '/players/' + req.file.filename;
   res.json({ path: filePath });
+});
+
+// ================================
+// === ИМПОРТ ИЗ XLSX ФАЙЛОВ ===
+// ================================
+
+// POST /api/import/teams — импорт команд из xlsx
+app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Файл не загружен' });
+
+  try {
+    const wb = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = xlsx.utils.sheet_to_json(ws, { header: 1 });
+
+    if (rows.length < 2) return res.status(400).json({ error: 'Файл пуст или не содержит данных' });
+
+    const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
+    const teamNameIdx = headers.findIndex(h => h === 'team name');
+
+    if (teamNameIdx === -1) return res.status(400).json({ error: 'Колонка "Team name" не найдена в файле' });
+
+    let created = 0, skipped = 0;
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const name = row[teamNameIdx] ? String(row[teamNameIdx]).trim() : null;
+      if (!name) continue;
+
+      const exists = teams.find(t => t.name.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        skipped++;
+        continue;
+      }
+
+      const newTeam = { id: Date.now().toString() + '_' + i, name, logo: null, score: 0 };
+      teams.push(newTeam);
+      created++;
+    }
+
+    if (created > 0) saveData();
+    res.json({
+      message: `Импорт завершён: создано ${created} команд, пропущено ${skipped} (уже существуют)`,
+      created,
+      skipped
+    });
+  } catch (err) {
+    console.error('Ошибка при парсинге xlsx:', err);
+    res.status(500).json({ error: 'Ошибка при разборе файла: ' + err.message });
+  }
+});
+
+// POST /api/import/players — импорт игроков из xlsx
+app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Файл не загружен' });
+
+  try {
+    const wb = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = xlsx.utils.sheet_to_json(ws, { header: 1 });
+
+    if (rows.length < 2) return res.status(400).json({ error: 'Файл пуст или не содержит данных' });
+
+    const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
+    const usernameIdx = headers.findIndex(h => h === 'username');
+    const steamIdIdx = headers.findIndex(h => h === 'steamid');
+    const teamNameIdx = headers.findIndex(h => h === 'team name');
+
+    if (usernameIdx === -1) return res.status(400).json({ error: 'Колонка "Username" не найдена в файле' });
+
+    let created = 0, skipped = 0;
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const name = row[usernameIdx] ? String(row[usernameIdx]).trim() : null;
+      if (!name) continue;
+
+      const steamId = (steamIdIdx !== -1 && row[steamIdIdx]) ? String(row[steamIdIdx]).trim() : null;
+
+      // Проверяем существование по steamId (приоритет) или по нику
+      let exists = null;
+      if (steamId) {
+        exists = players.find(p => p.steamId && p.steamId.toLowerCase() === steamId.toLowerCase());
+      }
+      if (!exists) {
+        exists = players.find(p => p.name.toLowerCase() === name.toLowerCase());
+      }
+      if (exists) {
+        skipped++;
+        continue;
+      }
+
+      // Ищем команду по имени
+      let teamId = null;
+      if (teamNameIdx !== -1 && row[teamNameIdx]) {
+        const teamName = String(row[teamNameIdx]).trim();
+        const teamObj = teams.find(t => t.name.toLowerCase() === teamName.toLowerCase());
+        if (teamObj) teamId = teamObj.id;
+      }
+
+      const newPlayer = {
+        id: Date.now().toString() + '_' + i,
+        name,
+        steamId: steamId || null,
+        photo: null,
+        teamId,
+        match_stats: {}
+      };
+      players.push(newPlayer);
+      created++;
+    }
+
+    if (created > 0) saveData();
+    res.json({
+      message: `Импорт завершён: создано ${created} игроков, пропущено ${skipped} (уже существуют)`,
+      created,
+      skipped
+    });
+  } catch (err) {
+    console.error('Ошибка при парсинге xlsx:', err);
+    res.status(500).json({ error: 'Ошибка при разборе файла: ' + err.message });
+  }
 });
 
 // ================================
