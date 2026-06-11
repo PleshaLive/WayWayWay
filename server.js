@@ -1062,6 +1062,12 @@ app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
     if (rows.length < 2) return res.status(400).json({ error: 'Файл пуст или не содержит данных' });
 
     const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
+
+    // Защита от случайной загрузки файла игроков в импорт команд
+    if (headers.includes('username') || headers.includes('steamid')) {
+      return res.status(400).json({ error: 'Похоже, вы загрузили файл игроков. Для импорта команд используйте файл с колонкой "Team name" без колонок Username/SteamID.' });
+    }
+
     const teamNameIdx = headers.findIndex(h => h === 'team name');
     const logoIdx = headers.findIndex(h => ['logo', 'team logo', 'avatar'].includes(h));
 
