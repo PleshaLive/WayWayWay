@@ -652,7 +652,7 @@
     padding: 1rem 1.2rem; border-bottom: 1px solid var(--border2);
     display: flex; align-items: center; justify-content: space-between;
   }
-  .modal-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+  .modal-title { font-size: 0.85rem; font-weight: 700; color: var(--text); min-width: 0; flex: 1; }
   .modal-close-btn {
     background: transparent; border: none; color: var(--muted);
     cursor: pointer; font-size: 1.3rem; padding: 0 0.3rem; border-radius: 4px;
@@ -1265,51 +1265,113 @@ document.getElementById('filter-history').addEventListener('input', function() {
 function openMatchDetail(id) {
   const m = _allHistory.find(x => x.id === id);
   if (!m) return;
-  const players = Object.values(m.players||{}).sort((a,b) => b.galaxyRating - a.galaxyRating);
+
+  const allPlayers = Object.values(m.players||{});
+  // Split by _team, fallback: first half CT second half T by rating
+  let ctPlayers = allPlayers.filter(p => p._team === 'CT').sort((a,b) => b.galaxyRating - a.galaxyRating);
+  let tPlayers  = allPlayers.filter(p => p._team === 'T' ).sort((a,b) => b.galaxyRating - a.galaxyRating);
+  if (!ctPlayers.length && !tPlayers.length) {
+    // no team info — just sort by rating
+    ctPlayers = allPlayers.sort((a,b) => b.galaxyRating - a.galaxyRating);
+  }
+
+  const ctInfo = m.teamCT || {};
+  const tInfo  = m.teamT  || {};
   const ro = m.roundOutcomes || {};
+
   const roChips = [
     ro.ct_win_defuse      && `<div class="chip chip-ct">💣 Defuse: ${ro.ct_win_defuse}</div>`,
     ro.ct_win_elimination && `<div class="chip chip-ct">🔫 CT Elim: ${ro.ct_win_elimination}</div>`,
-    ro.ct_win_time        && `<div class="chip chip-n">⏱ CT Time: ${ro.ct_win_time}</div>`,
+    ro.ct_win_time        && `<div class="chip chip-n">⏱ Time: ${ro.ct_win_time}</div>`,
     ro.t_win_bomb         && `<div class="chip chip-t">💥 Bomb: ${ro.t_win_bomb}</div>`,
     ro.t_win_elimination  && `<div class="chip chip-t">🔫 T Elim: ${ro.t_win_elimination}</div>`,
   ].filter(Boolean).join('');
-  document.getElementById('modal-title').textContent =
-    `${(m.mapName||'').replace('de_','').toUpperCase()} — ${m.teamCT?.name||'CT'} ${m.teamCT?.score??0} : ${m.teamT?.score??0} ${m.teamT?.name||'T'}`;
+
+  function teamLogoHtml(logo, name, size=26) {
+    return logo
+      ? `<img src="${logo}" alt="${name||''}" style="width:${size}px;height:${size}px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">`
+      : '';
+  }
+
+  function modalRows(players, side) {
+    const accentColor = side === 'CT' ? 'rgba(56,189,248,0.55)' : 'rgba(245,158,11,0.55)';
+    const rowBg       = side === 'CT' ? 'rgba(56,189,248,0.03)'  : 'rgba(245,158,11,0.03)';
+    return players.map(p => {
+      const mkStr = p.fiveKills  ? `<span style="color:#34d399">${p.fiveKills}×5K</span>` :
+                    p.fourKills  ? `<span style="color:#a78bfa">${p.fourKills}×4K</span>` :
+                    p.threeKills ? `<span style="color:#60a5fa">${p.threeKills}×3K</span>` : '—';
+      return `<tr style="background:${rowBg}">
+        <td style="border-left:3px solid ${accentColor};padding-left:0.7rem">
+          <div class="modal-player">
+            ${ava(p.photo, p.name, 'modal-avatar', 'modal-avatar-ph')}
+            <div>
+              <a href="${plink(p.steamId)}" style="font-size:0.82rem;font-weight:700;color:var(--text);text-decoration:none;display:block" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color=''">${p.name||p.steamId||'—'}</a>
+              <div style="font-size:0.6rem;color:${side==='CT'?'#38bdf8':'#f59e0b'};font-weight:700;letter-spacing:0.06em">${side}</div>
+            </div>
+          </div>
+        </td>
+        <td class="r" style="font-weight:700;color:var(--text)">${p.kills}</td>
+        <td class="r">${p.deaths}</td><td class="r">${p.assists}</td>
+        <td class="r">${p.adr}</td>
+        <td class="r" style="color:${p.kd>=1?'#34d399':'#f87171'}">${p.kd}</td>
+        <td class="r">${p.kast}%</td>
+        <td class="r">${p.hsRate!==undefined ? p.hsRate+'%' : hs(p.kills,p.headshots)}</td>
+        <td class="r" style="color:#fbbf24">${p.mvps||0}</td>
+        <td class="r">${mkStr}</td>
+        <td class="r">${ratingBar(p.galaxyRating)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function sectionHeader(teamInfo, side, score) {
+    const c = side === 'CT' ? '#38bdf8' : '#f59e0b';
+    const bg = side === 'CT' ? 'rgba(56,189,248,0.07)' : 'rgba(245,158,11,0.07)';
+    const border = side === 'CT' ? 'rgba(56,189,248,0.2)' : 'rgba(245,158,11,0.2)';
+    return `<tr>
+      <td colspan="11" style="padding:0.5rem 0.8rem;background:${bg};border-top:1px solid ${border};border-bottom:1px solid ${border}">
+        <div style="display:flex;align-items:center;gap:0.6rem">
+          ${teamLogoHtml(teamInfo.logo, teamInfo.name, 22)}
+          <span style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:${c}">${teamInfo.name||side}</span>
+          <span style="font-size:0.75rem;font-weight:900;color:${c};margin-left:auto">${score} rounds</span>
+          <div style="font-size:0.6rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:4px;background:${bg};border:1px solid ${border};color:${c}">${side}</div>
+        </div>
+      </td>
+    </tr>`;
+  }
+
+  document.getElementById('modal-title').innerHTML =
+    `<div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap">
+      ${teamLogoHtml(ctInfo.logo, ctInfo.name, 20)}
+      <span style="color:#38bdf8;font-weight:900">${ctInfo.name||'CT'}</span>
+      <span style="color:#38bdf8;font-weight:900;font-size:1.1rem">${ctInfo.score??0}</span>
+      <span style="color:var(--muted);font-weight:300;font-size:0.9rem">:</span>
+      <span style="color:#f59e0b;font-weight:900;font-size:1.1rem">${tInfo.score??0}</span>
+      <span style="color:#f59e0b;font-weight:900">${tInfo.name||'T'}</span>
+      ${teamLogoHtml(tInfo.logo, tInfo.name, 20)}
+      <span style="color:var(--muted);font-size:0.75rem;font-weight:600;margin-left:0.2rem">— ${(m.mapName||'').replace('de_','').toUpperCase()}</span>
+    </div>`;
+
   document.getElementById('modal-body').innerHTML = `
-    <div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.6rem">
-      <i class="fas fa-calendar"></i> ${new Date(m.startedAt||m.finishedAt).toLocaleString()}
-      &nbsp;·&nbsp; ${m.roundCount||0} rounds
-      ${m.winner ? `&nbsp;·&nbsp; <span style="color:#34d399">🏆 ${m.winner}</span>` : ''}
+    <div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap">
+      <span><i class="fas fa-calendar"></i> ${new Date(m.startedAt||m.finishedAt).toLocaleString()}</span>
+      <span>·</span><span>${m.roundCount||0} rounds</span>
+      ${m.winner ? `<span>·</span><span style="color:#34d399">🏆 ${m.winner}</span>` : ''}
     </div>
     ${roChips ? `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1rem">${roChips}</div>` : ''}
+    <div style="overflow-x:auto">
     <table class="modal-table">
       <thead><tr>
         <th>Player</th><th class="r">K</th><th class="r">D</th><th class="r">A</th>
         <th class="r">ADR</th><th class="r">K/D</th><th class="r">KAST%</th>
         <th class="r">HS%</th><th class="r">MVP</th><th class="r">MK</th><th class="r">Rating</th>
       </tr></thead>
-      <tbody>${players.map(p => {
-        const mkStr = p.fiveKills ? `<span style="color:#34d399">${p.fiveKills}×5K</span>` :
-                      p.fourKills ? `<span style="color:#a78bfa">${p.fourKills}×4K</span>` :
-                      p.threeKills ? `<span style="color:#60a5fa">${p.threeKills}×3K</span>` : '—';
-        return `<tr>
-          <td><div class="modal-player">
-            ${ava(p.photo, p.name, 'modal-avatar', 'modal-avatar-ph')}
-            <a href="${plink(p.steamId)}" style="font-size:0.82rem;font-weight:600;color:var(--text);text-decoration:none" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color=''">${p.name||p.steamId||'—'}</a>
-          </div></td>
-          <td class="r" style="font-weight:700;color:var(--text)">${p.kills}</td>
-          <td class="r">${p.deaths}</td><td class="r">${p.assists}</td>
-          <td class="r">${p.adr}</td>
-          <td class="r" style="color:${p.kd>=1?'#34d399':'#f87171'}">${p.kd}</td>
-          <td class="r">${p.kast}%</td>
-          <td class="r">${p.hsRate!==undefined ? p.hsRate+'%' : hs(p.kills,p.headshots)}</td>
-          <td class="r" style="color:#fbbf24">${p.mvps||0}</td>
-          <td class="r">${mkStr}</td>
-          <td class="r">${ratingBar(p.galaxyRating)}</td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table>`;
+      <tbody>
+        ${ctPlayers.length ? sectionHeader(ctInfo, 'CT', ctInfo.score??0) + modalRows(ctPlayers, 'CT') : ''}
+        ${tPlayers.length  ? sectionHeader(tInfo,  'T',  tInfo.score??0)  + modalRows(tPlayers,  'T')  : ''}
+      </tbody>
+    </table>
+    </div>`;
+
   document.getElementById('modal-bg').classList.add('open');
 }
 
