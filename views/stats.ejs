@@ -313,6 +313,7 @@
     <button class="tab-btn" data-tab="players"><i class="fas fa-trophy"></i> <span>Player Ratings</span></button>
     <button class="tab-btn" data-tab="teams"><i class="fas fa-users"></i> <span>Team Ratings</span></button>
     <button class="tab-btn" data-tab="history"><i class="fas fa-history"></i> <span>Match History</span></button>
+    <button class="tab-btn" data-tab="maps"><i class="fas fa-map"></i> <span>Map Stats</span></button>
     <button class="tab-btn" data-tab="h2h"><i class="fas fa-exchange-alt"></i> <span>Head 2 Head</span></button>
   </div>
 
@@ -359,7 +360,10 @@
                 <th>Player</th>
                 <th class="r">K</th><th class="r">D</th><th class="r">A</th>
                 <th class="r">ADR</th><th class="r">K/D</th><th class="r">KAST%</th>
-                <th class="r">HS%</th><th class="r" title="GalaxyRating">Rating</th>
+                <th class="r">HS%</th><th class="r">MVP</th>
+                <th class="r" title="3K/4K/5K">MK</th>
+                <th class="r" title="Bomb Plants">BP</th>
+                <th class="r" title="GalaxyRating">Rating</th>
               </tr></thead>
               <tbody id="tbody-ct"></tbody>
             </table>
@@ -376,7 +380,10 @@
                 <th>Player</th>
                 <th class="r">K</th><th class="r">D</th><th class="r">A</th>
                 <th class="r">ADR</th><th class="r">K/D</th><th class="r">KAST%</th>
-                <th class="r">HS%</th><th class="r" title="GalaxyRating">Rating</th>
+                <th class="r">HS%</th><th class="r">MVP</th>
+                <th class="r" title="3K/4K/5K">MK</th>
+                <th class="r" title="Bomb Plants">BP</th>
+                <th class="r" title="GalaxyRating">Rating</th>
               </tr></thead>
               <tbody id="tbody-t"></tbody>
             </table>
@@ -407,7 +414,14 @@
             <th class="r" data-sort="adr">ADR</th>
             <th class="r" data-sort="kd">K/D</th>
             <th class="r" data-sort="kast">KAST%</th>
-            <th class="r" data-sort="headshots">HS</th>
+            <th class="r" data-sort="hsRate">HS%</th>
+            <th class="r" data-sort="mvps">MVP</th>
+            <th class="r" data-sort="firstKills" title="Entry Kills">EK</th>
+            <th class="r" data-sort="threeKills" title="3K rounds">3K</th>
+            <th class="r" data-sort="fourKills"  title="4K rounds">4K</th>
+            <th class="r" data-sort="fiveKills"  title="Ace rounds">5K</th>
+            <th class="r" data-sort="bombPlants"  title="Bomb Plants">BP</th>
+            <th class="r" data-sort="bombDefuses" title="Bomb Defuses">BD</th>
             <th class="r" data-sort="kpr">KPR</th>
             <th class="r" data-sort="galaxyRating">GalaxyRating</th>
           </tr></thead>
@@ -445,6 +459,35 @@
         <div class="history-list" id="history-list">
           <div class="no-data">No match history yet.</div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ TAB: MAPS ═══ -->
+  <div class="tab-panel" id="tab-maps">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-map"></i> Map Statistics</div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="stats-table" id="tbl-maps">
+          <thead><tr>
+            <th>Map</th>
+            <th class="r">Matches</th>
+            <th class="r">Avg Rounds</th>
+            <th class="r" style="color:#38bdf8">CT Wins</th>
+            <th class="r" style="color:#fbbf24">T Wins</th>
+            <th class="r">Draws</th>
+            <th style="min-width:160px">CT vs T Win Rate</th>
+            <th class="r" title="CT Elimination wins">CT Elim</th>
+            <th class="r" title="CT Defuse wins">Defuse</th>
+            <th class="r" title="CT Timeout wins">CT Time</th>
+            <th class="r" title="T Bomb wins">Bomb</th>
+            <th class="r" title="T Elimination wins">T Elim</th>
+          </tr></thead>
+          <tbody id="tbody-maps"></tbody>
+        </table>
+        <div class="no-data" id="no-maps" style="display:none">No map stats yet. Finish some matches!</div>
       </div>
     </div>
   </div>
@@ -560,7 +603,10 @@ function applySortHeaders(tableId, data, renderFn) {
 // MATCH TAB
 // ─────────────────────────────────────────────────────────────────────────
 function playerMatchRow(p, allPlayers) {
-  const hsStr = hs(p.kills, p.headshots);
+  const hsStr  = p.hsRate !== undefined ? p.hsRate + '%' : hs(p.kills, p.headshots);
+  const mkStr  = p.fiveKills ? `<span class="val-good">${p.fiveKills}×5K</span>` :
+                 p.fourKills ? `<span style="color:#a78bfa">${p.fourKills}×4K</span>` :
+                 p.threeKills ? `<span style="color:#60a5fa">${p.threeKills}×3K</span>` : '—';
   return `<tr>
     <td><div class="player-cell">${avatar(p.photo, p.name)}
       <div><div class="player-name-text">${p.name || p.steamId || '—'}</div></div>
@@ -572,6 +618,9 @@ function playerMatchRow(p, allPlayers) {
     <td class="r ${p.kd >= 1 ? 'val-good' : 'val-bad'}">${fmt(p.kd)}</td>
     <td class="r">${fmt(p.kast)}%</td>
     <td class="r">${hsStr}</td>
+    <td class="r">${fmt(p.mvps)}</td>
+    <td class="r">${mkStr}</td>
+    <td class="r">${p.bombPlants ? `<span style="color:#fbbf24">${p.bombPlants}</span>` : (p.bombDefuses ? `<span style="color:#38bdf8">${p.bombDefuses}D</span>` : '—')}</td>
     <td class="r">${ratingBar(p.galaxyRating, 2)}</td>
   </tr>`;
 }
@@ -626,6 +675,7 @@ function renderGlobalPlayersTable(data) {
                : i === 1 ? `<span class="rank-2">2</span>`
                : i === 2 ? `<span class="rank-3">3</span>`
                : i + 1;
+    const mkStr = (p.fiveKills || 0) + '/' + (p.fourKills || 0) + '/' + (p.threeKills || 0);
     return `<tr>
       <td class="c">${rank}</td>
       <td><div class="player-cell">${avatar(p.photo, p.name)}
@@ -641,7 +691,14 @@ function renderGlobalPlayersTable(data) {
       <td class="r">${fmt(p.adr)}</td>
       <td class="r ${p.kd >= 1 ? 'val-good':'val-bad'}">${fmt(p.kd)}</td>
       <td class="r">${fmt(p.kast)}%</td>
-      <td class="r">${fmt(p.headshots)}</td>
+      <td class="r">${fmt(p.hsRate)}%</td>
+      <td class="r">${fmt(p.mvps)}</td>
+      <td class="r" title="Entry Kills">${fmt(p.firstKills)}</td>
+      <td class="r ${p.threeKills?'val-ok':''}">${fmt(p.threeKills)}</td>
+      <td class="r ${p.fourKills?'':''}" style="${p.fourKills?'color:#a78bfa':''}">${fmt(p.fourKills)}</td>
+      <td class="r ${p.fiveKills?'val-good':''}">${fmt(p.fiveKills)}</td>
+      <td class="r" style="color:#fbbf24">${fmt(p.bombPlants)}</td>
+      <td class="r" style="color:#38bdf8">${fmt(p.bombDefuses)}</td>
       <td class="r">${fmt(p.kpr)}</td>
       <td class="r">${ratingBar(p.galaxyRating, 2)}</td>
     </tr>`;
@@ -719,34 +776,97 @@ function openMatchDetail(id) {
   const m = allHistory.find(x => x.id === id);
   if (!m) return;
   const players = Object.values(m.players || {}).sort((a,b) => b.galaxyRating - a.galaxyRating);
+  const ro = m.roundOutcomes || {};
+  const roHtml = Object.keys(ro).length ? `
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.6rem;margin-bottom:0.8rem">
+      ${ro.ct_win_defuse      ? `<span style="font-size:0.68rem;padding:0.1rem 0.5rem;border-radius:4px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);color:#38bdf8">💣 Defuse: ${ro.ct_win_defuse}</span>` : ''}
+      ${ro.ct_win_elimination ? `<span style="font-size:0.68rem;padding:0.1rem 0.5rem;border-radius:4px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#818cf8">🔫 CT Elim: ${ro.ct_win_elimination}</span>` : ''}
+      ${ro.ct_win_time        ? `<span style="font-size:0.68rem;padding:0.1rem 0.5rem;border-radius:4px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#818cf8">⏱ CT Time: ${ro.ct_win_time}</span>` : ''}
+      ${ro.t_win_bomb         ? `<span style="font-size:0.68rem;padding:0.1rem 0.5rem;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);color:#fbbf24">💥 Bomb: ${ro.t_win_bomb}</span>` : ''}
+      ${ro.t_win_elimination  ? `<span style="font-size:0.68rem;padding:0.1rem 0.5rem;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);color:#fbbf24">🔫 T Elim: ${ro.t_win_elimination}</span>` : ''}
+    </div>` : '';
   document.getElementById('modal-title').textContent =
     `${(m.mapName||'').replace('de_','').toUpperCase()} — ${m.teamCT?.name||'CT'} ${m.teamCT?.score??0} : ${m.teamT?.score??0} ${m.teamT?.name||'T'}`;
   document.getElementById('modal-body').innerHTML = `
-    <div style="margin-bottom:0.8rem;font-size:0.72rem;color:var(--muted)">
+    <div style="margin-bottom:0.4rem;font-size:0.72rem;color:var(--muted)">
       <i class="fas fa-calendar"></i> ${new Date(m.startedAt||m.finishedAt).toLocaleString()}
       &nbsp;·&nbsp; ${m.roundCount||0} rounds
       ${m.winner ? `&nbsp;·&nbsp; <span style="color:#4ade80">Winner: ${m.winner}</span>` : ''}
     </div>
+    ${roHtml}
     <table class="stats-table">
       <thead><tr>
         <th>Player</th><th class="r">K</th><th class="r">D</th><th class="r">A</th>
         <th class="r">ADR</th><th class="r">K/D</th><th class="r">KAST%</th>
-        <th class="r">HS%</th><th class="r">Rating</th>
+        <th class="r">HS%</th><th class="r">MVP</th>
+        <th class="r" title="3K/4K/5K">MK</th>
+        <th class="r" title="Bomb">Bomb</th>
+        <th class="r">Rating</th>
       </tr></thead>
-      <tbody>${players.map(p => `<tr>
-        <td><div class="player-cell">${avatar(p.photo, p.name)}
-          <div class="player-name-text">${p.name||p.steamId||'—'}</div>
-        </div></td>
-        <td class="r val-hi">${p.kills}</td><td class="r">${p.deaths}</td><td class="r">${p.assists}</td>
-        <td class="r">${p.adr}</td>
-        <td class="r ${p.kd>=1?'val-good':'val-bad'}">${p.kd}</td>
-        <td class="r">${p.kast}%</td>
-        <td class="r">${hs(p.kills, p.headshots)}</td>
-        <td class="r">${ratingBar(p.galaxyRating, 2)}</td>
-      </tr>`).join('')}</tbody>
+      <tbody>${players.map(p => {
+        const mkStr = p.fiveKills ? `<span class="val-good">${p.fiveKills}×5K</span>` :
+                      p.fourKills ? `<span style="color:#a78bfa">${p.fourKills}×4K</span>` :
+                      p.threeKills ? `<span style="color:#60a5fa">${p.threeKills}×3K</span>` : '—';
+        const bombStr = p.bombPlants  ? `<span style="color:#fbbf24">${p.bombPlants}P</span>` :
+                        p.bombDefuses ? `<span style="color:#38bdf8">${p.bombDefuses}D</span>` : '—';
+        return `<tr>
+          <td><div class="player-cell">${avatar(p.photo, p.name)}
+            <div class="player-name-text">${p.name||p.steamId||'—'}</div>
+          </div></td>
+          <td class="r val-hi">${p.kills}</td><td class="r">${p.deaths}</td><td class="r">${p.assists}</td>
+          <td class="r">${p.adr}</td>
+          <td class="r ${p.kd>=1?'val-good':'val-bad'}">${p.kd}</td>
+          <td class="r">${p.kast}%</td>
+          <td class="r">${p.hsRate !== undefined ? p.hsRate + '%' : hs(p.kills, p.headshots)}</td>
+          <td class="r">${p.mvps || 0}</td>
+          <td class="r">${mkStr}</td>
+          <td class="r">${bombStr}</td>
+          <td class="r">${ratingBar(p.galaxyRating, 2)}</td>
+        </tr>`;
+      }).join('')}</tbody>
     </table>
   `;
   document.getElementById('modal-bg').classList.add('open');
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// MAPS TAB
+// ─────────────────────────────────────────────────────────────────────────
+function renderMapsTab(data) {
+  const tbody  = document.getElementById('tbody-maps');
+  const noData = document.getElementById('no-maps');
+  if (!data || !data.length) { tbody.innerHTML = ''; noData.style.display = ''; return; }
+  noData.style.display = 'none';
+  tbody.innerHTML = data.map(m => {
+    const ro = m.roundOutcomes || {};
+    const ctTotal = (ro.ct_win_elimination || 0) + (ro.ct_win_defuse || 0) + (ro.ct_win_time || 0);
+    const tTotal  = (ro.t_win_elimination  || 0) + (ro.t_win_bomb   || 0);
+    const allRounds = ctTotal + tTotal;
+    const ctRoundPct = allRounds > 0 ? ((ctTotal / allRounds) * 100).toFixed(0) : 50;
+    return `<tr>
+      <td><span style="font-weight:700;font-size:0.95rem;color:var(--primary)">${m.displayName}</span>
+          <div style="font-size:0.65rem;color:var(--muted)">${m.name}</div></td>
+      <td class="r">${m.matchCount}</td>
+      <td class="r">${m.avgRounds}</td>
+      <td class="r" style="color:#38bdf8;font-weight:700">${m.ctWins}</td>
+      <td class="r" style="color:#fbbf24;font-weight:700">${m.tWins}</td>
+      <td class="r">${m.draws}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.7rem">
+          <span style="color:#38bdf8;min-width:32px;text-align:right">${m.ctWinRate}%</span>
+          <div style="flex:1;height:6px;border-radius:3px;background:rgba(245,158,11,0.3);overflow:hidden">
+            <div style="width:${m.ctWinRate}%;height:100%;background:#38bdf8;border-radius:3px"></div>
+          </div>
+          <span style="color:#fbbf24;min-width:32px">${m.tWinRate}%</span>
+        </div>
+      </td>
+      <td class="r">${ro.ct_win_elimination || 0}</td>
+      <td class="r">${ro.ct_win_defuse      || 0}</td>
+      <td class="r">${ro.ct_win_time        || 0}</td>
+      <td class="r" style="color:#fbbf24">${ro.t_win_bomb       || 0}</td>
+      <td class="r">${ro.t_win_elimination  || 0}</td>
+    </tr>`;
+  }).join('');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -820,14 +940,15 @@ document.getElementById('h2h-go').addEventListener('click', () => {
 // ─────────────────────────────────────────────────────────────────────────
 async function fetchAll() {
   try {
-    const [matchRes, playersRes, teamsRes, histRes] = await Promise.all([
+    const [matchRes, playersRes, teamsRes, histRes, mapsRes] = await Promise.all([
       fetch('/api/stats/match'),
       fetch('/api/stats/players'),
       fetch('/api/stats/teams'),
       fetch('/api/stats/history?limit=50'),
+      fetch('/api/stats/maps'),
     ]);
-    const [matchData, playersData, teamsData, histData] = await Promise.all([
-      matchRes.json(), playersRes.json(), teamsRes.json(), histRes.json(),
+    const [matchData, playersData, teamsData, histData, mapsData] = await Promise.all([
+      matchRes.json(), playersRes.json(), teamsRes.json(), histRes.json(), mapsRes.json(),
     ]);
 
     // Match
@@ -849,6 +970,9 @@ async function fetchAll() {
       ...allHistory.map(m => m.teamT?.name).filter(Boolean),
     ])].sort();
     populateH2HSelects(teamNames);
+
+    // Maps
+    renderMapsTab(mapsData || []);
 
     // Timestamp
     document.getElementById('lastUpdate').innerHTML =

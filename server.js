@@ -1058,6 +1058,11 @@ app.get('/api/stats/global', (req, res) => {
   res.json(stats.getGlobalStats());
 });
 
+// GET /api/stats/maps — статистика по картам
+app.get('/api/stats/maps', (req, res) => {
+  res.json(stats.getMapStats());
+});
+
 // ================================
 // === ИМПОРТ ИЗ XLSX ФАЙЛОВ ===
 // ================================

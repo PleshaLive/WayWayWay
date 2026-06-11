@@ -14,17 +14,30 @@ const STATS_FILE = path.join(__dirname, 'stats.json');
 
 function emptyPlayerStats() {
   return {
+    // Cumulative match stats
     kills: 0, deaths: 0, assists: 0,
     headshots: 0,
-    damage: 0,       // total damage this match (accumulated)
-    rounds: 0,       // rounds participated in
-    kastRounds: 0,   // rounds with Kill / Assist / Survived / Traded
-    firstKills: 0,
-    // per-round scratch for KAST detection
+    damage: 0,
+    rounds: 0,
+    kastRounds: 0,
+    mvps: 0,
+    score: 0,
+    // Combat detail
+    firstKills:  0,   // entry/opening kills (first kill of round for team)
+    firstDeaths: 0,   // first to die per round per team
+    threeKills:  0,   // rounds with 3 kills
+    fourKills:   0,   // rounds with 4 kills
+    fiveKills:   0,   // aces
+    bombPlants:  0,
+    bombDefuses: 0,
+    // Per-round scratch (reset each round)
     _roundKills: 0, _roundAssists: 0, _survived: false, _traded: false,
-    _lastRoundSeen: -1,
-    _team: '',       // 'CT' or 'T'
-    _name: '',       // player name from GSI
+    _lastRoundSeen:  -1,
+    _maxRoundKills:  0,
+    _prevRoundKills: 0,
+    _prevHealth:   100,
+    _team: '',
+    _name: '',
   };
 }
 
@@ -34,8 +47,6 @@ function emptyTeamStats() {
     logo: null,
     roundsWon: 0,
     roundsLost: 0,
-    totalKills: 0,
-    totalDamage: 0,
   };
 }
 
@@ -76,9 +87,10 @@ function loadStats() {
     try {
       statsData = JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'));
       // ensure shape
-      statsData.global         = statsData.global         || { players: {}, teams: {} };
+      statsData.global         = statsData.global         || { players: {}, teams: {}, maps: {} };
       statsData.global.players = statsData.global.players || {};
       statsData.global.teams   = statsData.global.teams   || {};
+      statsData.global.maps    = statsData.global.maps    || {};
       statsData.matchHistory   = statsData.matchHistory   || [];
     } catch (e) {
       console.error('[stats] Failed to load stats.json:', e.message);
@@ -107,11 +119,16 @@ function freshMatch(mapName, teamCT, teamT) {
     finishedAt: null,
     teamCT: { name: teamCT?.name || 'CT', logo: null, score: 0 },
     teamT:  { name: teamT?.name  || 'T',  logo: null, score: 0 },
-    players: {},    // steamId → emptyPlayerStats()
+    players: {},
     roundCount: 0,
-    // scratch
+    roundOutcomes: {},   // roundNum → outcome code string
     _lastRoundCount: 0,
     _prevPhase: null,
+    _ctEntryDone:      false,
+    _tEntryDone:       false,
+    _ctFirstDeathDone: false,
+    _tFirstDeathDone:  false,
+    _prevBombState: '',
   };
 }
 
@@ -188,16 +205,41 @@ function _processGsi(data, playersDb, teamsDb) {
   if (!currentMatch.teamCT.logo) currentMatch.teamCT.logo = resolveTeamLogo(currentMatch.teamCT.name, teamsDb);
   if (!currentMatch.teamT.logo)  currentMatch.teamT.logo  = resolveTeamLogo(currentMatch.teamT.name,  teamsDb);
 
-  // ── 3. Detect new round ────────────────────────────────────────────────────
-  const newRound = roundCount > currentMatch._lastRoundCount;
-  if (newRound) {
-    currentMatch.roundCount       = roundCount;
-    currentMatch._lastRoundCount  = roundCount;
-    // Commit per-round scratch for KAST
-    _commitRoundKast(currentMatch);
+  // ── 3. Track round outcomes ────────────────────────────────────────────────
+  for (const rk in roundWins) {
+    const rNum = parseInt(rk);
+    if (!currentMatch.roundOutcomes[rNum]) {
+      currentMatch.roundOutcomes[rNum] = roundWins[rk];
+    }
   }
 
-  // ── 4. Update per-player stats ────────────────────────────────────────────
+  // ── 4. Detect new round ────────────────────────────────────────────────────
+  const newRound = roundCount > currentMatch._lastRoundCount;
+  if (newRound) {
+    currentMatch.roundCount      = roundCount;
+    currentMatch._lastRoundCount = roundCount;
+    _commitRoundKast(currentMatch);
+    // Reset per-round entry kill / first death flags
+    currentMatch._ctEntryDone      = false;
+    currentMatch._tEntryDone       = false;
+    currentMatch._ctFirstDeathDone = false;
+    currentMatch._tFirstDeathDone  = false;
+  }
+
+  // ── 5. Bomb events ─────────────────────────────────────────────────────────
+  const bomb      = data.bomb || {};
+  const bombState = bomb.state || '';
+  if (bombState && bombState !== currentMatch._prevBombState) {
+    const bp = bomb.player ? String(bomb.player) : null;
+    if (bombState === 'planted' && bp && currentMatch.players[bp]) {
+      currentMatch.players[bp].bombPlants = (currentMatch.players[bp].bombPlants || 0) + 1;
+    } else if (bombState === 'defused' && bp && currentMatch.players[bp]) {
+      currentMatch.players[bp].bombDefuses = (currentMatch.players[bp].bombDefuses || 0) + 1;
+    }
+    currentMatch._prevBombState = bombState;
+  }
+
+  // ── 6. Update per-player stats ────────────────────────────────────────────
   for (const steamId in allplayers) {
     const gp = allplayers[steamId];
     if (!currentMatch.players[steamId]) {
@@ -206,34 +248,69 @@ function _processGsi(data, playersDb, teamsDb) {
     const ps = currentMatch.players[steamId];
     const ms = gp.match_stats || {};
 
-    // Store team and name from GSI
-    if (gp.team)  ps._team = gp.team;
-    if (gp.name)  ps._name = gp.name;
+    // Team and name from GSI
+    if (gp.team) ps._team = gp.team;
+    if (gp.name) ps._name = gp.name;
 
-    // Direct match_stats from GSI (cumulative over the whole match)
-    // Use explicit check to avoid || operator bug (0 is falsy)
+    // Direct match_stats (cumulative) — explicit check avoids || bug with 0
     if (ms.kills     !== undefined) ps.kills     = ms.kills;
     if (ms.deaths    !== undefined) ps.deaths    = ms.deaths;
     if (ms.assists   !== undefined) ps.assists   = ms.assists;
     if (ms.headshots !== undefined) ps.headshots = ms.headshots;
+    if (ms.mvps      !== undefined) ps.mvps      = ms.mvps;
+    if (ms.score     !== undefined) ps.score     = ms.score;
 
-    // Damage: we track accumulated via round_totaldmg resets (per-round)
+    // Damage via round_totaldmg
     const roundDmg = (gp.state && gp.state.round_totaldmg) || 0;
-    if (roundDmg > (ps._prevRoundDmg || 0)) {
-      ps._roundDmgCurrent = roundDmg;
-    } else if (roundDmg === 0 && (ps._prevRoundDmg || 0) > 0) {
-      // round flipped — add previous round's damage
-      ps.damage += ps._prevRoundDmg || 0;
+    if (roundDmg === 0 && (ps._prevRoundDmg || 0) > 0) {
+      ps.damage += ps._prevRoundDmg;
     }
     ps._prevRoundDmg = roundDmg;
 
-    // Rounds played = total rounds seen while this player was in the match
+    // Rounds played
     if (newRound && ps._lastRoundSeen < roundCount) {
       ps.rounds = Math.max(ps.rounds, roundCount);
       ps._lastRoundSeen = roundCount;
     }
 
-    // Per-round KAST scratch
+    // Per-round kill count for multi-kill and entry kill detection
+    const currRoundKills = (gp.state && gp.state.round_kills != null) ? gp.state.round_kills : -1;
+    if (currRoundKills >= 0) {
+      if (currRoundKills > (ps._maxRoundKills || 0)) {
+        ps._maxRoundKills = currRoundKills;
+      }
+      // Entry kill: first kill event this round for this player's team
+      if (currRoundKills > 0 && (ps._prevRoundKills || 0) === 0) {
+        const team = gp.team || ps._team;
+        if (team === 'CT' && !currentMatch._ctEntryDone) {
+          ps.firstKills = (ps.firstKills || 0) + 1;
+          currentMatch._ctEntryDone = true;
+        } else if (team === 'T' && !currentMatch._tEntryDone) {
+          ps.firstKills = (ps.firstKills || 0) + 1;
+          currentMatch._tEntryDone = true;
+        }
+      }
+      ps._prevRoundKills = currRoundKills;
+    }
+
+    // First death detection (health >0 → 0 transition)
+    const health = gp.state ? gp.state.health : undefined;
+    if (health !== undefined) {
+      const prevHealth = ps._prevHealth != null ? ps._prevHealth : 100;
+      if (health === 0 && prevHealth > 0) {
+        const team = gp.team || ps._team;
+        if (team === 'CT' && !currentMatch._ctFirstDeathDone) {
+          ps.firstDeaths = (ps.firstDeaths || 0) + 1;
+          currentMatch._ctFirstDeathDone = true;
+        } else if (team === 'T' && !currentMatch._tFirstDeathDone) {
+          ps.firstDeaths = (ps.firstDeaths || 0) + 1;
+          currentMatch._tFirstDeathDone = true;
+        }
+      }
+      ps._prevHealth = health;
+    }
+
+    // KAST scratch
     if ((ms.kills || 0) > ps._roundKills) ps._roundKills = ms.kills || 0;
     if ((ms.assists || 0) > ps._roundAssists) ps._roundAssists = ms.assists || 0;
     if (gp.state && gp.state.health > 0) ps._survived = true;
@@ -243,16 +320,23 @@ function _processGsi(data, playersDb, teamsDb) {
 function _commitRoundKast(match) {
   for (const steamId in match.players) {
     const ps = match.players[steamId];
-    const hadKill    = ps._roundKills   > 0;
-    const hadAssist  = ps._roundAssists > 0;
-    const survived   = ps._survived;
-    const traded     = ps._traded;
+    const hadKill   = ps._roundKills   > 0;
+    const hadAssist = ps._roundAssists > 0;
+    const survived  = ps._survived;
+    const traded    = ps._traded;
     if (hadKill || hadAssist || survived || traded) ps.kastRounds++;
-    // reset scratch
-    ps._roundKills   = 0;
-    ps._roundAssists = 0;
-    ps._survived     = false;
-    ps._traded       = false;
+    // Multi-kill stats from max round_kills seen this round
+    const rk = ps._maxRoundKills || 0;
+    if (rk >= 5)       ps.fiveKills  = (ps.fiveKills  || 0) + 1;
+    else if (rk === 4) ps.fourKills  = (ps.fourKills  || 0) + 1;
+    else if (rk === 3) ps.threeKills = (ps.threeKills || 0) + 1;
+    // Reset scratch
+    ps._roundKills     = 0;
+    ps._roundAssists   = 0;
+    ps._survived       = false;
+    ps._traded         = false;
+    ps._maxRoundKills  = 0;
+    ps._prevRoundKills = 0;
   }
 }
 
@@ -281,22 +365,22 @@ function _finalizeMatch(match, playersDb, teamsDb, reason) {
     teamT:  { ...match.teamT  },
     winner,
     roundCount: match.roundCount,
+    roundOutcomes: { ...match.roundOutcomes },
     players: {},
   };
 
   const rounds = Math.max(match.roundCount, 1);
-
   for (const steamId in match.players) {
     const ps  = match.players[steamId];
     const db  = resolvePlayer(steamId, null, playersDb);
-    const dmg = ps.damage + (ps._prevRoundDmg || 0); // include current round
+    const dmg = ps.damage + (ps._prevRoundDmg || 0);
     const r   = ps.rounds || rounds;
-
-    const stats = {
+    const sp = {
       steamId,
-      name:    db?.name  || '',
-      photo:   db?.photo || null,
+      name:    db?.name   || ps._name || '',
+      photo:   db?.photo  || null,
       teamId:  db?.teamId || null,
+      _team:   ps._team   || '',
       kills:   ps.kills,
       deaths:  ps.deaths,
       assists: ps.assists,
@@ -304,20 +388,30 @@ function _finalizeMatch(match, playersDb, teamsDb, reason) {
       damage:  dmg,
       rounds:  r,
       kastRounds: ps.kastRounds,
+      mvps:        ps.mvps        || 0,
+      score:       ps.score       || 0,
+      firstKills:  ps.firstKills  || 0,
+      firstDeaths: ps.firstDeaths || 0,
+      threeKills:  ps.threeKills  || 0,
+      fourKills:   ps.fourKills   || 0,
+      fiveKills:   ps.fiveKills   || 0,
+      bombPlants:  ps.bombPlants  || 0,
+      bombDefuses: ps.bombDefuses || 0,
       adr:    r > 0 ? parseFloat((dmg / r).toFixed(1)) : 0,
       kd:     ps.deaths > 0 ? parseFloat((ps.kills / ps.deaths).toFixed(2)) : parseFloat(ps.kills.toFixed(2)),
-      kpr:    r > 0 ? parseFloat((ps.kills / r).toFixed(3)) : 0,
+      kpr:    r > 0 ? parseFloat((ps.kills  / r).toFixed(3)) : 0,
       dpr:    r > 0 ? parseFloat((ps.deaths / r).toFixed(3)) : 0,
       kast:   r > 0 ? parseFloat(((ps.kastRounds / r) * 100).toFixed(1)) : 0,
+      hsRate: ps.kills > 0 ? parseFloat(((ps.headshots / ps.kills) * 100).toFixed(1)) : 0,
     };
-    stats.galaxyRating = calcGalaxyRating({ ...ps, damage: dmg, rounds: r });
-    snapshot.players[steamId] = stats;
+    sp.galaxyRating = calcGalaxyRating({ kills: sp.kills, deaths: sp.deaths, assists: sp.assists, damage: dmg, kastRounds: ps.kastRounds, rounds: r });
+    snapshot.players[steamId] = sp;
   }
 
   statsData.matchHistory.unshift(snapshot);
   if (statsData.matchHistory.length > 200) statsData.matchHistory.pop();
 
-  // ── Merge into global stats ────────────────────────────────────────────────
+  // ── Merge into global player stats ────────────────────────────────────────
   for (const steamId in snapshot.players) {
     const sp = snapshot.players[steamId];
     if (!statsData.global.players[steamId]) {
@@ -325,14 +419,15 @@ function _finalizeMatch(match, playersDb, teamsDb, reason) {
         steamId, name: sp.name, photo: sp.photo, teamId: sp.teamId,
         kills: 0, deaths: 0, assists: 0, headshots: 0,
         damage: 0, rounds: 0, kastRounds: 0, matchesPlayed: 0,
+        mvps: 0, firstKills: 0, firstDeaths: 0,
+        threeKills: 0, fourKills: 0, fiveKills: 0,
+        bombPlants: 0, bombDefuses: 0,
       };
     }
     const g = statsData.global.players[steamId];
-    // update profile info
     if (sp.name)   g.name   = sp.name;
     if (sp.photo)  g.photo  = sp.photo;
     if (sp.teamId) g.teamId = sp.teamId;
-    // accumulate
     g.kills       += sp.kills;
     g.deaths      += sp.deaths;
     g.assists     += sp.assists;
@@ -341,6 +436,14 @@ function _finalizeMatch(match, playersDb, teamsDb, reason) {
     g.rounds      += sp.rounds;
     g.kastRounds  += sp.kastRounds;
     g.matchesPlayed++;
+    g.mvps        = (g.mvps        || 0) + (sp.mvps        || 0);
+    g.firstKills  = (g.firstKills  || 0) + (sp.firstKills  || 0);
+    g.firstDeaths = (g.firstDeaths || 0) + (sp.firstDeaths || 0);
+    g.threeKills  = (g.threeKills  || 0) + (sp.threeKills  || 0);
+    g.fourKills   = (g.fourKills   || 0) + (sp.fourKills   || 0);
+    g.fiveKills   = (g.fiveKills   || 0) + (sp.fiveKills   || 0);
+    g.bombPlants  = (g.bombPlants  || 0) + (sp.bombPlants  || 0);
+    g.bombDefuses = (g.bombDefuses || 0) + (sp.bombDefuses || 0);
   }
 
   // ── Global team stats ──────────────────────────────────────────────────────
@@ -356,14 +459,46 @@ function _finalizeMatch(match, playersDb, teamsDb, reason) {
         name: info.name, logo: info.logo,
         matchesPlayed: 0, matchesWon: 0,
         roundsWon: 0, roundsLost: 0,
+        mapStats: {},
       };
     }
     const gt = statsData.global.teams[key];
     if (info.logo && !gt.logo) gt.logo = info.logo;
+    if (!gt.mapStats) gt.mapStats = {};
     gt.matchesPlayed++;
     if (isWinner) gt.matchesWon++;
     gt.roundsWon  += score;
     gt.roundsLost += oppScore;
+    const mk = match.mapName.toLowerCase();
+    if (!gt.mapStats[mk]) gt.mapStats[mk] = { played: 0, won: 0 };
+    gt.mapStats[mk].played++;
+    if (isWinner) gt.mapStats[mk].won++;
+  }
+
+  // ── Global map stats ───────────────────────────────────────────────────────
+  if (!statsData.global.maps) statsData.global.maps = {};
+  const mapKey = match.mapName.toLowerCase();
+  if (!statsData.global.maps[mapKey]) {
+    statsData.global.maps[mapKey] = {
+      name: match.mapName,
+      matchCount: 0, ctWins: 0, tWins: 0, draws: 0,
+      totalRounds: 0,
+      roundOutcomes: {
+        ct_win_elimination: 0, ct_win_time: 0, ct_win_defuse: 0,
+        t_win_elimination: 0,  t_win_bomb: 0,
+      },
+    };
+  }
+  const gm = statsData.global.maps[mapKey];
+  if (!gm.roundOutcomes) gm.roundOutcomes = { ct_win_elimination: 0, ct_win_time: 0, ct_win_defuse: 0, t_win_elimination: 0, t_win_bomb: 0 };
+  gm.matchCount++;
+  if (winner === match.teamCT.name) gm.ctWins++;
+  else if (winner === match.teamT.name) gm.tWins++;
+  else gm.draws = (gm.draws || 0) + 1;
+  gm.totalRounds += match.roundCount;
+  for (const rNum in match.roundOutcomes) {
+    const outcome = match.roundOutcomes[rNum];
+    if (gm.roundOutcomes[outcome] !== undefined) gm.roundOutcomes[outcome]++;
   }
 
   saveStats();
@@ -379,23 +514,31 @@ function getCurrentMatchStats() {
   for (const steamId in currentMatch.players) {
     const ps  = currentMatch.players[steamId];
     const dmg = ps.damage + (ps._prevRoundDmg || 0);
-    const r   = ps.rounds || rounds;
-    // Resolve name/photo from playersDb if available
-    const db  = playersDb ? playersDb.find(p => p.steamId && p.steamId.toLowerCase() === steamId.toLowerCase()) : null;
+    const r   = Math.max(ps.rounds || 0, 1);
     players[steamId] = {
       steamId,
-      name:  db?.name  || ps._name || '',
-      photo: db?.photo || null,
-      _team: ps._team || '',
-      kills: ps.kills, deaths: ps.deaths, assists: ps.assists,
+      name:    ps._name || '',
+      photo:   null,
+      _team:   ps._team || '',
+      kills:   ps.kills,   deaths:  ps.deaths,  assists: ps.assists,
       headshots: ps.headshots, damage: dmg, rounds: r,
       kastRounds: ps.kastRounds,
+      mvps:        ps.mvps        || 0,
+      score:       ps.score       || 0,
+      firstKills:  ps.firstKills  || 0,
+      firstDeaths: ps.firstDeaths || 0,
+      threeKills:  ps.threeKills  || 0,
+      fourKills:   ps.fourKills   || 0,
+      fiveKills:   ps.fiveKills   || 0,
+      bombPlants:  ps.bombPlants  || 0,
+      bombDefuses: ps.bombDefuses || 0,
       adr:  r > 0 ? parseFloat((dmg / r).toFixed(1)) : 0,
       kd:   ps.deaths > 0 ? parseFloat((ps.kills / ps.deaths).toFixed(2)) : parseFloat(ps.kills.toFixed(2)),
-      kpr:  r > 0 ? parseFloat((ps.kills / r).toFixed(3)) : 0,
+      kpr:  r > 0 ? parseFloat((ps.kills  / r).toFixed(3)) : 0,
       dpr:  r > 0 ? parseFloat((ps.deaths / r).toFixed(3)) : 0,
       kast: r > 0 ? parseFloat(((ps.kastRounds / r) * 100).toFixed(1)) : 0,
-      galaxyRating: calcGalaxyRating({ ...ps, damage: dmg, rounds: r }),
+      hsRate: ps.kills > 0 ? parseFloat(((ps.headshots / ps.kills) * 100).toFixed(1)) : 0,
+      galaxyRating: calcGalaxyRating({ kills: ps.kills, deaths: ps.deaths, assists: ps.assists, damage: dmg, kastRounds: ps.kastRounds, rounds: r }),
     };
   }
   return {
@@ -409,25 +552,33 @@ function getCurrentMatchStats() {
 }
 
 function getGlobalPlayerRatings(playersDb) {
-  const base = req => req; // unused, just compute
   return Object.values(statsData.global.players)
     .map(g => {
-      const r = g.rounds || 1;
-      const db = playersDb.find(p => p.steamId && p.steamId.toLowerCase() === g.steamId.toLowerCase());
+      const r   = g.rounds || 1;
+      const db  = playersDb.find(p => p.steamId && p.steamId.toLowerCase() === g.steamId.toLowerCase());
       const adr  = parseFloat((g.damage / r).toFixed(1));
       const kpr  = parseFloat((g.kills  / r).toFixed(3));
       const dpr  = parseFloat((g.deaths / r).toFixed(3));
       const kast = parseFloat(((g.kastRounds / r) * 100).toFixed(1));
       return {
         steamId: g.steamId,
-        name: db?.name  || g.name  || g.steamId,
-        photo: db?.photo || g.photo || null,
+        name:   db?.name  || g.name  || g.steamId,
+        photo:  db?.photo || g.photo || null,
         teamId: db?.teamId || g.teamId || null,
         matchesPlayed: g.matchesPlayed,
         kills: g.kills, deaths: g.deaths, assists: g.assists,
         headshots: g.headshots, rounds: r,
+        mvps:        g.mvps        || 0,
+        firstKills:  g.firstKills  || 0,
+        firstDeaths: g.firstDeaths || 0,
+        threeKills:  g.threeKills  || 0,
+        fourKills:   g.fourKills   || 0,
+        fiveKills:   g.fiveKills   || 0,
+        bombPlants:  g.bombPlants  || 0,
+        bombDefuses: g.bombDefuses || 0,
         adr, kpr, dpr, kast,
         kd: g.deaths > 0 ? parseFloat((g.kills / g.deaths).toFixed(2)) : g.kills,
+        hsRate: g.kills > 0 ? parseFloat(((g.headshots / g.kills) * 100).toFixed(1)) : 0,
         galaxyRating: calcGalaxyRating(g),
       };
     })
@@ -438,20 +589,38 @@ function getGlobalTeamRatings(teamsDb) {
   return Object.values(statsData.global.teams)
     .map(t => {
       const db = teamsDb.find(td => td.name.toLowerCase() === t.name.toLowerCase());
+      const totalRounds = t.roundsWon + t.roundsLost;
       return {
         name: t.name,
         logo: db?.logo || t.logo || null,
         matchesPlayed: t.matchesPlayed,
         matchesWon:    t.matchesWon,
-        winRate: t.matchesPlayed > 0 ? parseFloat(((t.matchesWon / t.matchesPlayed) * 100).toFixed(1)) : 0,
         roundsWon:  t.roundsWon,
         roundsLost: t.roundsLost,
-        roundWinRate: (t.roundsWon + t.roundsLost) > 0
-          ? parseFloat(((t.roundsWon / (t.roundsWon + t.roundsLost)) * 100).toFixed(1))
-          : 0,
+        winRate:      t.matchesPlayed > 0 ? parseFloat(((t.matchesWon / t.matchesPlayed) * 100).toFixed(1)) : 0,
+        roundWinRate: totalRounds     > 0 ? parseFloat(((t.roundsWon  / totalRounds)    * 100).toFixed(1)) : 0,
+        mapStats: t.mapStats || {},
       };
     })
     .sort((a, b) => b.winRate - a.winRate || b.roundWinRate - a.roundWinRate);
+}
+
+function getMapStats() {
+  return Object.values(statsData.global.maps || {})
+    .map(m => ({
+      name:        m.name,
+      displayName: m.name.replace('de_', '').toUpperCase(),
+      matchCount:  m.matchCount,
+      ctWins:      m.ctWins  || 0,
+      tWins:       m.tWins   || 0,
+      draws:       m.draws   || 0,
+      ctWinRate:   m.matchCount > 0 ? parseFloat(((m.ctWins / m.matchCount) * 100).toFixed(1)) : 0,
+      tWinRate:    m.matchCount > 0 ? parseFloat(((m.tWins  / m.matchCount) * 100).toFixed(1)) : 0,
+      avgRounds:   m.matchCount > 0 ? parseFloat((m.totalRounds / m.matchCount).toFixed(1)) : 0,
+      totalRounds: m.totalRounds || 0,
+      roundOutcomes: m.roundOutcomes || {},
+    }))
+    .sort((a, b) => b.matchCount - a.matchCount);
 }
 
 // ─── Exports ─────────────────────────────────────────────────────────────────
@@ -461,6 +630,7 @@ module.exports = {
   getCurrentMatchStats,
   getGlobalPlayerRatings,
   getGlobalTeamRatings,
+  getMapStats,
   getMatchHistory:  () => statsData.matchHistory,
   getGlobalStats:   () => statsData.global,
   statsData,
