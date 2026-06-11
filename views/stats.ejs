@@ -633,6 +633,93 @@
   .form-dot.L { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
   .form-dot.D { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.2); }
 
+  /* ─── Player H2H ─────────────────────────────────────────── */
+  .p2p-divider {
+    display: flex; align-items: center; gap: 0.7rem;
+    margin: 1.4rem 0 0.8rem;
+  }
+  .p2p-divider-line { flex: 1; height: 1px; background: var(--border2); }
+  .p2p-divider-label {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text2); white-space: nowrap; display: flex; align-items: center; gap: 0.4rem;
+  }
+  .p2p-divider-label i { color: var(--primary); }
+  .p2p-selector { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+  .p2p-card {
+    border-radius: var(--r-lg); border: 1px solid var(--border);
+    background: rgba(17,14,39,0.7); overflow: hidden; margin-top: 1rem;
+  }
+  .p2p-head {
+    padding: 0; border-bottom: 1px solid var(--border2);
+    display: grid; grid-template-columns: 1fr 120px 1fr;
+    align-items: stretch;
+  }
+  .p2p-hero {
+    padding: 1.4rem 1.2rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  }
+  .p2p-hero.left  { border-right: 1px solid var(--border2); }
+  .p2p-avatar {
+    width: 72px; height: 72px; border-radius: 14px;
+    object-fit: cover; border: 2px solid rgba(99,102,241,0.25);
+    background: rgba(0,0,0,0.3);
+  }
+  .p2p-avatar-ph {
+    width: 72px; height: 72px; border-radius: 14px;
+    background: rgba(79,70,229,0.1); border: 2px solid rgba(99,102,241,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; color: var(--muted);
+  }
+  .p2p-pname {
+    font-size: 0.95rem; font-weight: 800; text-align: center;
+    color: var(--text); text-decoration: none; letter-spacing: -0.01em;
+  }
+  .p2p-pname:hover { color: var(--primary); }
+  .p2p-center {
+    padding: 1.4rem 0.5rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
+  }
+  .p2p-vs { font-size: 1.2rem; font-weight: 900; color: var(--muted); }
+  .p2p-rows { display: flex; flex-direction: column; }
+  .p2p-row {
+    display: grid; grid-template-columns: 1fr 110px 1fr;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.025);
+    min-height: 44px;
+  }
+  .p2p-row:last-child { border-bottom: none; }
+  .p2p-val {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.9rem; font-weight: 800;
+  }
+  .p2p-val.left  { text-align: left; }
+  .p2p-val.right { text-align: right; }
+  .p2p-val.winner { color: var(--success); }
+  .p2p-val.loser  { color: var(--danger); }
+  .p2p-val.tied   { color: var(--text); }
+  .p2p-stat-label {
+    text-align: center; padding: 0 0.4rem;
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted);
+  }
+  .p2p-bar-wrap {
+    position: relative; height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.06); overflow: visible;
+    margin: 0 1.2rem;
+  }
+  .p2p-bar-left {
+    position: absolute; right: 50%; top: 0; height: 100%;
+    border-radius: 2px 0 0 2px;
+  }
+  .p2p-bar-right {
+    position: absolute; left: 50%; top: 0; height: 100%;
+    border-radius: 0 2px 2px 0;
+  }
+  .p2p-row-inner {
+    display: flex; flex-direction: column; gap: 0.2rem;
+    padding: 0.55rem 0;
+  }
+
   /* ─── Modal ──────────────────────────────────────────────── */
   .modal-bg {
     display: none; position: fixed; inset: 0;
@@ -899,6 +986,7 @@
   <!-- ══ H2H ════════════════════════════════════════════════════════════ -->
   <div class="tab-panel" id="tab-h2h">
     <div class="card" style="padding:1.4rem">
+      <!-- Team H2H -->
       <div class="h2h-selector">
         <select class="h2h-select" id="h2h-t1"><option value="">— Team 1 —</option></select>
         <span class="h2h-vs">VS</span>
@@ -906,6 +994,21 @@
         <button class="h2h-btn" id="h2h-go"><i class="fas fa-search"></i> Compare</button>
       </div>
       <div id="h2h-result"></div>
+
+      <!-- Player H2H divider -->
+      <div class="p2p-divider">
+        <div class="p2p-divider-line"></div>
+        <div class="p2p-divider-label"><i class="fas fa-user-friends"></i> Player vs Player</div>
+        <div class="p2p-divider-line"></div>
+      </div>
+      <!-- Player H2H selectors -->
+      <div class="p2p-selector">
+        <select class="h2h-select" id="p2p-p1"><option value="">— Player 1 —</option></select>
+        <span class="h2h-vs">VS</span>
+        <select class="h2h-select" id="p2p-p2"><option value="">— Player 2 —</option></select>
+        <button class="h2h-btn" id="p2p-go"><i class="fas fa-bolt"></i> Compare</button>
+      </div>
+      <div id="p2p-result"></div>
     </div>
   </div>
 
@@ -1382,6 +1485,12 @@ function populateH2H(names) {
   document.getElementById('h2h-t2').innerHTML = '<option value="">— Team 2 —</option>' + opts;
 }
 
+function populateP2P(players) {
+  const opts = players.map(p => `<option value="${p.steamId}">${p.name||p.steamId}</option>`).join('');
+  document.getElementById('p2p-p1').innerHTML = '<option value="">— Player 1 —</option>' + opts;
+  document.getElementById('p2p-p2').innerHTML = '<option value="">— Player 2 —</option>' + opts;
+}
+
 function h2hTeamLogo(history, teamName) {
   for (const m of history) {
     if ((m.teamCT?.name||'').toLowerCase() === teamName.toLowerCase() && m.teamCT?.logo) return m.teamCT.logo;
@@ -1607,6 +1716,104 @@ document.getElementById('h2h-go').addEventListener('click', () => {
   el.querySelectorAll('[data-id]').forEach(r => r.addEventListener('click', () => openMatchDetail(r.dataset.id)));
 });
 
+// ─── Player vs Player ──────────────────────────────────────────────────────
+document.getElementById('p2p-go').addEventListener('click', () => {
+  const id1 = document.getElementById('p2p-p1').value;
+  const id2 = document.getElementById('p2p-p2').value;
+  const el  = document.getElementById('p2p-result');
+  if (!id1 || !id2 || id1 === id2) { el.innerHTML = '<div class="no-data">Select two different players.</div>'; return; }
+  const p1 = _globalPlayersData.find(p => p.steamId === id1);
+  const p2 = _globalPlayersData.find(p => p.steamId === id2);
+  if (!p1 || !p2) { el.innerHTML = '<div class="no-data">Player data not found.</div>'; return; }
+
+  // multi-kill rating: weighted sum
+  function mkRating(p) {
+    const r = p.rounds || 1;
+    return +((( (p.threeKills||0)*3 + (p.fourKills||0)*4 + (p.fiveKills||0)*5 ) / r).toFixed(3));
+  }
+
+  const stats = [
+    { label: 'Galaxy Rating',        key1: p1.galaxyRating,            key2: p2.galaxyRating,            fmt: v => v.toFixed(2), higher: true  },
+    { label: 'Kills per Round',       key1: +p1.kpr,                    key2: +p2.kpr,                    fmt: v => v.toFixed(2), higher: true  },
+    { label: 'Deaths per Round',      key1: +p1.dpr,                    key2: +p2.dpr,                    fmt: v => v.toFixed(2), higher: false },
+    { label: 'KAST %',                key1: +p1.kast,                   key2: +p2.kast,                   fmt: v => v + '%',      higher: true  },
+    { label: 'Multi-kill Rating',     key1: mkRating(p1),               key2: mkRating(p2),               fmt: v => v.toFixed(3), higher: true  },
+    { label: 'Avg Damage / Round',    key1: +p1.adr,                    key2: +p2.adr,                    fmt: v => v.toFixed(1), higher: true  },
+    { label: 'Headshot %',            key1: +p1.hsRate,                 key2: +p2.hsRate,                 fmt: v => v + '%',      higher: true  },
+    { label: 'K/D Ratio',             key1: +p1.kd,                     key2: +p2.kd,                     fmt: v => v.toFixed(2), higher: true  },
+    { label: 'Matches Played',        key1: p1.matchesPlayed,           key2: p2.matchesPlayed,           fmt: v => v,            higher: true  },
+    { label: 'Aces (5K)',             key1: p1.fiveKills||0,            key2: p2.fiveKills||0,            fmt: v => v,            higher: true  },
+    { label: 'Entry Kills',           key1: p1.firstKills||0,           key2: p2.firstKills||0,           fmt: v => v,            higher: true  },
+    { label: 'MVPs',                  key1: p1.mvps||0,                 key2: p2.mvps||0,                 fmt: v => v,            higher: true  },
+  ];
+
+  function pAva(p, size=72, cls='p2p-avatar', phCls='p2p-avatar-ph') {
+    return p.photo
+      ? `<img class="${cls}" src="${p.photo}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <div class="${phCls}" style="display:none"><i class="fas fa-user"></i></div>`
+      : `<div class="${phCls}"><i class="fas fa-user"></i></div>`;
+  }
+
+  let score1 = 0, score2 = 0;
+  stats.forEach(s => {
+    if (s.key1 === s.key2) return;
+    const p1better = s.higher ? s.key1 > s.key2 : s.key1 < s.key2;
+    if (p1better) score1++; else score2++;
+  });
+
+  const scoreColor1 = score1 > score2 ? '#34d399' : score1 < score2 ? '#f87171' : '#a5b4fc';
+  const scoreColor2 = score2 > score1 ? '#34d399' : score2 < score1 ? '#f87171' : '#a5b4fc';
+
+  const rowsHtml = stats.map(s => {
+    const v1 = s.key1, v2 = s.key2;
+    const max = Math.max(Math.abs(v1), Math.abs(v2), 0.001);
+    const p1better = s.higher ? v1 > v2 : v1 < v2;
+    const p2better = s.higher ? v2 > v1 : v2 < v1;
+    const tied = v1 === v2;
+    const c1 = tied ? 'tied' : p1better ? 'winner' : 'loser';
+    const c2 = tied ? 'tied' : p2better ? 'winner' : 'loser';
+    const pct1 = Math.round((v1 / max) * 50); // max 50% each side from center
+    const pct2 = Math.round((v2 / max) * 50);
+    const col1 = p1better ? '#34d399' : p2better ? '#f87171' : '#a5b4fc';
+    const col2 = p2better ? '#34d399' : p1better ? '#f87171' : '#a5b4fc';
+    return `<div class="p2p-row">
+      <div class="p2p-val left ${c1}">${s.fmt(v1)}</div>
+      <div class="p2p-row-inner">
+        <div class="p2p-stat-label">${s.label}</div>
+        <div class="p2p-bar-wrap">
+          <div class="p2p-bar-left"  style="width:${pct1}%;background:${col1}"></div>
+          <div class="p2p-bar-right" style="width:${pct2}%;background:${col2}"></div>
+        </div>
+      </div>
+      <div class="p2p-val right ${c2}">${s.fmt(v2)}</div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="p2p-card">
+    <div class="p2p-head">
+      <div class="p2p-hero left">
+        ${pAva(p1)}
+        <a class="p2p-pname" href="${plink(p1.steamId)}">${p1.name||p1.steamId}</a>
+        ${p1.teamId ? `<div style="font-size:0.65rem;color:var(--muted)">${p1.teamId}</div>` : ''}
+        <div style="font-size:1.6rem;font-weight:900;color:${scoreColor1};line-height:1">${score1}</div>
+        <div style="font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">categories won</div>
+      </div>
+      <div class="p2p-center">
+        <div class="p2p-vs">VS</div>
+        <div style="font-size:0.6rem;color:var(--muted);text-align:center;margin-top:0.3rem">${stats.length} stats<br>compared</div>
+      </div>
+      <div class="p2p-hero">
+        ${pAva(p2)}
+        <a class="p2p-pname" href="${plink(p2.steamId)}">${p2.name||p2.steamId}</a>
+        ${p2.teamId ? `<div style="font-size:0.65rem;color:var(--muted)">${p2.teamId}</div>` : ''}
+        <div style="font-size:1.6rem;font-weight:900;color:${scoreColor2};line-height:1">${score2}</div>
+        <div style="font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">categories won</div>
+      </div>
+    </div>
+    <div class="p2p-rows">${rowsHtml}</div>
+  </div>`;
+});
+
 // ─── Delete match ──────────────────────────────────────────────────────────
 let _delId = null;
 function delConfirm(id) {
@@ -1660,6 +1867,9 @@ async function fetchAll() {
       ..._allHistory.map(m => m.teamT?.name).filter(Boolean),
     ])].sort();
     populateH2H(teamNames);
+
+    const sortedPlayers = [..._globalPlayersData].sort((a,b) => (a.name||'').localeCompare(b.name||''));
+    populateP2P(sortedPlayers);
 
     renderMaps(mapData || []);
 
