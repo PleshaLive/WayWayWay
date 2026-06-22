@@ -307,6 +307,7 @@
     <div class="card danger-zone">
       <div class="desc">These actions only clear graphics cache/storage and do not remove teams, players, photos, or logos.</div>
       <div class="controls">
+        <button id="rebuildStatsBtn">Rebuild Stats</button>
         <button id="clearPostmatchBtn" class="danger">Clear Postmatch Data</button>
         <button id="clearCompletedTestBtn" class="danger">Clear Completed Test Matches</button>
         <button id="clearLiveBtn" class="danger">Clear Live Match Cache</button>
@@ -320,13 +321,19 @@
     const INITIAL_TEAMS = <%- JSON.stringify(teams || []) %>;
 
     const endpointDefs = [
+      { key: 'graphicsDatabase', method: 'GET', path: '/api/graphics/database', desc: 'Full database snapshot — all teams, players, matches, stats, assets' },
+      { key: 'graphicsValidate', method: 'GET', path: '/api/graphics/validate', desc: 'Data quality check — missing photos, logos, SteamIDs, countryCode' },
       { key: 'legacyScore', method: 'GET', path: '/score', desc: 'Legacy scoreboard JSON (compatibility endpoint)' },
+      { key: 'graphicsLive', method: 'GET', path: '/api/graphics/live', desc: 'Live GSI match data (alias for scoreboard)' },
       { key: 'graphicsScoreboard', method: 'GET', path: '/api/graphics/scoreboard', desc: 'Live broadcast-ready graphics scoreboard' },
-      { key: 'graphicsTeams', method: 'GET', path: '/api/graphics/teams', desc: 'Graphics teams profiles and players' },
+      { key: 'graphicsTeams', method: 'GET', path: '/api/graphics/teams', desc: 'Teams database with players, stats, mapStats' },
+      { key: 'graphicsPlayers', method: 'GET', path: '/api/graphics/players', desc: 'Players database with firstName, countryCode, stats' },
       { key: 'graphicsRosters', method: 'GET', path: '/api/graphics/rosters', desc: 'Complete rosters with teams and players' },
       { key: 'graphicsRostersCompact', method: 'GET', path: '/api/graphics/rosters/compact', desc: 'Compact rosters format for simple titling' },
       { key: 'graphicsRostersTeam', method: 'GET', path: '/api/graphics/rosters/:teamId', desc: 'Single team roster with players', dynamic: true },
-      { key: 'graphicsPrematch', method: 'GET', path: '/api/graphics/prematch', desc: 'Prematch builder endpoint for selected teams', dynamic: true },
+      { key: 'graphicsMatches', method: 'GET', path: '/api/graphics/matches', desc: 'All matches — live + completed history' },
+      { key: 'graphicsMatchesCompleted', method: 'GET', path: '/api/graphics/matches/completed', desc: 'Completed matches archive' },
+      { key: 'graphicsPrematch', method: 'GET', path: '/api/graphics/prematch', desc: 'Prematch builder — H2H, team stats, top players', dynamic: true },
       { key: 'graphicsPostmatch', method: 'GET', path: '/api/graphics/postmatch', desc: 'Last finalized match or idle payload' },
       { key: 'graphicsMatchFinal', method: 'GET', path: '/api/graphics/match/:matchId/final', desc: 'Final payload for a specific matchId', dynamic: true }
     ];
@@ -723,6 +730,19 @@
         cards.forEach((c) => c.refresh());
         refreshLiveInfo();
         refreshHealth();
+      });
+
+      document.getElementById('rebuildStatsBtn').addEventListener('click', async () => {
+        const resultEl = document.getElementById('dangerResult');
+        const confirmed = window.confirm('Rebuild team/player stats from completed matches? This will overwrite teamStats.json, playerStats.json, headToHead.json.');
+        if (!confirmed) return;
+        const response = await fetchJson('/api/admin/rebuild-stats', { method: 'POST' });
+        if (response.ok && response.json?.ok) {
+          resultEl.textContent = `✅ ${response.json.message} (${response.json.matchesProcessed} matches, ${response.json.teamsAggregated} teams, ${response.json.playersAggregated} players)`;
+        } else {
+          resultEl.textContent = `❌ Failed: ${response.json?.error || response.error || 'unknown error'}`;
+        }
+        cards.forEach((c) => c.refresh());
       });
 
       setInterval(() => {

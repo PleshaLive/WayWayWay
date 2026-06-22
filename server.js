@@ -1703,41 +1703,69 @@ app.get('/api/graphics/scoreboard', (req, res) => {
  */
 app.get('/api/graphics/teams', (req, res) => {
   try {
+    const teamStats = readJsonSafe(STORAGE_FILES.teamStats, {});
+
     const teamsData = teams.map(team => {
-      // Get players in this team
-      const teamPlayers = players.filter(p => p.teamId === team.id).map(p => ({
-        id: p.id,
-        steamId: p.steamId,
-        name: p.name,
-        nickname: p.nickname || p.name,
-        photo: graphicsUtils.resolvePlayerPhoto(p, baseUrl)
-      }));
+      const tStats = teamStats[team.id] || teamStats[team.name] || null;
+      // Get players in this team - use normalizer for full fields
+      const teamPlayers = players.filter(p => p.teamId === team.id).map(p => {
+        const firstName = p.firstName || p['First Name'] || null;
+        const lastName = p.lastName || p['Last Name'] || null;
+        const countryCode = (p.countryCode || p['Country Code'] || p.country || '').toUpperCase() || null;
+        return {
+          id: p.id,
+          steamId: p.steamId || null,
+          name: p.name,
+          nickname: p.nickname || p.name,
+          firstName: firstName,
+          lastName: lastName,
+          fullName: firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || p.name,
+          countryCode: countryCode,
+          role: p.role || '',
+          photo: graphicsUtils.resolvePlayerPhoto(p, baseUrl),
+          teamId: team.id,
+          teamName: team.name
+        };
+      });
+
+      const stats = tStats ? {
+        matchesPlayed: tStats.matchesPlayed || 0,
+        wins: tStats.wins || 0,
+        losses: tStats.losses || 0,
+        winRate: tStats.winRate != null ? tStats.winRate : (tStats.matchesPlayed > 0 ? parseFloat(((tStats.wins || 0) / tStats.matchesPlayed * 100).toFixed(1)) : 0),
+        mapsPlayed: tStats.mapsPlayed || 0,
+        mapsWon: tStats.mapsWon || 0,
+        mapsLost: tStats.mapsLost || 0,
+        mapWinRate: tStats.mapWinRate != null ? tStats.mapWinRate : (tStats.mapsPlayed > 0 ? parseFloat(((tStats.mapsWon || 0) / tStats.mapsPlayed * 100).toFixed(1)) : 0),
+        currentStreak: tStats.currentStreak || '',
+        lastMatches: Array.isArray(tStats.lastMatches) ? tStats.lastMatches : []
+      } : {
+        matchesPlayed: 0, wins: 0, losses: 0, winRate: 0,
+        mapsPlayed: 0, mapsWon: 0, mapsLost: 0, mapWinRate: 0,
+        currentStreak: '', lastMatches: []
+      };
 
       return {
         id: team.id,
         name: team.name,
         shortName: team.shortName || team.name.substring(0, 3).toUpperCase(),
+        tag: team.tag || team.shortName || team.name.substring(0, 3).toUpperCase(),
         logo: graphicsUtils.resolveLogo(team, baseUrl),
-        country: team.country || '',
+        country: team.country || null,
+        countryCode: (team.countryCode || team.country || '').toUpperCase() || null,
+        playersCount: teamPlayers.length,
         players: teamPlayers,
-        stats: {
-          matchesPlayed: 0,
-          wins: 0,
-          losses: 0,
-          winRate: 0,
-          mapsPlayed: 0,
-          mapsWon: 0,
-          mapsLost: 0,
-          mapWinRate: 0
-        },
-        mapStats: {},
-        lastMatches: []
+        stats: stats,
+        mapStats: tStats?.mapStats || {},
+        lastMatches: stats.lastMatches
       };
     });
 
     res.json({
-      teams: teamsData,
-      updatedAt: new Date().toISOString()
+      mode: 'teams',
+      updatedAt: new Date().toISOString(),
+      count: teamsData.length,
+      teams: teamsData
     });
   } catch (err) {
     console.error('Error in /api/graphics/teams:', err);
@@ -1804,7 +1832,6 @@ app.get('/api/graphics/team/:teamId', (req, res) => {
 /**
  * GET /api/graphics/prematch?teamA=team_001&teamB=team_002
  * Returns prematch data for two teams including head-to-head stats
- * Phase 3 endpoint
  */
 app.get('/api/graphics/prematch', (req, res) => {
   try {
@@ -1824,15 +1851,69 @@ app.get('/api/graphics/prematch', (req, res) => {
       return res.status(404).json({ error: 'One or both teams not found' });
     }
 
-    // Helper function to build team profile
+    const teamStats = readJsonSafe(STORAGE_FILES.teamStats, {});
+    const h2hData = readJsonSafe(STORAGE_FILES.headToHead, {});
+    const playerStatsData = readJsonSafe(STORAGE_FILES.playerStats, {});
+
+    // H2H key check both directions
+    const h2hKey = `${teamAId}_vs_${teamBId}`;
+    const h2hKeyRev = `${teamBId}_vs_${teamAId}`;
+    const h2hRaw = h2hData[h2hKey] || h2hData[h2hKeyRev] || null;
+
+    const headToHead = h2hRaw ? {
+      matchesPlayed: h2hRaw.matchesPlayed || 0,
+      teamAWins: h2hData[h2hKey] ? (h2hRaw.wins || 0) : (h2hRaw.losses || 0),
+      teamBWins: h2hData[h2hKey] ? (h2hRaw.losses || 0) : (h2hRaw.wins || 0),
+      recentMatches: Array.isArray(h2hRaw.recentMatches) ? h2hRaw.recentMatches : [],
+      mapBreakdown: h2hRaw.mapBreakdown || {}
+    } : {
+      matchesPlayed: 0, teamAWins: 0, teamBWins: 0, recentMatches: [], mapBreakdown: {}
+    };
+
     const buildTeamProfile = (team) => {
-      const teamPlayers = players.filter(p => p.teamId === team.id).map(p => ({
-        id: p.id,
-        steamId: p.steamId,
-        name: p.name,
-        nickname: p.nickname || p.name,
-        photo: graphicsUtils.resolvePlayerPhoto(p, baseUrl)
-      }));
+      const tStats = teamStats[team.id] || null;
+      const teamPlayers = players.filter(p => p.teamId === team.id).map(p => {
+        const pStats = playerStatsData[p.steamId] || playerStatsData[p.id] || null;
+        const firstName = p.firstName || p['First Name'] || null;
+        const lastName = p.lastName || p['Last Name'] || null;
+        const countryCode = (p.countryCode || p['Country Code'] || p.country || '').toUpperCase() || null;
+        return {
+          id: p.id,
+          steamId: p.steamId || null,
+          nickname: p.nickname || p.name,
+          firstName: firstName,
+          lastName: lastName,
+          fullName: firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || p.name,
+          countryCode: countryCode,
+          role: p.role || '',
+          photo: graphicsUtils.resolvePlayerPhoto(p, baseUrl),
+          stats: pStats ? {
+            matchesPlayed: pStats.matchesPlayed || 0,
+            kills: pStats.kills || 0,
+            deaths: pStats.deaths || 0,
+            kd: pStats.kd || 0,
+            adr: pStats.adr || 0,
+            rating: pStats.rating || 0
+          } : { matchesPlayed: 0, kills: 0, deaths: 0, kd: 0, adr: 0, rating: 0 }
+        };
+      });
+
+      const stats = tStats ? {
+        matchesPlayed: tStats.matchesPlayed || 0,
+        wins: tStats.wins || 0,
+        losses: tStats.losses || 0,
+        winRate: tStats.winRate != null ? tStats.winRate : 0,
+        mapsPlayed: tStats.mapsPlayed || 0,
+        mapsWon: tStats.mapsWon || 0,
+        mapsLost: tStats.mapsLost || 0,
+        mapWinRate: tStats.mapWinRate != null ? tStats.mapWinRate : 0,
+        currentStreak: tStats.currentStreak || '',
+        lastMatches: Array.isArray(tStats.lastMatches) ? tStats.lastMatches : []
+      } : {
+        matchesPlayed: 0, wins: 0, losses: 0, winRate: 0,
+        mapsPlayed: 0, mapsWon: 0, mapsLost: 0, mapWinRate: 0,
+        currentStreak: '', lastMatches: []
+      };
 
       return {
         id: team.id,
@@ -1840,40 +1921,32 @@ app.get('/api/graphics/prematch', (req, res) => {
         shortName: team.shortName || team.name.substring(0, 3).toUpperCase(),
         logo: graphicsUtils.resolveLogo(team, baseUrl),
         players: teamPlayers,
-        stats: {
-          matchesPlayed: 0,
-          wins: 0,
-          losses: 0,
-          winRate: 0,
-          mapsPlayed: 0,
-          mapsWon: 0,
-          mapsLost: 0,
-          mapWinRate: 0
-        },
-        mapStats: {},
-        lastMatches: []
+        stats: stats,
+        mapStats: tStats?.mapStats || {},
+        lastMatches: stats.lastMatches
       };
     };
 
-    const response = {
+    const teamAProfile = buildTeamProfile(teamA);
+    const teamBProfile = buildTeamProfile(teamB);
+
+    // Top players by rating/adr
+    const topPlayers = (teamPlayers) => [...teamPlayers]
+      .sort((a, b) => (b.stats?.rating || 0) - (a.stats?.rating || 0))
+      .slice(0, 3);
+
+    res.json({
       mode: 'prematch',
       updatedAt: new Date().toISOString(),
-
-      teamA: buildTeamProfile(teamA),
-      teamB: buildTeamProfile(teamB),
-
-      headToHead: {
-        matchesPlayed: 0,
-        teamAWins: 0,
-        teamBWins: 0,
-        recentMatches: [],
-        mapBreakdown: {}
-      },
-
-      maps: {}
-    };
-
-    res.json(response);
+      teamA: teamAProfile,
+      teamB: teamBProfile,
+      headToHead: headToHead,
+      mapComparison: {},
+      topPlayers: {
+        teamA: topPlayers(teamAProfile.players),
+        teamB: topPlayers(teamBProfile.players)
+      }
+    });
   } catch (err) {
     console.error('Error in /api/graphics/prematch:', err);
     res.status(500).json({ error: 'Internal Server Error', message: err.message });
@@ -2164,6 +2237,462 @@ app.get('/api/graphics/rosters/:teamId', (req, res) => {
       error: err.message,
       team: null
     });
+  }
+});
+
+// ================================
+// === NEW DATA API ENDPOINTS ===
+// ================================
+
+/**
+ * GET /api/graphics/players
+ * Returns all players with full profile data optimized for titling
+ */
+app.get('/api/graphics/players', (req, res) => {
+  try {
+    const playerStatsData = readJsonSafe(STORAGE_FILES.playerStats, {});
+    const normalizedPlayers = players.map(p => {
+      const pStats = playerStatsData[p.steamId] || playerStatsData[p.id] || null;
+      const team = teams.find(t => t.id === p.teamId);
+      const firstName = p.firstName || p['First Name'] || null;
+      const lastName = p.lastName || p['Last Name'] || null;
+      const countryCode = (p.countryCode || p['Country Code'] || p.country || '').toUpperCase() || null;
+      const fullName = p.fullName || (firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || p.name);
+      return {
+        id: p.id,
+        steamId: p.steamId || null,
+        nickname: p.nickname || p.name,
+        name: p.nickname || p.name,
+        firstName: firstName,
+        lastName: lastName,
+        fullName: fullName,
+        country: null,
+        countryCode: countryCode,
+        role: p.role || '',
+        photo: graphicsUtils.resolvePlayerPhoto(p, baseUrl),
+        teamId: p.teamId || null,
+        teamName: team?.name || null,
+        teamLogo: team ? graphicsUtils.resolveLogo(team, baseUrl) : `${baseUrl}/logos/none-team.png`,
+        stats: pStats ? {
+          matchesPlayed: pStats.matchesPlayed || 0,
+          mapsPlayed: pStats.mapsPlayed || 0,
+          kills: pStats.kills || 0,
+          deaths: pStats.deaths || 0,
+          assists: pStats.assists || 0,
+          kd: pStats.kd || 0,
+          adr: pStats.adr || 0,
+          rating: pStats.rating || 0,
+          damage: pStats.damage || 0
+        } : { matchesPlayed: 0, mapsPlayed: 0, kills: 0, deaths: 0, assists: 0, kd: 0, adr: 0, rating: 0, damage: 0 },
+        mapStats: pStats?.mapStats || {},
+        lastMatches: Array.isArray(pStats?.lastMatches) ? pStats.lastMatches : []
+      };
+    });
+
+    res.json({
+      mode: 'players',
+      updatedAt: new Date().toISOString(),
+      count: normalizedPlayers.length,
+      players: normalizedPlayers
+    });
+  } catch (err) {
+    console.error('Error in /api/graphics/players:', err);
+    res.status(500).json({ mode: 'players', error: err.message, count: 0, players: [] });
+  }
+});
+
+/**
+ * GET /api/graphics/live
+ * Alias for /api/graphics/scoreboard — live GSI match data
+ */
+app.get('/api/graphics/live', (req, res) => {
+  try {
+    const teamCT = scoreboard.map?.team_ct || { name: 'CT', score: 0 };
+    const teamT = scoreboard.map?.team_t || { name: 'T', score: 0 };
+    const teamAProfile = graphicsUtils.resolveTeamProfileFromGSI(teamCT, 'CT', teams, baseUrl);
+    const teamBProfile = graphicsUtils.resolveTeamProfileFromGSI(teamT, 'T', teams, baseUrl);
+
+    const playersData = [];
+    let ctCount = 0, tCount = 0;
+    for (const steamId in scoreboard.players) {
+      const gsiPlayer = scoreboard.players[steamId];
+      const side = gsiPlayer.team;
+      if (side === 'CT') ctCount++;
+      if (side === 'T') tCount++;
+      if ((side === 'CT' && ctCount > 5) || (side === 'T' && tCount > 5)) continue;
+      const regPlayer = graphicsUtils.resolvePlayerBySteamId(steamId, players);
+      const firstName = regPlayer?.firstName || regPlayer?.['First Name'] || null;
+      const countryCode = (regPlayer?.countryCode || regPlayer?.['Country Code'] || regPlayer?.country || '').toUpperCase() || null;
+      playersData.push({
+        id: regPlayer?.id || `temp_${steamId}`,
+        steamId,
+        name: regPlayer?.name || gsiPlayer.name || 'Unknown',
+        nickname: regPlayer?.nickname || gsiPlayer.name || 'Unknown',
+        firstName,
+        countryCode,
+        photo: graphicsUtils.resolvePlayerPhoto(regPlayer, baseUrl),
+        teamId: regPlayer?.teamId || null,
+        teamName: side === 'CT' ? teamCT.name : teamT.name,
+        teamLogo: side === 'CT' ? teamAProfile.logo : teamBProfile.logo,
+        side,
+        kills: gsiPlayer.match_stats?.kills || 0,
+        assists: gsiPlayer.match_stats?.assists || 0,
+        deaths: gsiPlayer.match_stats?.deaths || 0,
+        adr: parseFloat(getAverageDamage(steamId)),
+        damage: gsiPlayer.state?.damage || gsiPlayer.accumulatedDmg || 0,
+        kd: graphicsUtils.calculateKD(gsiPlayer.match_stats?.kills || 0, gsiPlayer.match_stats?.deaths || 0),
+        isAlive: gsiPlayer.state?.health > 0,
+        health: gsiPlayer.state?.health || 0
+      });
+    }
+    playersData.sort((a, b) => b.kills - a.kills);
+
+    res.json({
+      mode: 'live',
+      updatedAt: new Date().toISOString(),
+      matchId: null,
+      map: scoreboard.map?.name || null,
+      round: scoreboard.map?.round || 0,
+      phase: scoreboard.map?.phase || 'unknown',
+      teamA: teamAProfile,
+      teamB: teamBProfile,
+      players: playersData,
+      teamAPlayers: playersData.filter(p => p.side === 'CT'),
+      teamBPlayers: playersData.filter(p => p.side === 'T'),
+      topPlayers: {
+        kills: playersData.slice(0, 3),
+        adr: [...playersData].sort((a, b) => b.adr - a.adr).slice(0, 3),
+        damage: [...playersData].sort((a, b) => b.damage - a.damage).slice(0, 3)
+      }
+    });
+  } catch (err) {
+    console.error('Error in /api/graphics/live:', err);
+    res.status(500).json({ mode: 'live', error: err.message });
+  }
+});
+
+/**
+ * GET /api/graphics/matches
+ * GET /api/graphics/matches/completed
+ * GET /api/graphics/matches/upcoming  (always empty until match planning system added)
+ * GET /api/graphics/matches/live
+ * GET /api/graphics/match/:matchId
+ * Returns match history from completedMatches.json
+ */
+app.get('/api/graphics/matches/upcoming', (req, res) => {
+  res.json({ mode: 'matches_upcoming', updatedAt: new Date().toISOString(), matches: [] });
+});
+
+app.get('/api/graphics/matches/live', (req, res) => {
+  try {
+    const liveData = readJsonSafe(STORAGE_FILES.liveMatch, getIdleLiveMatch());
+    const hasLive = liveData.status !== 'idle' || Object.keys(scoreboard.players || {}).length > 0;
+    res.json({
+      mode: 'matches_live',
+      updatedAt: new Date().toISOString(),
+      hasLive,
+      matches: hasLive ? [{ id: liveData.matchId, status: 'live', map: liveData.map || scoreboard.map?.name, round: liveData.round || scoreboard.map?.round }] : []
+    });
+  } catch (err) {
+    res.status(500).json({ mode: 'matches_live', error: err.message, matches: [] });
+  }
+});
+
+app.get('/api/graphics/matches/completed', (req, res) => {
+  try {
+    const completed = readJsonSafe(STORAGE_FILES.completedMatches, []);
+    res.json({
+      mode: 'matches_completed',
+      updatedAt: new Date().toISOString(),
+      count: completed.length,
+      matches: Array.isArray(completed) ? completed : []
+    });
+  } catch (err) {
+    res.status(500).json({ mode: 'matches_completed', error: err.message, count: 0, matches: [] });
+  }
+});
+
+app.get('/api/graphics/matches', (req, res) => {
+  try {
+    const completed = readJsonSafe(STORAGE_FILES.completedMatches, []);
+    const liveData = readJsonSafe(STORAGE_FILES.liveMatch, getIdleLiveMatch());
+    const hasLive = liveData.status !== 'idle' || Object.keys(scoreboard.players || {}).length > 0;
+
+    const completedList = Array.isArray(completed) ? completed : [];
+    const liveList = hasLive ? [{ id: liveData.matchId, status: 'live', map: liveData.map || scoreboard.map?.name, round: liveData.round || scoreboard.map?.round }] : [];
+
+    res.json({
+      mode: 'matches',
+      updatedAt: new Date().toISOString(),
+      count: completedList.length + liveList.length,
+      matches: [...liveList, ...completedList]
+    });
+  } catch (err) {
+    res.status(500).json({ mode: 'matches', error: err.message, count: 0, matches: [] });
+  }
+});
+
+app.get('/api/graphics/match/:matchId', (req, res) => {
+  try {
+    const { matchId } = req.params;
+    const completed = readJsonSafe(STORAGE_FILES.completedMatches, []);
+    const match = Array.isArray(completed) ? completed.find(m => m.matchId === matchId || m.id === matchId) : null;
+    if (!match) return res.status(404).json({ error: 'Match not found', matchId });
+    res.json({ mode: 'match', ...match });
+  } catch (err) {
+    res.status(500).json({ mode: 'match', error: err.message });
+  }
+});
+
+/**
+ * GET /api/graphics/database
+ * Full snapshot of all GGBB data — main datasource for GB Next Gen Overlay
+ */
+app.get('/api/graphics/database', (req, res) => {
+  try {
+    const protocol = req.protocol || 'http';
+    const host = req.get('host') || `localhost:${port}`;
+    const reqBaseUrl = `${protocol}://${host}`;
+
+    const teamStatsData = readJsonSafe(STORAGE_FILES.teamStats, {});
+    const playerStatsData = readJsonSafe(STORAGE_FILES.playerStats, {});
+    const mapStatsData = readJsonSafe(STORAGE_FILES.mapStats, {});
+    const h2hData = readJsonSafe(STORAGE_FILES.headToHead, {});
+    const completedMatches = readJsonSafe(STORAGE_FILES.completedMatches, []);
+
+    // Normalize all teams
+    const teamsOut = teams.map(team => graphicsUtils.normalizeTeamForGraphics(team, players, reqBaseUrl));
+    // Normalize all players
+    const playersOut = players.map(p => {
+      const team = teams.find(t => t.id === p.teamId);
+      return graphicsUtils.normalizePlayerForGraphics(p, team, reqBaseUrl);
+    });
+    // Roster format (teams with players inside)
+    const rostersOut = teamsOut.map(t => ({
+      id: t.id, name: t.name, shortName: t.shortName, tag: t.tag,
+      logo: t.logo, countryCode: t.countryCode,
+      players: t.players, playersCount: t.playersCount
+    }));
+
+    // Assets
+    const teamLogos = teams.map(t => ({
+      teamId: t.id, teamName: t.name,
+      logo: graphicsUtils.resolveLogo(t, reqBaseUrl)
+    }));
+    const playerPhotos = players.map(p => ({
+      playerId: p.id, nickname: p.nickname || p.name,
+      photo: graphicsUtils.resolvePlayerPhoto(p, reqBaseUrl)
+    }));
+
+    res.json({
+      mode: 'database',
+      updatedAt: new Date().toISOString(),
+      teamsCount: teams.length,
+      playersCount: players.length,
+      matchesCount: Array.isArray(completedMatches) ? completedMatches.length : 0,
+      teams: teamsOut,
+      players: playersOut,
+      rosters: rostersOut,
+      matches: Array.isArray(completedMatches) ? completedMatches : [],
+      completedMatches: Array.isArray(completedMatches) ? completedMatches : [],
+      stats: {
+        teams: teamStatsData,
+        players: playerStatsData,
+        maps: mapStatsData,
+        headToHead: h2hData
+      },
+      assets: {
+        teamLogos,
+        playerPhotos,
+        fallbacks: {
+          playerPhoto: `${reqBaseUrl}/NoneP.png`,
+          teamLogo: `${reqBaseUrl}/logos/none-team.png`
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Error in /api/graphics/database:', err);
+    res.status(500).json({ mode: 'database', error: err.message });
+  }
+});
+
+/**
+ * GET /api/graphics/validate
+ * Data quality check — shows warnings about missing data
+ */
+app.get('/api/graphics/validate', (req, res) => {
+  try {
+    const warnings = [];
+    const errors = [];
+    let ok = true;
+
+    // Teams without logo
+    teams.forEach(t => {
+      if (!t.logo) warnings.push(`Team "${t.name}" has no logo`);
+    });
+
+    // Teams without players
+    teams.forEach(t => {
+      const count = players.filter(p => p.teamId === t.id).length;
+      if (count === 0) warnings.push(`Team "${t.name}" has no players assigned`);
+    });
+
+    // Players without photo
+    players.forEach(p => {
+      const photoVal = p.photo || p.avatar || '';
+      if (!photoVal) warnings.push(`Player "${p.nickname || p.name}" has no photo`);
+    });
+
+    // Players without SteamID
+    players.forEach(p => {
+      if (!p.steamId) warnings.push(`Player "${p.nickname || p.name}" has no SteamID`);
+    });
+
+    // Players without teamId
+    players.forEach(p => {
+      if (!p.teamId) warnings.push(`Player "${p.nickname || p.name}" has no team assigned`);
+    });
+
+    // Players without firstName/countryCode
+    let noFirstName = 0, noCountry = 0;
+    players.forEach(p => {
+      if (!p.firstName && !p['First Name']) noFirstName++;
+      if (!p.countryCode && !p['Country Code'] && !p.country) noCountry++;
+    });
+    if (noFirstName > 0) warnings.push(`${noFirstName} players missing firstName`);
+    if (noCountry > 0) warnings.push(`${noCountry} players missing countryCode`);
+
+    // Live data
+    const scoreboardPlayerCount = Object.keys(scoreboard.players || {}).length;
+    if (scoreboardPlayerCount > 0 && scoreboardPlayerCount < 10) {
+      warnings.push(`Live scoreboard has only ${scoreboardPlayerCount} players (expected 10)`);
+    }
+
+    // Postmatch
+    const postmatch = readJsonSafe(STORAGE_FILES.postmatch, getIdlePostmatch());
+    if (!postmatch || postmatch.status === 'idle') {
+      warnings.push('Postmatch is idle (no finalized match)');
+    }
+
+    // Storage files
+    Object.entries(STORAGE_FILES).forEach(([key, filePath]) => {
+      if (!fs.existsSync(filePath)) {
+        errors.push(`Storage file missing: ${key} (${filePath})`);
+        ok = false;
+      }
+    });
+
+    if (errors.length > 0) ok = false;
+
+    res.json({
+      ok: ok && warnings.length === 0,
+      hasWarnings: warnings.length > 0,
+      hasErrors: errors.length > 0,
+      teamsCount: teams.length,
+      playersCount: players.length,
+      warnings,
+      errors,
+      checkedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Error in /api/graphics/validate:', err);
+    res.status(500).json({ ok: false, error: err.message, warnings: [], errors: [] });
+  }
+});
+
+/**
+ * POST /api/admin/rebuild-stats
+ * Manually rebuild team/player stats aggregates from completedMatches.json
+ */
+app.post('/api/admin/rebuild-stats', (req, res) => {
+  try {
+    const completedMatches = readJsonSafe(STORAGE_FILES.completedMatches, []);
+    if (!Array.isArray(completedMatches) || completedMatches.length === 0) {
+      return res.json({ ok: true, message: 'No completed matches to aggregate', matchesProcessed: 0 });
+    }
+
+    const teamStatsAgg = {};
+    const playerStatsAgg = {};
+    const mapStatsAgg = {};
+    const h2hAgg = {};
+
+    for (const match of completedMatches) {
+      if (!match || match.status === 'idle') continue;
+
+      const tAId = match.teamA?.id;
+      const tBId = match.teamB?.id;
+      const winnerTeamId = match.winnerTeamId;
+
+      // Team stats
+      [tAId, tBId].forEach(tid => {
+        if (!tid) return;
+        if (!teamStatsAgg[tid]) teamStatsAgg[tid] = { matchesPlayed: 0, wins: 0, losses: 0, mapsPlayed: 0, mapsWon: 0, mapsLost: 0, lastMatches: [] };
+        teamStatsAgg[tid].matchesPlayed++;
+        if (winnerTeamId === tid) teamStatsAgg[tid].wins++;
+        else teamStatsAgg[tid].losses++;
+        const result = winnerTeamId === tid ? 'W' : 'L';
+        teamStatsAgg[tid].lastMatches.unshift({ matchId: match.matchId, result, map: match.map || null, at: match.updatedAt });
+        if (teamStatsAgg[tid].lastMatches.length > 10) teamStatsAgg[tid].lastMatches.length = 10;
+      });
+
+      // Player stats
+      const allPlayers = Array.isArray(match.players) ? match.players : [];
+      for (const mp of allPlayers) {
+        if (!mp) continue;
+        const pid = mp.steamId || mp.id;
+        if (!pid) continue;
+        if (!playerStatsAgg[pid]) playerStatsAgg[pid] = { matchesPlayed: 0, mapsPlayed: 0, kills: 0, deaths: 0, assists: 0, damage: 0, lastMatches: [] };
+        const pAgg = playerStatsAgg[pid];
+        pAgg.matchesPlayed++;
+        pAgg.mapsPlayed++;
+        pAgg.kills += mp.kills || 0;
+        pAgg.deaths += mp.deaths || 0;
+        pAgg.assists += mp.assists || 0;
+        pAgg.damage += mp.damage || 0;
+        pAgg.lastMatches.unshift({ matchId: match.matchId, kills: mp.kills, deaths: mp.deaths, adr: mp.adr });
+        if (pAgg.lastMatches.length > 10) pAgg.lastMatches.length = 10;
+      }
+
+      // H2H
+      if (tAId && tBId) {
+        const key = `${tAId}_vs_${tBId}`;
+        if (!h2hAgg[key]) h2hAgg[key] = { matchesPlayed: 0, wins: 0, losses: 0, recentMatches: [], mapBreakdown: {} };
+        h2hAgg[key].matchesPlayed++;
+        if (winnerTeamId === tAId) h2hAgg[key].wins++;
+        else if (winnerTeamId === tBId) h2hAgg[key].losses++;
+        h2hAgg[key].recentMatches.unshift({ matchId: match.matchId, map: match.map, winner: winnerTeamId, at: match.updatedAt });
+        if (h2hAgg[key].recentMatches.length > 10) h2hAgg[key].recentMatches.length = 10;
+      }
+    }
+
+    // Calculate derived stats
+    for (const tid in teamStatsAgg) {
+      const t = teamStatsAgg[tid];
+      t.winRate = t.matchesPlayed > 0 ? parseFloat((t.wins / t.matchesPlayed * 100).toFixed(1)) : 0;
+      t.mapWinRate = t.mapsPlayed > 0 ? parseFloat((t.mapsWon / t.mapsPlayed * 100).toFixed(1)) : 0;
+    }
+    for (const pid in playerStatsAgg) {
+      const p = playerStatsAgg[pid];
+      p.kd = p.deaths > 0 ? parseFloat((p.kills / p.deaths).toFixed(2)) : p.kills;
+      p.adr = p.mapsPlayed > 0 ? parseFloat((p.damage / p.mapsPlayed).toFixed(1)) : 0;
+    }
+
+    writeJsonSafe(STORAGE_FILES.teamStats, teamStatsAgg);
+    writeJsonSafe(STORAGE_FILES.playerStats, playerStatsAgg);
+    writeJsonSafe(STORAGE_FILES.headToHead, h2hAgg);
+
+    res.json({
+      ok: true,
+      message: 'Stats rebuilt from completed matches',
+      matchesProcessed: completedMatches.length,
+      teamsAggregated: Object.keys(teamStatsAgg).length,
+      playersAggregated: Object.keys(playerStatsAgg).length,
+      h2hPairsAggregated: Object.keys(h2hAgg).length,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Error in /api/admin/rebuild-stats:', err);
+    res.status(500).json({ ok: false, error: err.message });
   }
 });
 
