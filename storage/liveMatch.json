@@ -1,0 +1,23 @@
+{
+  "mode": "live",
+  "status": "idle",
+  "matchId": null,
+  "map": null,
+  "round": 0,
+  "phase": "idle",
+  "teamA": null,
+  "teamB": null,
+  "players": [],
+  "teams": {
+    "teamAPlayers": [],
+    "teamBPlayers": [],
+    "ctPlayers": [],
+    "tPlayers": []
+  },
+  "topPlayers": {
+    "kills": [],
+    "adr": [],
+    "damage": []
+  },
+  "updatedAt": null
+}
