@@ -1,0 +1,27 @@
+{
+  "mode": "postmatch",
+  "status": "idle",
+  "matchId": null,
+  "teamA": null,
+  "teamB": null,
+  "players": [],
+  "teamAPlayers": [],
+  "teamBPlayers": [],
+  "topPlayers": {
+    "kills": [],
+    "adr": [],
+    "damage": [],
+    "kd": [],
+    "plusMinus": [],
+    "rating": [],
+    "survivalRate": [],
+    "multiKills": []
+  },
+  "mvp": null,
+  "teamStats": {
+    "teamA": null,
+    "teamB": null
+  },
+  "roundHistory": [],
+  "updatedAt": null
+}

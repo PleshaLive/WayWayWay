@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graphics API Preview</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --ok: #22c55e;
+      --err: #ef4444;
+      --idle: #f59e0b;
+      --border: #334155;
+      --btn: #2563eb;
+      --btn-hover: #1d4ed8;
+      --danger: #b91c1c;
+      --danger-hover: #991b1b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .badge.ok { background: rgba(34,197,94,0.12); color: #4ade80; border-color: rgba(34,197,94,0.35); }
+    .badge.idle { background: rgba(245,158,11,0.12); color: #fbbf24; border-color: rgba(245,158,11,0.35); }
+    .badge.error { background: rgba(239,68,68,0.12); color: #f87171; border-color: rgba(239,68,68,0.35); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .method {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: #93c5fd;
+    }
+
+    .endpoint-url {
+      color: #93c5fd;
+      font-family: Consolas, Menlo, monospace;
+      font-size: 12px;
+      word-break: break-all;
+      margin-bottom: 6px;
+    }
+
+    .desc {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      color: white;
+      background: var(--btn);
+      font-size: 12px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--btn-hover); }
+    button.secondary { background: #374151; }
+    button.secondary:hover { background: #4b5563; }
+    button.danger { background: var(--danger); }
+    button.danger:hover { background: var(--danger-hover); }
+
+    .inline {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    select, input {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 12px;
+      min-width: 160px;
+    }
+
+    .endpoint-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 6px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .json-wrap {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0b1220;
+    }
+
+    .json-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      padding: 6px;
+      border-bottom: 1px solid var(--border);
+      background: #111827;
+    }
+
+    .json-preview {
+      margin: 0;
+      padding: 10px;
+      max-height: 300px;
+      overflow: auto;
+      font-family: Consolas, Menlo, monospace;
+      font-size: 12px;
+      white-space: pre;
+      line-height: 1.45;
+    }
+
+    .section-title {
+      margin: 16px 0 8px;
+      font-size: 16px;
+      color: #c7d2fe;
+    }
+
+    .danger-zone {
+      margin-top: 16px;
+      border: 1px solid rgba(239,68,68,0.4);
+      background: rgba(127,29,29,0.2);
+    }
+
+    .team-preview {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .team-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .team-chip img {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #334155;
+    }
+
+    a.back {
+      color: #93c5fd;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    a.back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Graphics API Preview</h1>
+        <div class="subtitle">Broadcast-ready JSON endpoints for GB Next Gen Overlay</div>
+        <div style="margin-top:6px;"><a href="/admin" class="back">Back to Admin</a></div>
+      </div>
+      <div class="status-row">
+        <span id="gsiBadge" class="badge idle">GSI: idle</span>
+        <span id="healthBadge" class="badge idle">Health: unknown</span>
+        <span id="lastUpdate" class="badge idle">Last update: -</span>
+      </div>
+    </div>
+
+    <div class="section-title">Prematch Builder</div>
+    <div class="card">
+      <div class="inline">
+        <select id="teamASelect"></select>
+        <select id="teamBSelect"></select>
+        <button id="previewPrematchBtn">Preview Prematch</button>
+        <button id="copyPrematchUrlBtn" class="secondary">Copy Prematch URL</button>
+      </div>
+      <div id="prematchTeamPreview" class="team-preview"></div>
+    </div>
+
+    <div class="section-title">Match Finalization</div>
+    <div class="card">
+      <div id="liveInfo" class="desc">Loading live match info...</div>
+      <div class="inline">
+        <input id="finalizeMatchId" placeholder="matchId (optional)" />
+        <button id="finalizeBtn">Finalize Match</button>
+        <button id="refreshPostmatchBtn" class="secondary">Refresh Postmatch</button>
+        <button id="copyPostmatchUrlBtn" class="secondary">Copy Postmatch URL</button>
+      </div>
+      <div id="finalizeResult" class="desc"></div>
+    </div>
+
+    <div class="section-title">Endpoint Preview</div>
+    <div id="endpointGrid" class="grid"></div>
+
+    <div class="section-title">Danger Zone</div>
+    <div class="card danger-zone">
+      <div class="desc">These actions only clear graphics cache/storage and do not remove teams, players, photos, or logos.</div>
+      <div class="controls">
+        <button id="clearPostmatchBtn" class="danger">Clear Postmatch Data</button>
+        <button id="clearCompletedTestBtn" class="danger">Clear Completed Test Matches</button>
+        <button id="clearLiveBtn" class="danger">Clear Live Match Cache</button>
+      </div>
+      <div id="dangerResult" class="desc"></div>
+    </div>
+  </div>
+
+  <script>
+    const ORIGIN = <%- JSON.stringify(origin) %>;
+    const INITIAL_TEAMS = <%- JSON.stringify(teams || []) %>;
+
+    const endpointDefs = [
+      { key: 'legacyScore', method: 'GET', path: '/score', desc: 'Legacy scoreboard JSON (compatibility endpoint)' },
+      { key: 'graphicsScoreboard', method: 'GET', path: '/api/graphics/scoreboard', desc: 'Live broadcast-ready graphics scoreboard' },
+      { key: 'graphicsTeams', method: 'GET', path: '/api/graphics/teams', desc: 'Graphics teams profiles and players' },
+      { key: 'graphicsPrematch', method: 'GET', path: '/api/graphics/prematch', desc: 'Prematch builder endpoint for selected teams', dynamic: true },
+      { key: 'graphicsPostmatch', method: 'GET', path: '/api/graphics/postmatch', desc: 'Last finalized match or idle payload' },
+      { key: 'graphicsMatchFinal', method: 'GET', path: '/api/graphics/match/:matchId/final', desc: 'Final payload for a specific matchId', dynamic: true }
+    ];
+
+    let teamList = Array.isArray(INITIAL_TEAMS) ? INITIAL_TEAMS : [];
+
+    function prettyJson(data) {
+      try { return JSON.stringify(data, null, 2); } catch (_) { return String(data); }
+    }
+
+    async function fetchJson(url, options) {
+      const started = Date.now();
+      try {
+        const res = await fetch(url, options || {});
+        const text = await res.text();
+        let json = null;
+        try { json = text ? JSON.parse(text) : null; } catch (_) {}
+        return {
+          ok: res.ok,
+          status: res.status,
+          durationMs: Date.now() - started,
+          json,
+          text,
+          error: null
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          status: 0,
+          durationMs: Date.now() - started,
+          json: null,
+          text: '',
+          error: error.message || String(error)
+        };
+      }
+    }
+
+    function buildUrl(def) {
+      if (def.key === 'graphicsPrematch') {
+        const a = document.getElementById('teamASelect').value;
+        const b = document.getElementById('teamBSelect').value;
+        if (!a || !b) return `${ORIGIN}/api/graphics/prematch?teamA=&teamB=`;
+        return `${ORIGIN}/api/graphics/prematch?teamA=${encodeURIComponent(a)}&teamB=${encodeURIComponent(b)}`;
+      }
+      if (def.key === 'graphicsMatchFinal') {
+        const id = (document.getElementById('finalizeMatchId').value || '').trim();
+        const matchId = id || ':matchId';
+        return `${ORIGIN}/api/graphics/match/${encodeURIComponent(matchId)}/final`;
+      }
+      return `${ORIGIN}${def.path}`;
+    }
+
+    function classifyStatus(def, response) {
+      if (!response) return 'Idle';
+      if (!response.ok) return 'Error';
+      const json = response.json;
+
+      if (def.key === 'graphicsPostmatch') {
+        if (!json || json.status === 'idle') return 'Idle';
+      }
+
+      if (def.key === 'graphicsScoreboard') {
+        if (!json || !Array.isArray(json.players) || json.players.length === 0) return 'Idle';
+      }
+
+      if (def.key === 'graphicsPrematch') {
+        if (!json || !json.teamA || !json.teamB) return 'Empty';
+      }
+
+      if (json && Array.isArray(json) && json.length === 0) return 'Empty';
+      return 'OK';
+    }
+
+    function statusClass(status) {
+      if (status === 'OK') return 'ok';
+      if (status === 'Error') return 'error';
+      return 'idle';
+    }
+
+    function createCard(def) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3>
+          <span>${def.path}</span>
+          <span class="method">${def.method}</span>
+        </h3>
+        <div class="endpoint-url" data-role="url"></div>
+        <div class="desc">${def.desc}</div>
+        <div class="controls">
+          <button data-action="open">Open</button>
+          <button data-action="copy-url" class="secondary">Copy URL</button>
+          <button data-action="refresh" class="secondary">Refresh Preview</button>
+        </div>
+        <div class="endpoint-meta">
+          <span data-role="status" class="badge idle">Idle</span>
+          <span data-role="timing">Last response: -</span>
+        </div>
+        <div class="json-wrap">
+          <div class="json-toolbar">
+            <button data-action="copy-json" class="secondary">Copy JSON</button>
+            <button data-action="refresh-json" class="secondary">Refresh</button>
+          </div>
+          <pre class="json-preview" data-role="json">Click Refresh Preview</pre>
+        </div>
+      `;
+
+      const urlEl = card.querySelector('[data-role="url"]');
+      const statusEl = card.querySelector('[data-role="status"]');
+      const timingEl = card.querySelector('[data-role="timing"]');
+      const jsonEl = card.querySelector('[data-role="json"]');
+
+      async function refresh() {
+        const url = buildUrl(def);
+        urlEl.textContent = url;
+
+        // For placeholder /match/:matchId/final without id, keep preview informational.
+        if (def.key === 'graphicsMatchFinal' && url.includes('/:matchId/')) {
+          statusEl.textContent = 'Idle';
+          statusEl.className = 'badge idle';
+          timingEl.textContent = 'Last response: waiting for matchId';
+          jsonEl.textContent = 'Set matchId in Match Finalization panel to preview this endpoint.';
+          return;
+        }
+
+        const response = await fetchJson(url);
+        const status = classifyStatus(def, response);
+
+        statusEl.textContent = status;
+        statusEl.className = `badge ${statusClass(status)}`;
+        timingEl.textContent = `Last response: ${response.durationMs} ms (HTTP ${response.status || 'ERR'})`;
+
+        if (response.json !== null) {
+          jsonEl.textContent = prettyJson(response.json);
+        } else if (response.text) {
+          jsonEl.textContent = response.text;
+        } else {
+          jsonEl.textContent = response.error || 'No response body';
+        }
+      }
+
+      card.querySelector('[data-action="open"]').addEventListener('click', () => {
+        const url = buildUrl(def);
+        window.open(url, '_blank');
+      });
+
+      card.querySelector('[data-action="copy-url"]').addEventListener('click', async () => {
+        const url = buildUrl(def);
+        await navigator.clipboard.writeText(url);
+      });
+
+      card.querySelector('[data-action="refresh"]').addEventListener('click', refresh);
+      card.querySelector('[data-action="refresh-json"]').addEventListener('click', refresh);
+      card.querySelector('[data-action="copy-json"]').addEventListener('click', async () => {
+        await navigator.clipboard.writeText(jsonEl.textContent || '');
+      });
+
+      refresh();
+      return { card, refresh };
+    }
+
+    function fillTeamSelectors() {
+      const aSel = document.getElementById('teamASelect');
+      const bSel = document.getElementById('teamBSelect');
+      aSel.innerHTML = '';
+      bSel.innerHTML = '';
+
+      if (!teamList.length) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No teams';
+        aSel.appendChild(opt.cloneNode(true));
+        bSel.appendChild(opt);
+        return;
+      }
+
+      const placeholderA = document.createElement('option');
+      placeholderA.value = '';
+      placeholderA.textContent = 'Select Team A';
+      const placeholderB = document.createElement('option');
+      placeholderB.value = '';
+      placeholderB.textContent = 'Select Team B';
+      aSel.appendChild(placeholderA);
+      bSel.appendChild(placeholderB);
+
+      teamList.forEach((t) => {
+        const text = `${t.shortName || '---'} | ${t.name || t.id}`;
+        const optA = document.createElement('option');
+        optA.value = t.id;
+        optA.textContent = text;
+        const optB = document.createElement('option');
+        optB.value = t.id;
+        optB.textContent = text;
+        aSel.appendChild(optA);
+        bSel.appendChild(optB);
+      });
+    }
+
+    function renderPrematchTeamPreview() {
+      const el = document.getElementById('prematchTeamPreview');
+      const teamAId = document.getElementById('teamASelect').value;
+      const teamBId = document.getElementById('teamBSelect').value;
+      const teamA = teamList.find((t) => t.id === teamAId);
+      const teamB = teamList.find((t) => t.id === teamBId);
+
+      const chip = (label, team) => {
+        if (!team) return `<span class="team-chip"><strong>${label}</strong> not selected</span>`;
+        const logo = team.logo && team.logo.startsWith('http') ? team.logo : `${ORIGIN}${team.logo || '/logos/none-team.png'}`;
+        return `<span class="team-chip"><img src="${logo}" alt="${team.name}" /><strong>${label}</strong> ${team.shortName || ''} ${team.name}</span>`;
+      };
+
+      el.innerHTML = `${chip('Team A', teamA)} ${chip('Team B', teamB)}`;
+    }
+
+    async function refreshHealth() {
+      const health = await fetchJson(`${ORIGIN}/api/graphics/health`);
+      const gsiBadge = document.getElementById('gsiBadge');
+      const healthBadge = document.getElementById('healthBadge');
+      const lastUpdate = document.getElementById('lastUpdate');
+
+      if (!health.ok || !health.json) {
+        gsiBadge.textContent = 'GSI: error';
+        gsiBadge.className = 'badge error';
+        healthBadge.textContent = 'Health: error';
+        healthBadge.className = 'badge error';
+        return;
+      }
+
+      const h = health.json;
+      const gsi = (h.gsiStatus || 'idle').toLowerCase();
+      gsiBadge.textContent = `GSI: ${gsi}`;
+      gsiBadge.className = `badge ${gsi === 'connected' ? 'ok' : gsi === 'error' ? 'error' : 'idle'}`;
+
+      healthBadge.textContent = h.ok ? 'Health: OK' : 'Health: error';
+      healthBadge.className = `badge ${h.ok ? 'ok' : 'error'}`;
+      lastUpdate.textContent = `Last update: ${h.lastScoreboardUpdate || '-'}`;
+      lastUpdate.className = 'badge idle';
+    }
+
+    async function refreshLiveInfo() {
+      const infoEl = document.getElementById('liveInfo');
+      const response = await fetchJson(`${ORIGIN}/api/graphics/scoreboard`);
+      if (!response.ok || !response.json) {
+        infoEl.textContent = `Unable to load live scoreboard (${response.status || 'ERR'})`;
+        return;
+      }
+      const d = response.json;
+      infoEl.textContent = [
+        `matchId: ${d.matchId || '-'}`,
+        `map: ${d.map || '-'}`,
+        `score: ${(d.teamA?.name || 'A')} ${d.teamA?.score ?? 0} : ${d.teamB?.score ?? 0} ${(d.teamB?.name || 'B')}`,
+        `players: ${Array.isArray(d.players) ? d.players.length : 0}`,
+        `updatedAt: ${d.updatedAt || '-'}`
+      ].join(' | ');
+    }
+
+    async function finalizeMatch() {
+      const resultEl = document.getElementById('finalizeResult');
+      const matchId = (document.getElementById('finalizeMatchId').value || '').trim();
+      const body = matchId ? { matchId } : {};
+      const response = await fetchJson(`${ORIGIN}/api/admin/finalize-match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (response.ok && response.json?.ok) {
+        resultEl.textContent = `Finalize success. matchId=${response.json.matchId}`;
+      } else {
+        resultEl.textContent = `Finalize failed: ${response.json?.message || response.error || 'unknown error'}`;
+      }
+    }
+
+    async function runDangerAction(path, message) {
+      const resultEl = document.getElementById('dangerResult');
+      const confirmed = window.confirm(message);
+      if (!confirmed) return;
+      const response = await fetchJson(`${ORIGIN}${path}`, { method: 'POST' });
+      if (response.ok && response.json?.ok) {
+        resultEl.textContent = response.json.message || 'Done';
+      } else {
+        resultEl.textContent = `Failed: ${response.json?.message || response.error || 'unknown error'}`;
+      }
+    }
+
+    async function loadGraphicsTeams() {
+      const response = await fetchJson(`${ORIGIN}/api/graphics/teams`);
+      if (response.ok && response.json?.teams && Array.isArray(response.json.teams)) {
+        teamList = response.json.teams.map((t) => ({
+          id: t.id,
+          name: t.name,
+          shortName: t.shortName,
+          logo: t.logo
+        }));
+      }
+      fillTeamSelectors();
+      renderPrematchTeamPreview();
+    }
+
+    (async function init() {
+      await loadGraphicsTeams();
+      await refreshHealth();
+      await refreshLiveInfo();
+
+      const cards = endpointDefs.map(createCard);
+      const grid = document.getElementById('endpointGrid');
+      cards.forEach((c) => grid.appendChild(c.card));
+
+      document.getElementById('teamASelect').addEventListener('change', () => {
+        renderPrematchTeamPreview();
+        cards.forEach((c) => c.refresh());
+      });
+      document.getElementById('teamBSelect').addEventListener('change', () => {
+        renderPrematchTeamPreview();
+        cards.forEach((c) => c.refresh());
+      });
+
+      document.getElementById('previewPrematchBtn').addEventListener('click', () => {
+        const card = cards.find((c) => c.card.textContent.includes('/api/graphics/prematch'));
+        if (card) card.refresh();
+      });
+
+      document.getElementById('copyPrematchUrlBtn').addEventListener('click', async () => {
+        const url = `${ORIGIN}/api/graphics/prematch?teamA=${encodeURIComponent(document.getElementById('teamASelect').value || '')}&teamB=${encodeURIComponent(document.getElementById('teamBSelect').value || '')}`;
+        await navigator.clipboard.writeText(url);
+      });
+
+      document.getElementById('finalizeBtn').addEventListener('click', async () => {
+        await finalizeMatch();
+        await refreshLiveInfo();
+        await refreshHealth();
+        cards.forEach((c) => c.refresh());
+      });
+
+      document.getElementById('refreshPostmatchBtn').addEventListener('click', () => {
+        cards.forEach((c) => c.refresh());
+      });
+
+      document.getElementById('copyPostmatchUrlBtn').addEventListener('click', async () => {
+        await navigator.clipboard.writeText(`${ORIGIN}/api/graphics/postmatch`);
+      });
+
+      document.getElementById('clearPostmatchBtn').addEventListener('click', async () => {
+        await runDangerAction('/api/admin/graphics/clear-postmatch', 'Clear postmatch data?');
+        cards.forEach((c) => c.refresh());
+        refreshHealth();
+      });
+
+      document.getElementById('clearCompletedTestBtn').addEventListener('click', async () => {
+        await runDangerAction('/api/admin/graphics/clear-completed-test', 'Remove test/mock/demo matches from completedMatches only?');
+        cards.forEach((c) => c.refresh());
+      });
+
+      document.getElementById('clearLiveBtn').addEventListener('click', async () => {
+        await runDangerAction('/api/admin/graphics/clear-live', 'Clear live match cache?');
+        cards.forEach((c) => c.refresh());
+        refreshLiveInfo();
+        refreshHealth();
+      });
+
+      setInterval(() => {
+        refreshHealth();
+      }, 5000);
+    })();
+  </script>
+</body>
+</html>
