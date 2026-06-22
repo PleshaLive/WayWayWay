@@ -1110,12 +1110,15 @@ app.get('/api/players/:id', (req, res) => {
 });
 
 app.post('/api/players', (req, res) => {
-  const { name, steamId, photo, teamId, match_stats } = req.body; // -P-�-�-�-�-+-+ match_stats
+  const { name, steamId, photo, teamId, match_stats, firstName, lastName, country } = req.body; // -P-�-�-�-�-+-+ match_stats
   if (!name) return res.status(400).json({error: "Player name is required"});
   const newPlayer = { 
     id: Date.now().toString(), name, steamId: steamId || null, 
     photo: photo || null, teamId: teamId || null, 
-    match_stats: match_stats || {} // -�-+-+-�-+-�-+-+-+-+-�-�-�-+, -�-�-� -� -�-�-�-�-+ -+-�-+-�-+-+-�-+-�
+    match_stats: match_stats || {}, // -�-+-+-�-+-�-+-+-+-+-�-�-�-+, -�-�-� -� -�-�-�-�-+ -+-�-+-�-+-+-�-+-�
+    firstName: firstName || null,
+    lastName: lastName || null,
+    country: country ? country.toUpperCase() : null
   };
   players.push(newPlayer);
   saveData();
@@ -1124,7 +1127,7 @@ app.post('/api/players', (req, res) => {
 
 app.put('/api/players/:id', (req, res) => {
   const { id } = req.params;
-  const { name, steamId, photo, teamId, match_stats } = req.body; // -P-�-�-�-�-+-+ match_stats
+  const { name, steamId, photo, teamId, match_stats, firstName, lastName, country } = req.body; // -P-�-�-�-�-+-+ match_stats
   const playerIndex = players.findIndex(p => p.id === id); // -�-�-+-+-+-�-+-�-�-+ findIndex
   if (playerIndex === -1) return res.status(404).json({ error: "Player not found" });
   
@@ -1133,6 +1136,9 @@ app.put('/api/players/:id', (req, res) => {
   players[playerIndex].photo = photo !== undefined ? (photo || null) : players[playerIndex].photo;
   players[playerIndex].teamId = teamId !== undefined ? (teamId || null) : players[playerIndex].teamId;
   players[playerIndex].match_stats = match_stats !== undefined ? (match_stats || {}) : players[playerIndex].match_stats;
+  players[playerIndex].firstName = firstName !== undefined ? (firstName || null) : players[playerIndex].firstName;
+  players[playerIndex].lastName = lastName !== undefined ? (lastName || null) : players[playerIndex].lastName;
+  players[playerIndex].country = country !== undefined ? (country ? country.toUpperCase() : null) : players[playerIndex].country;
   saveData();
   res.json(players[playerIndex]);
 });
@@ -1489,6 +1495,9 @@ app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
     const steamIdIdx = headers.findIndex(h => h === 'steamid');
     const teamNameIdx = headers.findIndex(h => h === 'team name');
     const photoIdx = headers.findIndex(h => ['avatar', 'photo'].includes(h));
+    const firstNameIdx = headers.findIndex(h => h === 'first name');
+    const lastNameIdx = headers.findIndex(h => h === 'last name');
+    const countryIdx = headers.findIndex(h => h === 'country code' || h === 'country');
 
     if (usernameIdx === -1) return res.status(400).json({ error: '??????? "Username" ?? ??????? ? ?????' });
 
@@ -1546,7 +1555,10 @@ app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
         steamId: steamId || null,
         photo,
         teamId,
-        match_stats: {}
+        match_stats: {},
+        firstName: (firstNameIdx !== -1 && row[firstNameIdx]) ? String(row[firstNameIdx]).trim() : null,
+        lastName: (lastNameIdx !== -1 && row[lastNameIdx]) ? String(row[lastNameIdx]).trim() : null,
+        country: (countryIdx !== -1 && row[countryIdx]) ? String(row[countryIdx]).trim().toUpperCase() : null
       };
       players.push(newPlayer);
       created++;
@@ -1999,6 +2011,158 @@ app.get('/api/graphics/health', (req, res) => {
         liveMatch: 'error'
       },
       message: err.message
+    });
+  }
+});
+
+/**
+ * GET /api/graphics/rosters
+ * Returns complete rosters with all teams and players
+ * Format optimized for GB Next Gen Overlay roster binding
+ */
+app.get('/api/graphics/rosters', (req, res) => {
+  try {
+    const protocol = req.protocol || 'http';
+    const host = req.get('host') || `localhost:${port}`;
+    const baseUrl = `${protocol}://${host}`;
+
+    const normalizedTeams = teams
+      .map(team => graphicsUtils.normalizeTeamForGraphics(team, players, baseUrl))
+      .filter(t => t !== null);
+
+    const normalizedPlayers = players
+      .map(p => {
+        const playerTeam = teams.find(t => 
+          t.id === p.teamId || 
+          (p.teamName && t.name.toLowerCase() === p.teamName.toLowerCase()) ||
+          (p.team && t.name.toLowerCase() === p.team.toLowerCase()) ||
+          (p.team && t.shortName.toLowerCase() === p.team.toLowerCase())
+        );
+        return graphicsUtils.normalizePlayerForGraphics(p, playerTeam, baseUrl);
+      })
+      .filter(p => p !== null);
+
+    res.json({
+      mode: 'rosters',
+      updatedAt: new Date().toISOString(),
+      teamsCount: normalizedTeams.length,
+      playersCount: normalizedPlayers.length,
+      teams: normalizedTeams,
+      players: normalizedPlayers
+    });
+  } catch (err) {
+    console.error('Error in /api/graphics/rosters:', err);
+    res.status(500).json({
+      ok: false,
+      mode: 'rosters',
+      error: err.message,
+      teamsCount: 0,
+      playersCount: 0,
+      teams: [],
+      players: []
+    });
+  }
+});
+
+/**
+ * GET /api/graphics/rosters/compact
+ * Compact roster format for simple titling systems
+ */
+app.get('/api/graphics/rosters/compact', (req, res) => {
+  try {
+    const protocol = req.protocol || 'http';
+    const host = req.get('host') || `localhost:${port}`;
+    const baseUrl = `${protocol}://${host}`;
+
+    const compactTeams = teams
+      .map(team => {
+        const teamPlayers = players
+          .filter(p => 
+            p.teamId === team.id || 
+            (p.teamName && team.name.toLowerCase() === p.teamName.toLowerCase()) ||
+            (p.team && team.name.toLowerCase() === p.team.toLowerCase()) ||
+            (p.team && team.shortName.toLowerCase() === p.team.toLowerCase())
+          )
+          .map(p => {
+            const firstName = p.firstName || p['First Name'] || null;
+            const countryCode = (p.countryCode || p['Country Code'] || p.country || '').toUpperCase() || null;
+            const photo = (p.photo || p.avatar || '').startsWith('http') 
+              ? (p.photo || p.avatar)
+              : (p.photo || p.avatar ? `${baseUrl}${p.photo || p.avatar}` : `${baseUrl}/NoneP.png`);
+            return {
+              nickname: p.nickname || p.name || '',
+              firstName: firstName,
+              countryCode: countryCode,
+              photo: photo
+            };
+          });
+
+        const logo = team.logo
+          ? (team.logo.startsWith('http') ? team.logo : `${baseUrl}${team.logo}`)
+          : `${baseUrl}/logos/none-team.png`;
+
+        return {
+          id: team.id,
+          name: team.name,
+          shortName: team.shortName || team.name?.substring(0, 3).toUpperCase() || '',
+          logo: logo,
+          players: teamPlayers
+        };
+      })
+      .filter(t => t !== null);
+
+    res.json({
+      mode: 'rosters_compact',
+      updatedAt: new Date().toISOString(),
+      teamsCount: compactTeams.length,
+      teams: compactTeams
+    });
+  } catch (err) {
+    console.error('Error in /api/graphics/rosters/compact:', err);
+    res.status(500).json({
+      ok: false,
+      mode: 'rosters_compact',
+      error: err.message,
+      teams: []
+    });
+  }
+});
+
+/**
+ * GET /api/graphics/rosters/:teamId
+ * Single team roster with detailed player information
+ */
+app.get('/api/graphics/rosters/:teamId', (req, res) => {
+  try {
+    const { teamId } = req.params;
+    const protocol = req.protocol || 'http';
+    const host = req.get('host') || `localhost:${port}`;
+    const baseUrl = `${protocol}://${host}`;
+
+    const team = teams.find(t => t.id === teamId);
+    if (!team) {
+      return res.status(404).json({
+        ok: false,
+        mode: 'team_roster',
+        error: 'Team not found',
+        team: null
+      });
+    }
+
+    const normalizedTeam = graphicsUtils.normalizeTeamForGraphics(team, players, baseUrl);
+
+    res.json({
+      mode: 'team_roster',
+      updatedAt: new Date().toISOString(),
+      team: normalizedTeam
+    });
+  } catch (err) {
+    console.error('Error in /api/graphics/rosters/:teamId:', err);
+    res.status(500).json({
+      ok: false,
+      mode: 'team_roster',
+      error: err.message,
+      team: null
     });
   }
 });
