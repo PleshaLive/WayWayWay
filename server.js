@@ -731,10 +731,25 @@ app.get('/score', (req, res) => {
 
   const teamCT = scoreboard.map?.team_ct || { name: "CT", score: 0, timeouts_remaining: 0 };
   const teamT = scoreboard.map?.team_t || { name: "T", score: 0, timeouts_remaining: 0 };
-  const mapInfo = { CT: teamCT, T: teamT }; // -�-�-+-+-+-�-+-�-�-+ -+-+-+-+-�-� -+-�-�-�-�-�-�
+
+  const registeredTeamCT = teams.find(t => t.name?.toLowerCase() === teamCT.name?.toLowerCase());
+  const registeredTeamT = teams.find(t => t.name?.toLowerCase() === teamT.name?.toLowerCase());
+
+  const teamCTLogo = registeredTeamCT?.logo
+    ? `${baseUrl}${registeredTeamCT.logo.startsWith('/') ? '' : '/'}${registeredTeamCT.logo}`
+    : `${baseUrl}/logos/none-team.png`;
+  const teamTLogo = registeredTeamT?.logo
+    ? `${baseUrl}${registeredTeamT.logo.startsWith('/') ? '' : '/'}${registeredTeamT.logo}`
+    : `${baseUrl}/logos/none-team.png`;
+
+  const mapInfo = {
+    CT: { ...teamCT, logo: teamCTLogo },
+    T: { ...teamT, logo: teamTLogo }
+  };
+
   const playersArr = [
-    ...ctPlayers.map(p => ({ ...p, teamName: teamCT.name })), // -�-+-�-�-�-+-�-�-+ teamName
-    ...tPlayers.map(p => ({ ...p, teamName: teamT.name }))  // -�-+-�-�-�-+-�-�-+ teamName
+    ...ctPlayers.map(p => ({ ...p, teamName: teamCT.name, teamLogo: teamCTLogo })),
+    ...tPlayers.map(p => ({ ...p, teamName: teamT.name, teamLogo: teamTLogo }))
   ];
 
   res.json({ mapInfo, players: playersArr });
