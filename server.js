@@ -136,27 +136,53 @@ function createPlaceholderPlayer() {
     kills: 0,
     deaths: 0,
     assists: 0,
-    kd: 0,
     plusMinus: 0,
+    kd: 0,
     damage: 0,
     adr: 0,
+    kpr: 0,
+    apr: 0,
     damagePerKill: 0,
     roundsPlayed: 0,
-    headshots: null,
-    headshotRate: null,
+    survivedRounds: 0,
+    survivalRate: 0,
+    kast: null,
+    impact: null,
     multiKills: {
       oneKillRounds: 0,
       twoKillRounds: 0,
       threeKillRounds: 0,
       fourKillRounds: 0,
       fiveKillRounds: 0,
+      twoKCount: 0,
+      threeKCount: 0,
+      fourKCount: 0,
+      fiveKCount: 0,
       aces: 0,
       totalMultiKillRounds: 0
+    },
+    headshots: {
+      count: null,
+      rate: null,
+      percentage: null,
+      available: false
     },
     opening: {
       firstKills: null,
       firstDeaths: null,
-      entryDiff: null
+      openingKpr: null,
+      entryDiff: null,
+      available: false
+    },
+    weapons: {
+      awpKills: null,
+      awpKpr: null,
+      rifleKills: null,
+      knifeKills: null,
+      zeusKills: null,
+      pistolKills: null,
+      smgKills: null,
+      available: false
     },
     clutches: {
       attempts: null,
@@ -175,12 +201,30 @@ function createPlaceholderPlayer() {
       heThrown: null,
       molotovsThrown: null,
       decoysThrown: null,
-      utilityDamage: null
+      utilityDamage: null,
+      available: false
     },
     economy: {
       money: null,
       equipmentValue: null,
       spendThisRound: null
+    },
+    roundStats: {
+      killsByRound: [],
+      damageByRound: [],
+      survivedByRound: [],
+      kastByRound: []
+    },
+    availability: {
+      basic: true,
+      damage: true,
+      multiKills: true,
+      headshots: false,
+      opening: false,
+      weapons: false,
+      utility: false,
+      kast: false,
+      impact: false
     },
     weaponStats: {},
     sideStats: {
@@ -199,36 +243,53 @@ function createPlaceholderPlayers(count) {
 
 function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   const source = player || {};
+  const base = createPlaceholderPlayer();
   const result = {
-    ...createPlaceholderPlayer(),
+    ...base,
     ...source,
     multiKills: {
-      ...createPlaceholderPlayer().multiKills,
+      ...base.multiKills,
       ...(source.multiKills || {})
     },
+    headshots: {
+      ...base.headshots,
+      ...(source.headshots || {})
+    },
     opening: {
-      ...createPlaceholderPlayer().opening,
+      ...base.opening,
       ...(source.opening || {})
     },
+    weapons: {
+      ...base.weapons,
+      ...(source.weapons || {})
+    },
     clutches: {
-      ...createPlaceholderPlayer().clutches,
+      ...base.clutches,
       ...(source.clutches || {})
     },
     utility: {
-      ...createPlaceholderPlayer().utility,
+      ...base.utility,
       ...(source.utility || {})
     },
     economy: {
-      ...createPlaceholderPlayer().economy,
+      ...base.economy,
       ...(source.economy || {})
+    },
+    roundStats: {
+      ...base.roundStats,
+      ...(source.roundStats || {})
+    },
+    availability: {
+      ...base.availability,
+      ...(source.availability || {})
     },
     sideStats: {
       CT: {
-        ...createPlaceholderPlayer().sideStats.CT,
+        ...base.sideStats.CT,
         ...(source.sideStats?.CT || {})
       },
       T: {
-        ...createPlaceholderPlayer().sideStats.T,
+        ...base.sideStats.T,
         ...(source.sideStats?.T || {})
       }
     },
@@ -252,10 +313,14 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.plusMinus = toNumber(source.plusMinus, 0);
   result.damage = toNumber(source.damage, 0);
   result.adr = toNumber(source.adr, 0);
+  result.kpr = toNumber(source.kpr, 0);
+  result.apr = toNumber(source.apr, 0);
   result.damagePerKill = toNumber(source.damagePerKill, 0);
   result.roundsPlayed = toNumber(source.roundsPlayed, 0);
-  result.headshots = source.headshots ?? null;
-  result.headshotRate = source.headshotRate ?? null;
+  result.survivedRounds = toNumber(source.survivedRounds, 0);
+  result.survivalRate = toNumber(source.survivalRate, 0);
+  result.kast = source.kast ?? null;
+  result.impact = source.impact ?? null;
   result.rating = toNumber(source.rating, 0);
   result.customRating = toNumber(source.customRating, 0);
   result.isPlaceholder = !!source.isPlaceholder || placeholder;
@@ -379,6 +444,10 @@ function sortPlayersBestToWorst(playersList) {
     const bAdr = toNumber(b?.adr, 0);
     if (bAdr !== aAdr) return bAdr - aAdr;
 
+    const aKpr = toNumber(a?.kpr, 0);
+    const bKpr = toNumber(b?.kpr, 0);
+    if (bKpr !== aKpr) return bKpr - aKpr;
+
     const aKills = toNumber(a?.kills, 0);
     const bKills = toNumber(b?.kills, 0);
     if (bKills !== aKills) return bKills - aKills;
@@ -407,6 +476,39 @@ function isPlayerInTeam(player, { teamId = null, teamName = '', side = '' } = {}
   if (playerSide && targetSide && playerSide === targetSide) return true;
 
   return false;
+}
+
+function calculateScoreboardCustomRating({ kills, adr, assists, survivalRate, multiKillRounds, deaths }) {
+  const rating =
+    (toNumber(kills, 0) * 0.35) +
+    (toNumber(adr, 0) * 0.02) +
+    (toNumber(assists, 0) * 0.1) +
+    (toNumber(survivalRate, 0) * 0.01) +
+    (toNumber(multiKillRounds, 0) * 0.2) -
+    (toNumber(deaths, 0) * 0.15);
+  return parseFloat(rating.toFixed(2));
+}
+
+function buildTopList(playersList, selector, { limit = 5 } = {}) {
+  if (!Array.isArray(playersList)) return [];
+  return [...playersList]
+    .map((player) => ({ player, value: selector(player) }))
+    .filter((entry) => entry.value !== null && entry.value !== undefined && Number.isFinite(Number(entry.value)))
+    .sort((a, b) => {
+      const diff = Number(b.value) - Number(a.value);
+      if (diff !== 0) return diff;
+      return toNumber(a.player?.deaths, 0) - toNumber(b.player?.deaths, 0);
+    })
+    .slice(0, limit)
+    .map((entry) => normalizeTopPlayerEntry({
+      id: entry.player?.id,
+      name: entry.player?.name,
+      nickname: entry.player?.nickname,
+      photo: entry.player?.photo,
+      teamId: entry.player?.teamId,
+      teamLogo: entry.player?.teamLogo,
+      value: Number(entry.value)
+    }));
 }
 
 function safeDivide(numerator, denominator, digits = 2) {
@@ -445,6 +547,231 @@ function buildPlayerFullName(player) {
   const lastName = getPlayerLastName(player);
   const nickname = getPlayerNickname(player);
   return player?.fullName || player?.['Full Name'] || player?.fullname || (firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || nickname);
+}
+
+function buildScoreboardOverallPlayer({
+  steamId,
+  sourcePlayer,
+  regPlayer,
+  teamProfile,
+  side,
+  roundsPlayed,
+  roundStats,
+  baseUrl
+}) {
+  const kills = toNumber(sourcePlayer?.kills ?? sourcePlayer?.match_stats?.kills, 0);
+  const deaths = toNumber(sourcePlayer?.deaths ?? sourcePlayer?.match_stats?.deaths, 0);
+  const assists = toNumber(sourcePlayer?.assists ?? sourcePlayer?.match_stats?.assists, 0);
+  const damage = toNumber(sourcePlayer?.damage ?? sourcePlayer?.accumulatedDmg, 0);
+  const plusMinus = kills - deaths;
+  const adr = roundsPlayed > 0 ? parseFloat((damage / roundsPlayed).toFixed(2)) : 0;
+  const kpr = roundsPlayed > 0 ? parseFloat((kills / roundsPlayed).toFixed(3)) : 0;
+  const apr = roundsPlayed > 0 ? parseFloat((assists / roundsPlayed).toFixed(3)) : 0;
+
+  const survivedCumulative = sourcePlayer?.match_stats?.survived_rounds ?? sourcePlayer?.match_stats?.survivedRounds;
+  const survivedRounds = Number.isFinite(Number(survivedCumulative))
+    ? toNumber(survivedCumulative, 0)
+    : (Array.isArray(roundStats?.survivedByRound) ? roundStats.survivedByRound.filter((value) => value === true).length : 0);
+  const survivalRate = roundsPlayed > 0 ? parseFloat(((survivedRounds / roundsPlayed) * 100).toFixed(2)) : 0;
+
+  const oneKillRounds = Array.isArray(roundStats?.killsByRound)
+    ? roundStats.killsByRound.filter((value) => value === 1).length
+    : toNumber(sourcePlayer?.match_stats?.oneKillRounds ?? sourcePlayer?.multiKills?.oneKillRounds, 0);
+  const twoKCount = Array.isArray(roundStats?.killsByRound)
+    ? roundStats.killsByRound.filter((value) => value === 2).length
+    : toNumber(sourcePlayer?.match_stats?.twoKillRounds ?? sourcePlayer?.multiKills?.twoKCount ?? sourcePlayer?.multiKills?.twoKillRounds, 0);
+  const threeKCount = Array.isArray(roundStats?.killsByRound)
+    ? roundStats.killsByRound.filter((value) => value === 3).length
+    : toNumber(sourcePlayer?.match_stats?.threeKillRounds ?? sourcePlayer?.multiKills?.threeKCount ?? sourcePlayer?.multiKills?.threeKillRounds, 0);
+  const fourKCount = Array.isArray(roundStats?.killsByRound)
+    ? roundStats.killsByRound.filter((value) => value === 4).length
+    : toNumber(sourcePlayer?.match_stats?.fourKillRounds ?? sourcePlayer?.multiKills?.fourKCount ?? sourcePlayer?.multiKills?.fourKillRounds, 0);
+  const fiveKCount = Array.isArray(roundStats?.killsByRound)
+    ? roundStats.killsByRound.filter((value) => value >= 5).length
+    : toNumber(sourcePlayer?.match_stats?.fiveKillRounds ?? sourcePlayer?.multiKills?.fiveKCount ?? sourcePlayer?.multiKills?.fiveKillRounds, 0);
+  const totalMultiKillRounds = twoKCount + threeKCount + fourKCount + fiveKCount;
+
+  const headshotsCountRaw = sourcePlayer?.match_stats?.headshots ?? sourcePlayer?.headshots?.count ?? null;
+  const headshotsAvailable = Number.isFinite(Number(headshotsCountRaw));
+  const headshotsCount = headshotsAvailable ? toNumber(headshotsCountRaw, 0) : null;
+  const headshotRate = headshotsAvailable && kills > 0 ? parseFloat(((headshotsCount / kills) * 100).toFixed(2)) : null;
+
+  const firstKillsRaw = sourcePlayer?.match_stats?.firstKills ?? sourcePlayer?.opening?.firstKills ?? null;
+  const firstDeathsRaw = sourcePlayer?.match_stats?.firstDeaths ?? sourcePlayer?.opening?.firstDeaths ?? null;
+  const openingAvailable = Number.isFinite(Number(firstKillsRaw)) && Number.isFinite(Number(firstDeathsRaw));
+  const firstKills = openingAvailable ? toNumber(firstKillsRaw, 0) : null;
+  const firstDeaths = openingAvailable ? toNumber(firstDeathsRaw, 0) : null;
+  const openingKpr = openingAvailable && roundsPlayed > 0 ? parseFloat((firstKills / roundsPlayed).toFixed(3)) : null;
+  const entryDiff = openingAvailable ? firstKills - firstDeaths : null;
+
+  const utilityRaw = {
+    flashAssists: sourcePlayer?.match_stats?.flashAssists ?? sourcePlayer?.utility?.flashAssists ?? null,
+    flashesThrown: sourcePlayer?.match_stats?.flashesThrown ?? sourcePlayer?.utility?.flashesThrown ?? null,
+    enemiesFlashed: sourcePlayer?.match_stats?.enemiesFlashed ?? sourcePlayer?.utility?.enemiesFlashed ?? null,
+    smokesThrown: sourcePlayer?.match_stats?.smokesThrown ?? sourcePlayer?.utility?.smokesThrown ?? null,
+    heThrown: sourcePlayer?.match_stats?.heThrown ?? sourcePlayer?.utility?.heThrown ?? null,
+    molotovsThrown: sourcePlayer?.match_stats?.molotovsThrown ?? sourcePlayer?.utility?.molotovsThrown ?? null,
+    utilityDamage: sourcePlayer?.match_stats?.utilityDamage ?? sourcePlayer?.utility?.utilityDamage ?? null
+  };
+  const utilityAvailable = Object.values(utilityRaw).some((value) => Number.isFinite(Number(value)));
+
+  const weaponsRaw = {
+    awpKills: sourcePlayer?.match_stats?.awpKills ?? sourcePlayer?.weapons?.awpKills ?? null,
+    rifleKills: sourcePlayer?.match_stats?.rifleKills ?? sourcePlayer?.weapons?.rifleKills ?? null,
+    knifeKills: sourcePlayer?.match_stats?.knifeKills ?? sourcePlayer?.weapons?.knifeKills ?? null,
+    zeusKills: sourcePlayer?.match_stats?.zeusKills ?? sourcePlayer?.weapons?.zeusKills ?? null,
+    pistolKills: sourcePlayer?.match_stats?.pistolKills ?? sourcePlayer?.weapons?.pistolKills ?? null,
+    smgKills: sourcePlayer?.match_stats?.smgKills ?? sourcePlayer?.weapons?.smgKills ?? null
+  };
+  const weaponsAvailable = Object.values(weaponsRaw).some((value) => Number.isFinite(Number(value)));
+  const awpKills = weaponsAvailable && Number.isFinite(Number(weaponsRaw.awpKills)) ? toNumber(weaponsRaw.awpKills, 0) : null;
+  const awpKpr = weaponsAvailable && awpKills != null && roundsPlayed > 0 ? parseFloat((awpKills / roundsPlayed).toFixed(3)) : null;
+
+  const kastRaw = sourcePlayer?.match_stats?.kast ?? sourcePlayer?.kast ?? null;
+  const kast = Number.isFinite(Number(kastRaw)) ? toNumber(kastRaw, 0) : null;
+  const impactRaw = sourcePlayer?.match_stats?.impact ?? sourcePlayer?.impact ?? null;
+  const impact = Number.isFinite(Number(impactRaw)) ? toNumber(impactRaw, 0) : null;
+
+  const ratingRaw = sourcePlayer?.match_stats?.rating ?? sourcePlayer?.rating ?? null;
+  const rating = Number.isFinite(Number(ratingRaw)) ? toNumber(ratingRaw, 0) : 0;
+  const customRating = calculateScoreboardCustomRating({
+    kills,
+    adr,
+    assists,
+    survivalRate,
+    multiKillRounds: totalMultiKillRounds,
+    deaths
+  });
+
+  const playerTeamId = sourcePlayer?.teamId ?? regPlayer?.teamId ?? teamProfile?.id ?? null;
+  const playerTeamName = sourcePlayer?.teamName || teamProfile?.name || '';
+  const playerTeamLogo = sourcePlayer?.teamLogo || teamProfile?.logo || '';
+
+  return normalizePlayerStatsShape({
+    id: sourcePlayer?.id || regPlayer?.id || `temp_${steamId}`,
+    steamId: steamId || sourcePlayer?.steamId || regPlayer?.steamId || '',
+    nickname: sourcePlayer?.nickname || regPlayer?.nickname || regPlayer?.name || sourcePlayer?.name || 'Unknown',
+    name: sourcePlayer?.name || regPlayer?.name || sourcePlayer?.nickname || 'Unknown',
+    photo: sourcePlayer?.photo || graphicsUtils.resolvePlayerPhoto(regPlayer || sourcePlayer, baseUrl, ''),
+    teamId: playerTeamId,
+    teamName: playerTeamName,
+    teamLogo: playerTeamLogo,
+    side: side || sourcePlayer?.side || '',
+    kills,
+    deaths,
+    assists,
+    plusMinus,
+    damage,
+    adr,
+    kpr,
+    apr,
+    rating,
+    customRating,
+    impact,
+    roundsPlayed,
+    survivedRounds,
+    survivalRate,
+    kast,
+    multiKills: {
+      oneKillRounds,
+      twoKillRounds: twoKCount,
+      threeKillRounds: threeKCount,
+      fourKillRounds: fourKCount,
+      fiveKillRounds: fiveKCount,
+      twoKCount,
+      threeKCount,
+      fourKCount,
+      fiveKCount,
+      aces: fiveKCount,
+      totalMultiKillRounds
+    },
+    headshots: {
+      count: headshotsCount,
+      rate: headshotRate,
+      percentage: headshotRate,
+      available: headshotsAvailable
+    },
+    opening: {
+      firstKills,
+      firstDeaths,
+      openingKpr,
+      entryDiff,
+      available: openingAvailable
+    },
+    weapons: {
+      awpKills,
+      awpKpr,
+      rifleKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.rifleKills)) ? toNumber(weaponsRaw.rifleKills, 0) : null,
+      knifeKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.knifeKills)) ? toNumber(weaponsRaw.knifeKills, 0) : null,
+      zeusKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.zeusKills)) ? toNumber(weaponsRaw.zeusKills, 0) : null,
+      pistolKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.pistolKills)) ? toNumber(weaponsRaw.pistolKills, 0) : null,
+      smgKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.smgKills)) ? toNumber(weaponsRaw.smgKills, 0) : null,
+      available: weaponsAvailable
+    },
+    utility: {
+      flashAssists: utilityAvailable && Number.isFinite(Number(utilityRaw.flashAssists)) ? toNumber(utilityRaw.flashAssists, 0) : null,
+      flashesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.flashesThrown)) ? toNumber(utilityRaw.flashesThrown, 0) : null,
+      enemiesFlashed: utilityAvailable && Number.isFinite(Number(utilityRaw.enemiesFlashed)) ? toNumber(utilityRaw.enemiesFlashed, 0) : null,
+      smokesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.smokesThrown)) ? toNumber(utilityRaw.smokesThrown, 0) : null,
+      heThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.heThrown)) ? toNumber(utilityRaw.heThrown, 0) : null,
+      molotovsThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.molotovsThrown)) ? toNumber(utilityRaw.molotovsThrown, 0) : null,
+      utilityDamage: utilityAvailable && Number.isFinite(Number(utilityRaw.utilityDamage)) ? toNumber(utilityRaw.utilityDamage, 0) : null,
+      available: utilityAvailable
+    },
+    roundStats: {
+      killsByRound: roundStats?.killsByRound || [],
+      damageByRound: roundStats?.damageByRound || [],
+      survivedByRound: roundStats?.survivedByRound || [],
+      kastByRound: roundStats?.kastByRound || []
+    },
+    availability: {
+      basic: true,
+      damage: true,
+      multiKills: true,
+      headshots: headshotsAvailable,
+      opening: openingAvailable,
+      weapons: weaponsAvailable,
+      utility: utilityAvailable,
+      kast: kast != null,
+      impact: impact != null
+    },
+    isPlaceholder: false
+  }, { placeholder: false });
+}
+
+function buildOverallTopPlayers(playersList) {
+  const top = {
+    rating: buildTopList(playersList, (p) => p.rating > 0 ? p.rating : p.customRating),
+    kills: buildTopList(playersList, (p) => p.kills),
+    adr: buildTopList(playersList, (p) => p.adr),
+    kpr: buildTopList(playersList, (p) => p.kpr),
+    apr: buildTopList(playersList, (p) => p.apr),
+    impact: buildTopList(playersList, (p) => (p.availability?.impact ? p.impact : null)),
+    kast: buildTopList(playersList, (p) => (p.availability?.kast ? p.kast : null)),
+    survivalRate: buildTopList(playersList, (p) => p.survivalRate),
+    headshotRate: buildTopList(playersList, (p) => (p.headshots?.available ? p.headshots.rate : null)),
+    openingKpr: buildTopList(playersList, (p) => (p.opening?.available ? p.opening.openingKpr : null)),
+    flashAssists: buildTopList(playersList, (p) => (p.utility?.available ? p.utility.flashAssists : null)),
+    awpKills: buildTopList(playersList, (p) => (p.weapons?.available ? p.weapons.awpKills : null)),
+    rifleKills: buildTopList(playersList, (p) => (p.weapons?.available ? p.weapons.rifleKills : null)),
+    multiKills: buildTopList(playersList, (p) => p.multiKills?.totalMultiKillRounds)
+  };
+  return top;
+}
+
+function buildOverallStatAvailability(playersList) {
+  const source = Array.isArray(playersList) ? playersList : [];
+  return {
+    basic: true,
+    damage: true,
+    multiKills: true,
+    headshots: source.some((p) => p.headshots?.available),
+    opening: source.some((p) => p.opening?.available),
+    weapons: source.some((p) => p.weapons?.available),
+    utility: source.some((p) => p.utility?.available),
+    kast: source.some((p) => p.availability?.kast),
+    impact: source.some((p) => p.availability?.impact)
+  };
 }
 
 function buildPlayerStatsSnapshot(steamId, baseUrl = '') {
@@ -1206,6 +1533,146 @@ function buildMatchKey(mapObj) {
   return [ctName, tName].sort().join(' vs ');
 }
 
+let overallRoundTracker = {
+  currentRound: 0,
+  players: {}
+};
+
+function resetOverallRoundTracker() {
+  overallRoundTracker = {
+    currentRound: getRoundCount(),
+    players: {}
+  };
+}
+
+function ensureOverallTrackerPlayer(steamId) {
+  if (!overallRoundTracker.players[steamId]) {
+    overallRoundTracker.players[steamId] = {
+      roundStart: {
+        kills: 0,
+        damage: 0,
+        survivedRounds: 0
+      },
+      lastTotals: {
+        kills: 0,
+        damage: 0,
+        survivedRounds: 0
+      },
+      lastKnownHealth: null,
+      roundStats: {
+        killsByRound: [],
+        damageByRound: [],
+        survivedByRound: [],
+        kastByRound: []
+      }
+    };
+  }
+  return overallRoundTracker.players[steamId];
+}
+
+function getSurvivedRoundsCumulative(playerData) {
+  const value = playerData?.match_stats?.survived_rounds ?? playerData?.match_stats?.survivedRounds;
+  return Number.isFinite(Number(value)) ? Number(value) : null;
+}
+
+function updateOverallRoundTrackerFromScoreboard() {
+  const currentRound = toNumber(getRoundCount(), 0);
+
+  if (currentRound < overallRoundTracker.currentRound) {
+    resetOverallRoundTracker();
+  }
+
+  const roundAdvanced = currentRound > overallRoundTracker.currentRound;
+
+  if (roundAdvanced) {
+    for (const steamId in scoreboard.players || {}) {
+      const playerData = scoreboard.players[steamId] || {};
+      const tracked = ensureOverallTrackerPlayer(steamId);
+
+      const currentKills = toNumber(playerData?.match_stats?.kills, tracked.lastTotals.kills);
+      const currentDamage = toNumber(playerData?.accumulatedDmg, tracked.lastTotals.damage);
+      const currentSurvivedRounds = getSurvivedRoundsCumulative(playerData);
+
+      const killDelta = Math.max(0, currentKills - toNumber(tracked.roundStart.kills, 0));
+      const damageDelta = Math.max(0, currentDamage - toNumber(tracked.roundStart.damage, 0));
+
+      let survivedInRound = null;
+      if (currentSurvivedRounds != null) {
+        survivedInRound = currentSurvivedRounds > toNumber(tracked.roundStart.survivedRounds, 0);
+      } else if (tracked.lastKnownHealth != null) {
+        survivedInRound = toNumber(tracked.lastKnownHealth, 0) > 0;
+      }
+
+      tracked.roundStats.killsByRound.push(killDelta);
+      tracked.roundStats.damageByRound.push(damageDelta);
+      tracked.roundStats.survivedByRound.push(survivedInRound);
+      tracked.roundStats.kastByRound.push(null);
+
+      tracked.roundStart = {
+        kills: currentKills,
+        damage: currentDamage,
+        survivedRounds: currentSurvivedRounds != null ? currentSurvivedRounds : toNumber(tracked.roundStart.survivedRounds, 0)
+      };
+      tracked.lastTotals = {
+        kills: currentKills,
+        damage: currentDamage,
+        survivedRounds: currentSurvivedRounds != null ? currentSurvivedRounds : toNumber(tracked.lastTotals.survivedRounds, 0)
+      };
+    }
+
+    overallRoundTracker.currentRound = currentRound;
+  }
+
+  for (const steamId in scoreboard.players || {}) {
+    const playerData = scoreboard.players[steamId] || {};
+    const tracked = ensureOverallTrackerPlayer(steamId);
+
+    const currentKills = toNumber(playerData?.match_stats?.kills, tracked.lastTotals.kills);
+    const currentDamage = toNumber(playerData?.accumulatedDmg, tracked.lastTotals.damage);
+    const currentSurvivedRounds = getSurvivedRoundsCumulative(playerData);
+
+    tracked.lastKnownHealth = playerData?.state?.health ?? tracked.lastKnownHealth;
+    tracked.lastTotals = {
+      kills: currentKills,
+      damage: currentDamage,
+      survivedRounds: currentSurvivedRounds != null ? currentSurvivedRounds : toNumber(tracked.lastTotals.survivedRounds, 0)
+    };
+
+    if (tracked.roundStart.kills === 0 && tracked.roundStart.damage === 0 && tracked.roundStats.killsByRound.length === 0) {
+      tracked.roundStart = {
+        kills: currentKills,
+        damage: currentDamage,
+        survivedRounds: currentSurvivedRounds != null ? currentSurvivedRounds : 0
+      };
+    }
+  }
+}
+
+function getOverallRoundStatsForPlayer(steamId, roundsPlayed = 0) {
+  const tracked = overallRoundTracker.players[steamId];
+  const empty = { killsByRound: [], damageByRound: [], survivedByRound: [], kastByRound: [] };
+  if (!tracked) return empty;
+
+  const killsByRound = Array.isArray(tracked.roundStats.killsByRound) ? [...tracked.roundStats.killsByRound] : [];
+  const damageByRound = Array.isArray(tracked.roundStats.damageByRound) ? [...tracked.roundStats.damageByRound] : [];
+  const survivedByRound = Array.isArray(tracked.roundStats.survivedByRound) ? [...tracked.roundStats.survivedByRound] : [];
+  const kastByRound = Array.isArray(tracked.roundStats.kastByRound) ? [...tracked.roundStats.kastByRound] : [];
+
+  if (roundsPlayed > 0) {
+    while (killsByRound.length < roundsPlayed) killsByRound.push(0);
+    while (damageByRound.length < roundsPlayed) damageByRound.push(0);
+    while (survivedByRound.length < roundsPlayed) survivedByRound.push(null);
+    while (kastByRound.length < roundsPlayed) kastByRound.push(null);
+
+    if (killsByRound.length > roundsPlayed) killsByRound.length = roundsPlayed;
+    if (damageByRound.length > roundsPlayed) damageByRound.length = roundsPlayed;
+    if (survivedByRound.length > roundsPlayed) survivedByRound.length = roundsPlayed;
+    if (kastByRound.length > roundsPlayed) kastByRound.length = roundsPlayed;
+  }
+
+  return { killsByRound, damageByRound, survivedByRound, kastByRound };
+}
+
 // ------------------------------
 // -�-�-+-�-�-+-� -+-�-�-�-�-+-�-+ -�-�-+-+-�-� -+-+ data.json
 // ------------------------------
@@ -1595,6 +2062,7 @@ app.post('/', (req, res) => {
     scoreboard.players = {};
     roundsHistory = [];
     roundsAlive = [];
+    resetOverallRoundTracker();
     // ??????? ???? ?????, ???? ??? ????? ????? ??????
     currentMatchKey = buildMatchKey(data.map);
     // scoreboard.map = {}; // -�-�-+ -+-+-�-�-� -�-�-�-� -�-+-+-�-�-+-+ -�-�-+-+, -�-�-+-+ -�-�-� -+-�-�-+-� original_team_ct/t
@@ -1610,6 +2078,7 @@ app.post('/', (req, res) => {
       scoreboard.players = {}; // -�-�-�-�-�-�-�-�-�-+ -+-�-�-+-�-+-� -+-�-+ -�-+-�-+-� -�-�-�-�-�
       roundsHistory = [];
       roundsAlive = [];
+      resetOverallRoundTracker();
       // scoreboard.map = {}; // -�-�-�-�-�-�-�-�-�-+ -�-�-�-�-�
       // -�-�-+ -+-+-�-+-+ -+-�-�-�-� -+-�-+-�-+-+-�-+-�-+-+-� -�-�-�-+-�-�-�-�-+-�-+-+-� -�-+-�-+-�-�-�-�-� -� -�-�-�-�-�-+-+
       scoreboard.map = { // -�-�-�-�-+-�-�-+-+-�-�-�-+ -+-+-�-�-� -�-�-�-�-� -+ -+-�-+-�-+-+-�-+-�-+-�-� -�-+-+-�-+-�-�
@@ -1628,6 +2097,7 @@ app.post('/', (req, res) => {
         scoreboard.players = {};
         roundsHistory = [];
         roundsAlive = [];
+        resetOverallRoundTracker();
         // ??????????? ????? ? ??????????? ????? ???????????? ???????
         scoreboard.map = {
           ...data.map,
@@ -1694,6 +2164,8 @@ app.post('/', (req, res) => {
       }
     }
   }
+
+  updateOverallRoundTrackerFromScoreboard();
   
   console.log("-�-+-+-�-�-�-+-� -�-�-+-+-�-� GSI (-�-�-�-�-�):", JSON.stringify(data, null, 2).substring(0, 300) + "...");
 
@@ -2650,64 +3122,51 @@ app.get('/api/graphics/scoreboard', (req, res) => {
     const teamAProfile = graphicsUtils.resolveTeamProfileFromGSI(teamCT, 'CT', teams, baseUrl);
     const teamBProfile = graphicsUtils.resolveTeamProfileFromGSI(teamT, 'T', teams, baseUrl);
 
-    // Collect all players (up to 10)
+    const roundsPlayed = toNumber(getRoundCount(), 0);
+
+    // Collect all live players from active sides
     const playersData = [];
-    let ctCount = 0, tCount = 0;
 
     for (const steamId in scoreboard.players) {
       const gsiPlayer = scoreboard.players[steamId];
       const side = gsiPlayer.team;
 
-      if (side === 'CT') ctCount++;
-      if (side === 'T') tCount++;
-
-      // Skip if we already have 5 from this side (10 total max)
-      if ((side === 'CT' && ctCount > 5) || (side === 'T' && tCount > 5)) continue;
+      if (side !== 'CT' && side !== 'T') continue;
 
       // Resolve player profile
       const regPlayer = graphicsUtils.resolvePlayerBySteamId(steamId, players);
-      const playerProfile = {
-        id: regPlayer?.id || `temp_${steamId}`,
-        steamId: steamId,
-        name: regPlayer?.name || gsiPlayer.name || 'Unknown',
-        nickname: regPlayer?.nickname || gsiPlayer.name || 'Unknown',
-        photo: graphicsUtils.resolvePlayerPhoto(regPlayer, baseUrl),
-        teamId: regPlayer?.teamId || null,
-        teamName: side === 'CT' ? teamCT.name : teamT.name,
-        teamLogo: side === 'CT' ? teamAProfile.logo : teamBProfile.logo,
-        side: side,
-        kills: gsiPlayer.match_stats?.kills || 0,
-        assists: gsiPlayer.match_stats?.assists || 0,
-        deaths: gsiPlayer.match_stats?.deaths || 0,
-        adr: parseFloat(getAverageDamage(steamId)),
-        damage: gsiPlayer.state?.damage || gsiPlayer.accumulatedDmg || 0,
-        kd: graphicsUtils.calculateKD(gsiPlayer.match_stats?.kills || 0, gsiPlayer.match_stats?.deaths || 0),
-        isAlive: gsiPlayer.state?.health > 0,
-        health: gsiPlayer.state?.health || 0,
-        armor: gsiPlayer.state?.armor || 0,
-        money: gsiPlayer.state?.money || 0,
-        weapon: gsiPlayer.state?.primary_weapon || gsiPlayer.state?.secondary_weapon || null
-      };
+
+      const roundStats = getOverallRoundStatsForPlayer(steamId, roundsPlayed);
+      const playerProfile = buildScoreboardOverallPlayer({
+        steamId,
+        sourcePlayer: gsiPlayer,
+        regPlayer,
+        teamProfile: side === 'CT' ? teamAProfile : teamBProfile,
+        side,
+        roundsPlayed,
+        roundStats,
+        baseUrl
+      });
 
       playersData.push(playerProfile);
     }
 
-    // Keep full list globally sorted for generic consumers
-    playersData.sort((a, b) => b.kills - a.kills);
-
-    const stablePlayers = buildStablePlayerList(playersData, 10);
+    // Keep stable player list (10 slots) ranked best -> worst globally
+    const rankedPlayers = sortPlayersBestToWorst(playersData).slice(0, 10);
+    const stablePlayers = buildStablePlayerList(rankedPlayers, 10);
     const meaningfulPlayers = stablePlayers.filter((p) => !p.isPlaceholder);
 
     // Team slices for overlay bindings: always 5 slots, sorted best -> worst
-    const rankedTeamAPlayers = sortPlayersBestToWorst(playersData.filter((p) => p.side === 'CT'));
-    const rankedTeamBPlayers = sortPlayersBestToWorst(playersData.filter((p) => p.side === 'T'));
+    const rankedTeamAPlayers = sortPlayersBestToWorst(meaningfulPlayers.filter((p) => p.side === 'CT')).slice(0, 5);
+    const rankedTeamBPlayers = sortPlayersBestToWorst(meaningfulPlayers.filter((p) => p.side === 'T')).slice(0, 5);
     const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers, 5);
     const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers, 5);
 
     // Prepare response
     const response = {
-      mode: 'live',
-      matchId: null,
+      mode: 'scoreboard',
+      type: 'overall_scoreboard',
+      matchId: scoreboard.matchId || null,
       map: scoreboard.map?.name || null,
       round: scoreboard.map?.round || 0,
       phase: scoreboard.map?.phase || 'unknown',
@@ -2743,12 +3202,8 @@ app.get('/api/graphics/scoreboard', (req, res) => {
         tPlayers: teamBPlayers
       },
 
-      topPlayers: {
-        kills: [...meaningfulPlayers].sort((a, b) => b.kills - a.kills).slice(0, 3),
-        adr: [...meaningfulPlayers].sort((a, b) => b.adr - a.adr).slice(0, 3),
-        damage: [...meaningfulPlayers].sort((a, b) => b.damage - a.damage).slice(0, 3),
-        rating: sortPlayersBestToWorst(meaningfulPlayers).slice(0, 3)
-      }
+      topPlayers: buildOverallTopPlayers(meaningfulPlayers),
+      statAvailability: buildOverallStatAvailability(meaningfulPlayers)
     };
 
     res.json(response);
@@ -3028,15 +3483,58 @@ app.get('/api/graphics/postmatch', (req, res) => {
       ? JSON.parse(fs.readFileSync(POSTMATCH_FILE, 'utf8'))
       : getIdlePostmatch();
 
-    const normalizedPlayers = buildStablePlayerList(Array.isArray(postmatch.players) ? postmatch.players : [], 10);
-    const meaningfulPlayers = normalizedPlayers.filter((p) => !p.isPlaceholder);
-
     const teamAValue = postmatch.teamA || null;
     const teamBValue = postmatch.teamB || null;
     const teamAName = extractTeamNameValue(teamAValue);
     const teamBName = extractTeamNameValue(teamBValue);
     const teamAId = extractTeamIdValue(teamAValue);
     const teamBId = extractTeamIdValue(teamBValue);
+
+    const teamAProfile = typeof teamAValue === 'object' && teamAValue !== null
+      ? {
+          id: teamAId,
+          name: teamAName || 'Team A',
+          logo: teamAValue.logo || '',
+          score: toNumber(teamAValue.score, 0)
+        }
+      : { id: teamAId, name: teamAName || 'Team A', logo: '', score: 0 };
+    const teamBProfile = typeof teamBValue === 'object' && teamBValue !== null
+      ? {
+          id: teamBId,
+          name: teamBName || 'Team B',
+          logo: teamBValue.logo || '',
+          score: toNumber(teamBValue.score, 0)
+        }
+      : { id: teamBId, name: teamBName || 'Team B', logo: '', score: 0 };
+
+    const roundsPlayed = toNumber(postmatch.round, 0) || Math.max(...(Array.isArray(postmatch.players) ? postmatch.players.map((p) => toNumber(p?.roundsPlayed ?? p?.rounds, 0)) : [0]), 0);
+    const rawPlayers = Array.isArray(postmatch.players) ? postmatch.players : [];
+    const enrichedPlayers = rawPlayers.map((player, index) => {
+      const steamId = player?.steamId || `postmatch_${index}`;
+      const regPlayer = players.find((p) => normalizeSteamId(p.steamId) === normalizeSteamId(steamId));
+      const side = (player?.side || '').toUpperCase() === 'CT' || (player?.side || '').toUpperCase() === 'T'
+        ? player.side.toUpperCase()
+        : (isPlayerInTeam(player, { teamId: teamAId, teamName: teamAName, side: 'CT' }) ? 'CT' : 'T');
+      const roundStats = {
+        killsByRound: Array.isArray(player?.roundStats?.killsByRound) ? player.roundStats.killsByRound : [],
+        damageByRound: Array.isArray(player?.roundStats?.damageByRound) ? player.roundStats.damageByRound : [],
+        survivedByRound: Array.isArray(player?.roundStats?.survivedByRound) ? player.roundStats.survivedByRound : [],
+        kastByRound: Array.isArray(player?.roundStats?.kastByRound) ? player.roundStats.kastByRound : []
+      };
+      return buildScoreboardOverallPlayer({
+        steamId,
+        sourcePlayer: player,
+        regPlayer,
+        teamProfile: side === 'CT' ? teamAProfile : teamBProfile,
+        side,
+        roundsPlayed,
+        roundStats,
+        baseUrl
+      });
+    });
+
+    const normalizedPlayers = buildStablePlayerList(sortPlayersBestToWorst(enrichedPlayers).slice(0, 10), 10);
+    const meaningfulPlayers = normalizedPlayers.filter((p) => !p.isPlaceholder);
 
     const rankedTeamAPlayers = sortPlayersBestToWorst(
       meaningfulPlayers.filter((player) =>
@@ -3059,13 +3557,18 @@ app.get('/api/graphics/postmatch', (req, res) => {
     const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers.length ? rankedTeamAPlayers : fallbackTeamA, 5);
     const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers.length ? rankedTeamBPlayers : fallbackTeamB, 5);
 
+    const topPlayers = buildOverallTopPlayers(meaningfulPlayers);
+    const rankedForMvp = sortPlayersBestToWorst(meaningfulPlayers);
+
     res.json({
       ...postmatch,
+      type: postmatch.type || 'overall_scoreboard',
       players: normalizedPlayers,
       teamAPlayers,
       teamBPlayers,
-      mvp: postmatch.mvp || null,
-      topPlayers: buildStableTopPlayers(postmatch.topPlayers),
+      mvp: rankedForMvp[0] || postmatch.mvp || null,
+      topPlayers,
+      statAvailability: buildOverallStatAvailability(meaningfulPlayers),
       teamStats: postmatch.teamStats || { teamA: null, teamB: null }
     });
   } catch (err) {
@@ -3865,6 +4368,7 @@ app.post('/api/admin/graphics/clear-live', (req, res) => {
     roundsHistory = [];
     roundsAlive = [];
     currentMatchKey = null;
+    resetOverallRoundTracker();
     lastScoreboardUpdate = null;
     res.json({ ok: true, message: 'Live match cache cleared', updatedAt: new Date().toISOString() });
   } catch (err) {
