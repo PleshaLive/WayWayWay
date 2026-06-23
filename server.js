@@ -138,6 +138,8 @@ function createPlaceholderPlayer() {
     assists: 0,
     plusMinus: 0,
     kd: 0,
+    dpr: 0,
+    kda: 0,
     damage: 0,
     damageTotal: 0,
     damageCurrentRound: null,
@@ -390,6 +392,8 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.deaths = toNumber(source.deaths, 0);
   result.assists = toNumber(source.assists, 0);
   result.kd = toNumber(source.kd, 0);
+  result.dpr = toNumber(source.dpr, 0);
+  result.kda = toNumber(source.kda, 0);
   result.plusMinus = toNumber(source.plusMinus, 0);
   result.damage = toNumber(source.damage, 0);
   result.damageTotal = toNumber(source.damageTotal ?? source.damage, 0);
@@ -756,6 +760,8 @@ function buildScoreboardOverallPlayer({
   const adr = roundsForRates > 0 ? parseFloat((damage / roundsForRates).toFixed(2)) : 0;
   const kpr = roundsForRates > 0 ? parseFloat((kills / roundsForRates).toFixed(3)) : 0;
   const apr = roundsForRates > 0 ? parseFloat((assists / roundsForRates).toFixed(3)) : 0;
+  const dpr = roundsForRates > 0 ? parseFloat((deaths / roundsForRates).toFixed(3)) : 0;
+  const kda = deaths > 0 ? parseFloat(((kills + assists) / deaths).toFixed(2)) : (kills + assists);
   const damagePerKill = kills > 0 ? parseFloat((damage / kills).toFixed(2)) : 0;
 
   const survivedCumulative = sourcePlayer?.match_stats?.survived_rounds ?? sourcePlayer?.match_stats?.survivedRounds;
@@ -764,21 +770,37 @@ function buildScoreboardOverallPlayer({
     : (Array.isArray(roundStats?.survivedByRound) ? roundStats.survivedByRound.filter((value) => value === true).length : 0);
   const survivalRate = roundsPlayed > 0 ? parseFloat(((survivedRounds / roundsPlayed) * 100).toFixed(2)) : 0;
 
-  const oneKillRounds = Array.isArray(roundStats?.killsByRound)
-    ? roundStats.killsByRound.filter((value) => value === 1).length
-    : toNumber(sourcePlayer?.match_stats?.oneKillRounds ?? tracked.multiKills_1k ?? sourcePlayer?.multiKills?.oneKillRounds, 0);
-  const twoKCount = Array.isArray(roundStats?.killsByRound)
-    ? roundStats.killsByRound.filter((value) => value === 2).length
-    : toNumber(sourcePlayer?.match_stats?.twoKillRounds ?? tracked.multiKills_2k ?? sourcePlayer?.multiKills?.twoKCount ?? sourcePlayer?.multiKills?.twoKillRounds, 0);
-  const threeKCount = Array.isArray(roundStats?.killsByRound)
-    ? roundStats.killsByRound.filter((value) => value === 3).length
-    : toNumber(sourcePlayer?.match_stats?.threeKillRounds ?? tracked.multiKills_3k ?? sourcePlayer?.multiKills?.threeKCount ?? sourcePlayer?.multiKills?.threeKillRounds, 0);
-  const fourKCount = Array.isArray(roundStats?.killsByRound)
-    ? roundStats.killsByRound.filter((value) => value === 4).length
-    : toNumber(sourcePlayer?.match_stats?.fourKillRounds ?? tracked.multiKills_4k ?? sourcePlayer?.multiKills?.fourKCount ?? sourcePlayer?.multiKills?.fourKillRounds, 0);
-  const fiveKCount = Array.isArray(roundStats?.killsByRound)
-    ? roundStats.killsByRound.filter((value) => value >= 5).length
-    : toNumber(sourcePlayer?.match_stats?.fiveKillRounds ?? tracked.multiKills_5k ?? sourcePlayer?.multiKills?.fiveKCount ?? sourcePlayer?.multiKills?.fiveKillRounds, 0);
+  const trackedMultiAvailable = Number.isFinite(Number(tracked.multiKills_1k))
+    || Number.isFinite(Number(tracked.multiKills_2k))
+    || Number.isFinite(Number(tracked.multiKills_3k))
+    || Number.isFinite(Number(tracked.multiKills_4k))
+    || Number.isFinite(Number(tracked.multiKills_5k));
+
+  const oneKillRounds = trackedMultiAvailable
+    ? toNumber(tracked.multiKills_1k, 0)
+    : (Array.isArray(roundStats?.killsByRound)
+      ? roundStats.killsByRound.filter((value) => value === 1).length
+      : toNumber(sourcePlayer?.match_stats?.oneKillRounds ?? sourcePlayer?.multiKills?.oneKillRounds, 0));
+  const twoKCount = trackedMultiAvailable
+    ? toNumber(tracked.multiKills_2k, 0)
+    : (Array.isArray(roundStats?.killsByRound)
+      ? roundStats.killsByRound.filter((value) => value === 2).length
+      : toNumber(sourcePlayer?.match_stats?.twoKillRounds ?? sourcePlayer?.multiKills?.twoKCount ?? sourcePlayer?.multiKills?.twoKillRounds, 0));
+  const threeKCount = trackedMultiAvailable
+    ? toNumber(tracked.multiKills_3k, 0)
+    : (Array.isArray(roundStats?.killsByRound)
+      ? roundStats.killsByRound.filter((value) => value === 3).length
+      : toNumber(sourcePlayer?.match_stats?.threeKillRounds ?? sourcePlayer?.multiKills?.threeKCount ?? sourcePlayer?.multiKills?.threeKillRounds, 0));
+  const fourKCount = trackedMultiAvailable
+    ? toNumber(tracked.multiKills_4k, 0)
+    : (Array.isArray(roundStats?.killsByRound)
+      ? roundStats.killsByRound.filter((value) => value === 4).length
+      : toNumber(sourcePlayer?.match_stats?.fourKillRounds ?? sourcePlayer?.multiKills?.fourKCount ?? sourcePlayer?.multiKills?.fourKillRounds, 0));
+  const fiveKCount = trackedMultiAvailable
+    ? toNumber(tracked.multiKills_5k, 0)
+    : (Array.isArray(roundStats?.killsByRound)
+      ? roundStats.killsByRound.filter((value) => value >= 5).length
+      : toNumber(sourcePlayer?.match_stats?.fiveKillRounds ?? sourcePlayer?.multiKills?.fiveKCount ?? sourcePlayer?.multiKills?.fiveKillRounds, 0));
   const totalMultiKillRounds = twoKCount + threeKCount + fourKCount + fiveKCount;
 
   const headshotsCountRaw = tracked.hasRoundKillHsField
@@ -895,6 +917,8 @@ function buildScoreboardOverallPlayer({
     assists,
     plusMinus,
     kd,
+    dpr,
+    kda,
     damage,
     damageTotal,
     damageCurrentRound,
@@ -1109,6 +1133,8 @@ function toScoreboardTableRow(player) {
     assists: toNumber(source.assists, 0),
     plusMinus: toNumber(source.plusMinus, 0),
     kd: toNumber(source.kd, 0),
+    dpr: toNumber(source.dpr, 0),
+    kda: toNumber(source.kda, 0),
     damageTotal: toNumber(source.damageTotal ?? source.damage, 0),
     damageCurrentRound: source.damageCurrentRound != null ? toNumber(source.damageCurrentRound, 0) : null,
     damagePreviousRound: source.damagePreviousRound != null ? toNumber(source.damagePreviousRound, 0) : null,
@@ -1203,6 +1229,9 @@ function buildStatsDebug({
     if (tracked?.weaponTrackingAvailable) {
       weaponTrackingAvailable = true;
     }
+    if (Array.isArray(tracked?.trackerWarnings) && tracked.trackerWarnings.length > 0) {
+      tracked.trackerWarnings.forEach((entry) => warnings.push(entry));
+    }
     if (Array.isArray(tracked?.clutchPendingRounds) && tracked.clutchPendingRounds.length > 0) {
       tracked.clutchPendingRounds.forEach((roundNo) => warnings.push(`clutch_pending_round_${roundNo}`));
     }
@@ -1249,6 +1278,12 @@ function buildStatsDebug({
       warnings.push(`multikill_total_mismatch:${steamId}`);
     }
   });
+
+  const totalAces = sourcePlayers.reduce((sum, player) => sum + toNumber(player.multiKills_aces, 0), 0);
+  const maxReasonableAces = Math.max(0, ...sourcePlayers.map((player) => toNumber(player.roundsPlayed, 0)));
+  if (totalAces > maxReasonableAces && maxReasonableAces > 0) {
+    warnings.push(`aces_gt_rounds:${totalAces}>${maxReasonableAces}`);
+  }
 
   table.forEach((row, index) => {
     for (const [key, value] of Object.entries(row || {})) {
@@ -2163,6 +2198,7 @@ function ensureKillTrackerPlayer(steamId) {
       hasRoundTotalDmgField: false,
       weaponTrackingAvailable: false,
       weaponUnknownKills: 0,
+      trackerWarnings: [],
       roundStats: {
         killsByRound: [],
         damageByRound: []
@@ -2339,6 +2375,12 @@ function processGsiKillTracking() {
     if (!pd || (pd.team !== 'CT' && pd.team !== 'T')) continue;
     const tr = ensureKillTrackerPlayer(steamId);
 
+    const payloadSteamId = pd?.steamid || pd?.steamId || null;
+    if (payloadSteamId && normalizeSteamId(payloadSteamId) !== normalizeSteamId(steamId)) {
+      const warning = `steamid_key_mismatch:${steamId}:${payloadSteamId}`;
+      if (!tr.trackerWarnings.includes(warning)) tr.trackerWarnings.push(warning);
+    }
+
     const curKills = toNumber(pd?.match_stats?.kills, 0);
     const curDeaths = toNumber(pd?.match_stats?.deaths, 0);
     const curAssists = toNumber(pd?.match_stats?.assists, 0);
@@ -2410,10 +2452,17 @@ function processGsiKillTracking() {
     if (killDelta > 0) {
       // Weapon kill â€” categorize by active weapon snapshot at kill delta moment
       const weaponBucket = classifyWeaponKillCounter(activeWeapon);
-      if (weaponBucket) {
-        tr.matchStats[weaponBucket] += killDelta;
+      if (killDelta === 1) {
+        if (weaponBucket) {
+          tr.matchStats[weaponBucket] += 1;
+        } else {
+          tr.weaponUnknownKills += 1;
+        }
       } else {
+        // Snapshot jumped by >1 kill: weapon attribution is ambiguous, keep as unknown.
         tr.weaponUnknownKills += killDelta;
+        const warning = `weapon_delta_gt1:${steamId}:delta=${killDelta}`;
+        if (!tr.trackerWarnings.includes(warning)) tr.trackerWarnings.push(warning);
       }
     }
 
@@ -2457,6 +2506,7 @@ function processGsiKillTracking() {
       hasRoundTotalDmgField: tr.hasRoundTotalDmgField,
       weaponTrackingAvailable: tr.weaponTrackingAvailable,
       weaponUnknownKills: tr.weaponUnknownKills,
+      trackerWarnings: tr.trackerWarnings,
       clutchPendingRounds: Object.keys(clutchTrackerState.pendingRounds || {}).map((round) => toNumber(round, 0))
     };
   }
