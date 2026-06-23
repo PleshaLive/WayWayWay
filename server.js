@@ -26,6 +26,42 @@ app.set('views', path.join(__dirname, 'views'));
 // -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½-ï¿½ CORS -ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½
 app.use(cors()); // <--- -ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½, -ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½
 
+function createCaseInsensitiveStaticHandler(publicSubdir) {
+  const rootDir = path.join(__dirname, 'public', publicSubdir);
+
+  return (req, res, next) => {
+    const relativePath = decodeURIComponent((req.path || '').replace(/^\/+/, ''));
+    if (!relativePath || relativePath.includes('..')) {
+      next();
+      return;
+    }
+
+    const directPath = path.join(rootDir, relativePath);
+    if (fs.existsSync(directPath)) {
+      next();
+      return;
+    }
+
+    const directoryPath = path.join(rootDir, path.dirname(relativePath));
+    if (!fs.existsSync(directoryPath)) {
+      next();
+      return;
+    }
+
+    const targetBaseName = path.basename(relativePath).toLowerCase();
+    const matchedName = fs.readdirSync(directoryPath).find((entry) => entry.toLowerCase() === targetBaseName);
+    if (!matchedName) {
+      next();
+      return;
+    }
+
+    res.sendFile(path.join(directoryPath, matchedName));
+  };
+}
+
+app.use('/players', createCaseInsensitiveStaticHandler('players'));
+app.use('/logos', createCaseInsensitiveStaticHandler('logos'));
+
 // -ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½ (-+-+-ï¿½-+-ï¿½-+-+-ï¿½, -ï¿½-+-ï¿½-+ -+ -ï¿½.-ï¿½.)
 app.use(express.static(path.join(__dirname, 'public')));
 
