@@ -161,6 +161,13 @@ function createPlaceholderPlayer() {
       aces: 0,
       totalMultiKillRounds: 0
     },
+    multiKills_1k: 0,
+    multiKills_2k: 0,
+    multiKills_3k: 0,
+    multiKills_4k: 0,
+    multiKills_5k: 0,
+    multiKills_aces: 0,
+    multiKills_total: 0,
     headshots: {
       count: null,
       rate: null,
@@ -321,6 +328,13 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.survivalRate = toNumber(source.survivalRate, 0);
   result.kast = source.kast ?? null;
   result.impact = source.impact ?? null;
+  result.multiKills_1k = toNumber(source.multiKills_1k, toNumber(source.multiKills?.oneKillRounds, 0));
+  result.multiKills_2k = toNumber(source.multiKills_2k, toNumber(source.multiKills?.twoKCount ?? source.multiKills?.twoKillRounds, 0));
+  result.multiKills_3k = toNumber(source.multiKills_3k, toNumber(source.multiKills?.threeKCount ?? source.multiKills?.threeKillRounds, 0));
+  result.multiKills_4k = toNumber(source.multiKills_4k, toNumber(source.multiKills?.fourKCount ?? source.multiKills?.fourKillRounds, 0));
+  result.multiKills_5k = toNumber(source.multiKills_5k, toNumber(source.multiKills?.fiveKCount ?? source.multiKills?.fiveKillRounds, 0));
+  result.multiKills_aces = toNumber(source.multiKills_aces, toNumber(source.multiKills?.aces, 0));
+  result.multiKills_total = toNumber(source.multiKills_total, toNumber(source.multiKills?.totalMultiKillRounds, 0));
   result.rating = toNumber(source.rating, 0);
   result.customRating = toNumber(source.customRating, 0);
   result.isPlaceholder = !!source.isPlaceholder || placeholder;
@@ -685,6 +699,13 @@ function buildScoreboardOverallPlayer({
       aces: fiveKCount,
       totalMultiKillRounds
     },
+    multiKills_1k: oneKillRounds,
+    multiKills_2k: twoKCount,
+    multiKills_3k: threeKCount,
+    multiKills_4k: fourKCount,
+    multiKills_5k: fiveKCount,
+    multiKills_aces: fiveKCount,
+    multiKills_total: totalMultiKillRounds,
     headshots: {
       count: headshotsCount,
       rate: headshotRate,
