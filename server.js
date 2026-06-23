@@ -14,19 +14,19 @@ const matchFinalization = require('./lib/match-finalization');
 const app = express();
 const port = process.env.PORT || 2727;
 
-// Middleware -�-+-� -+-�-�-�-+-+-�-� JSON -+ URL-encoded -�-�-+-+-�-�
+// Middleware -ï¿½-+-ï¿½ -+-ï¿½-ï¿½-ï¿½-+-+-ï¿½-ï¿½ JSON -+ URL-encoded -ï¿½-ï¿½-+-+-ï¿½-ï¿½
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// -�-�-+-�-�-+-�-� CORS -�-+-� -�-�-�-� -+-�-�-�-�-�-�-+-�
-app.use(cors()); // <--- -�-�-�-�-+-�-�-�-�, -�-�-+ -�-�-� -�-�-�-+-�-� -�-�-�-�
+// -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½-ï¿½ CORS -ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½
+app.use(cors()); // <--- -ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½, -ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½
 
-// -�-�-�-�-+-�-�-�-�-+-� -�-�-�-+-� (-+-+-�-+-�-+-+-�, -�-+-�-+ -+ -�.-�.)
+// -ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½ (-+-+-ï¿½-+-ï¿½-+-+-ï¿½, -ï¿½-+-ï¿½-+ -+ -ï¿½.-ï¿½.)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// -�-�-�-� -� -�-�-�-+-� -�-+-� -�-�-�-+-�-+-+-� -�-�-+-+-�-� (persistent storage)
+// -ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ (persistent storage)
 const DATA_FILE = path.join(__dirname, 'data.json');
 const STORAGE_DIR = path.join(__dirname, 'storage');
 const STORAGE_FILES = {
@@ -646,35 +646,43 @@ function buildScoreboardOverallPlayer({
     : (Array.isArray(roundStats?.survivedByRound) ? roundStats.survivedByRound.filter((value) => value === true).length : 0);
   const survivalRate = roundsPlayed > 0 ? parseFloat(((survivedRounds / roundsPlayed) * 100).toFixed(2)) : 0;
 
+  // _tracked is written by processGsiKillTracking() — live delta stats from GSI
+  const tracked = sourcePlayer?._tracked || {};
+
   const oneKillRounds = Array.isArray(roundStats?.killsByRound)
     ? roundStats.killsByRound.filter((value) => value === 1).length
-    : toNumber(sourcePlayer?.match_stats?.oneKillRounds ?? sourcePlayer?.multiKills?.oneKillRounds, 0);
+    : toNumber(sourcePlayer?.match_stats?.oneKillRounds ?? tracked.multiKills_1k ?? sourcePlayer?.multiKills?.oneKillRounds, 0);
   const twoKCount = Array.isArray(roundStats?.killsByRound)
     ? roundStats.killsByRound.filter((value) => value === 2).length
-    : toNumber(sourcePlayer?.match_stats?.twoKillRounds ?? sourcePlayer?.multiKills?.twoKCount ?? sourcePlayer?.multiKills?.twoKillRounds, 0);
+    : toNumber(sourcePlayer?.match_stats?.twoKillRounds ?? tracked.multiKills_2k ?? sourcePlayer?.multiKills?.twoKCount ?? sourcePlayer?.multiKills?.twoKillRounds, 0);
   const threeKCount = Array.isArray(roundStats?.killsByRound)
     ? roundStats.killsByRound.filter((value) => value === 3).length
-    : toNumber(sourcePlayer?.match_stats?.threeKillRounds ?? sourcePlayer?.multiKills?.threeKCount ?? sourcePlayer?.multiKills?.threeKillRounds, 0);
+    : toNumber(sourcePlayer?.match_stats?.threeKillRounds ?? tracked.multiKills_3k ?? sourcePlayer?.multiKills?.threeKCount ?? sourcePlayer?.multiKills?.threeKillRounds, 0);
   const fourKCount = Array.isArray(roundStats?.killsByRound)
     ? roundStats.killsByRound.filter((value) => value === 4).length
-    : toNumber(sourcePlayer?.match_stats?.fourKillRounds ?? sourcePlayer?.multiKills?.fourKCount ?? sourcePlayer?.multiKills?.fourKillRounds, 0);
+    : toNumber(sourcePlayer?.match_stats?.fourKillRounds ?? tracked.multiKills_4k ?? sourcePlayer?.multiKills?.fourKCount ?? sourcePlayer?.multiKills?.fourKillRounds, 0);
   const fiveKCount = Array.isArray(roundStats?.killsByRound)
     ? roundStats.killsByRound.filter((value) => value >= 5).length
-    : toNumber(sourcePlayer?.match_stats?.fiveKillRounds ?? sourcePlayer?.multiKills?.fiveKCount ?? sourcePlayer?.multiKills?.fiveKillRounds, 0);
+    : toNumber(sourcePlayer?.match_stats?.fiveKillRounds ?? tracked.multiKills_5k ?? sourcePlayer?.multiKills?.fiveKCount ?? sourcePlayer?.multiKills?.fiveKillRounds, 0);
   const totalMultiKillRounds = twoKCount + threeKCount + fourKCount + fiveKCount;
 
-  const headshotsCountRaw = sourcePlayer?.match_stats?.headshots ?? sourcePlayer?.headshots?.count ?? null;
+  const headshotsCountRaw = tracked.headshots != null && tracked.headshots > 0
+    ? tracked.headshots
+    : (sourcePlayer?.match_stats?.headshots ?? sourcePlayer?.headshots?.count ?? null);
   const headshotsAvailable = Number.isFinite(Number(headshotsCountRaw));
   const headshotsCount = headshotsAvailable ? toNumber(headshotsCountRaw, 0) : null;
   const headshotRate = headshotsAvailable && kills > 0 ? parseFloat(((headshotsCount / kills) * 100).toFixed(2)) : null;
 
-  const firstKillsRaw = sourcePlayer?.match_stats?.firstKills ?? sourcePlayer?.opening?.firstKills ?? null;
-  const firstDeathsRaw = sourcePlayer?.match_stats?.firstDeaths ?? sourcePlayer?.opening?.firstDeaths ?? null;
-  const openingAvailable = Number.isFinite(Number(firstKillsRaw)) && Number.isFinite(Number(firstDeathsRaw));
-  const firstKills = openingAvailable ? toNumber(firstKillsRaw, 0) : null;
-  const firstDeaths = openingAvailable ? toNumber(firstDeathsRaw, 0) : null;
-  const openingKpr = openingAvailable && roundsPlayed > 0 ? parseFloat((firstKills / roundsPlayed).toFixed(3)) : null;
-  const entryDiff = openingAvailable ? firstKills - firstDeaths : null;
+  // Opening kills: prefer tracked delta, then match_stats fallback
+  const firstKillsRaw  = tracked.firstKills  != null && tracked.firstKills  > 0 ? tracked.firstKills
+    : (sourcePlayer?.match_stats?.firstKills  ?? sourcePlayer?.opening?.firstKills  ?? null);
+  const firstDeathsRaw = tracked.firstDeaths != null && tracked.firstDeaths > 0 ? tracked.firstDeaths
+    : (sourcePlayer?.match_stats?.firstDeaths ?? sourcePlayer?.opening?.firstDeaths ?? null);
+  const openingAvailable = Number.isFinite(Number(firstKillsRaw));
+  const firstKills  = openingAvailable ? toNumber(firstKillsRaw,  0) : null;
+  const firstDeaths = Number.isFinite(Number(firstDeathsRaw)) ? toNumber(firstDeathsRaw, 0) : null;
+  const openingKpr  = openingAvailable && roundsPlayed > 0 ? parseFloat((firstKills  / roundsPlayed).toFixed(3)) : null;
+  const entryDiff   = openingAvailable && firstDeaths != null ? firstKills - firstDeaths : null;
 
   const utilityRaw = {
     flashAssists: sourcePlayer?.match_stats?.flashAssists ?? sourcePlayer?.utility?.flashAssists ?? null,
@@ -688,16 +696,18 @@ function buildScoreboardOverallPlayer({
   const utilityAvailable = Object.values(utilityRaw).some((value) => Number.isFinite(Number(value)));
 
   const weaponsRaw = {
-    awpKills: sourcePlayer?.match_stats?.awpKills ?? sourcePlayer?.weapons?.awpKills ?? null,
-    rifleKills: sourcePlayer?.match_stats?.rifleKills ?? sourcePlayer?.weapons?.rifleKills ?? null,
-    knifeKills: sourcePlayer?.match_stats?.knifeKills ?? sourcePlayer?.weapons?.knifeKills ?? null,
-    zeusKills: sourcePlayer?.match_stats?.zeusKills ?? sourcePlayer?.weapons?.zeusKills ?? null,
-    pistolKills: sourcePlayer?.match_stats?.pistolKills ?? sourcePlayer?.weapons?.pistolKills ?? null,
-    smgKills: sourcePlayer?.match_stats?.smgKills ?? sourcePlayer?.weapons?.smgKills ?? null
+    awpKills:    tracked.awpKills    > 0 ? tracked.awpKills    : (sourcePlayer?.match_stats?.awpKills    ?? sourcePlayer?.weapons?.awpKills    ?? null),
+    rifleKills:  tracked.rifleKills  > 0 ? tracked.rifleKills  : (sourcePlayer?.match_stats?.rifleKills  ?? sourcePlayer?.weapons?.rifleKills  ?? null),
+    knifeKills:  tracked.knifeKills  > 0 ? tracked.knifeKills  : (sourcePlayer?.match_stats?.knifeKills  ?? sourcePlayer?.weapons?.knifeKills  ?? null),
+    zeusKills:   tracked.zeusKills   > 0 ? tracked.zeusKills   : (sourcePlayer?.match_stats?.zeusKills   ?? sourcePlayer?.weapons?.zeusKills   ?? null),
+    pistolKills: tracked.pistolKills > 0 ? tracked.pistolKills : (sourcePlayer?.match_stats?.pistolKills ?? sourcePlayer?.weapons?.pistolKills ?? null),
+    smgKills:    tracked.smgKills    > 0 ? tracked.smgKills    : (sourcePlayer?.match_stats?.smgKills    ?? sourcePlayer?.weapons?.smgKills    ?? null),
   };
-  const weaponsAvailable = Object.values(weaponsRaw).some((value) => Number.isFinite(Number(value)));
-  const awpKills = weaponsAvailable && Number.isFinite(Number(weaponsRaw.awpKills)) ? toNumber(weaponsRaw.awpKills, 0) : null;
-  const awpKpr = weaponsAvailable && awpKills != null && roundsPlayed > 0 ? parseFloat((awpKills / roundsPlayed).toFixed(3)) : null;
+  // weaponsAvailable: true if any weapon kill tracked (even 0 is meaningful if tracker ran)
+  const weaponsAvailable = Object.values(tracked).some(v => typeof v === 'number') ||
+    Object.values(weaponsRaw).some((v) => Number.isFinite(Number(v)));
+  const awpKills = Number.isFinite(Number(weaponsRaw.awpKills)) ? toNumber(weaponsRaw.awpKills, 0) : null;
+  const awpKpr   = awpKills != null && roundsPlayed > 0 ? parseFloat((awpKills / roundsPlayed).toFixed(3)) : null;
 
   const kastRaw = sourcePlayer?.match_stats?.kast ?? sourcePlayer?.kast ?? null;
   const kast = Number.isFinite(Number(kastRaw)) ? toNumber(kastRaw, 0) : null;
@@ -1616,18 +1626,18 @@ function isTestLikeMatch(match) {
   return candidates.some((val) => isTestLikeValue(val));
 }
 
-// -�-�-+-+-�-� -�-+-� -�-�-+-+-+-�-+ G�� -�-+-+-�-+-�-� -+ -+-�-�-+-�-+ (persistent storage)
-let teams = [];      // -P-�-�-�-�-�-�: { id, name, logo, score }
-let players = [];  // -P-�-�-�-�-�-�: { id, name, steamId, photo, teamId, match_stats }
+// -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -ï¿½-+-ï¿½ -ï¿½-ï¿½-+-+-+-ï¿½-+ Gï¿½ï¿½ -ï¿½-+-+-ï¿½-+-ï¿½-ï¿½ -+ -+-ï¿½-ï¿½-+-ï¿½-+ (persistent storage)
+let teams = [];      // -P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½: { id, name, logo, score }
+let players = [];  // -P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½: { id, name, steamId, photo, teamId, match_stats }
 
-// -P-�-�-�-�-� scoreboard -�-+-� -�-�-+-+-�-� GSI (-+-� CS:GO/CS2)
+// -P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ scoreboard -ï¿½-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ GSI (-+-ï¿½ CS:GO/CS2)
 let scoreboard = {
   players: {},
   map: {},
   player: {}
 };
 
-// -�-+-+-�-�-+-�-+-�-� -+-�-�-�-+-�-+-+-�-� -�-+-� -�-�-�-+-�-+-+-� -+-�-�-+-�-+-+ -�-�-�-+-�-+-�
+// -ï¿½-+-+-ï¿½-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½-ï¿½ -ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½ -+-ï¿½-ï¿½-+-ï¿½-+-+ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½
 let roundsHistory = [];
 let roundsAlive = [];
 
@@ -1653,6 +1663,115 @@ function resetOverallRoundTracker() {
     players: {}
   };
 }
+
+// â”€â”€â”€ GSI Kill Delta Tracker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Tracks opening kills, weapon kills, headshots, and multi-kills via GSI deltas.
+// Results stored in scoreboard.players[steamId]._tracked and consumed by
+// buildScoreboardOverallPlayer.
+let gsiKillTracker = {};
+let killTrackCurrentRound  = 0;
+let killTrackRoundOpeningDone = false;
+
+function resetGsiKillTracker() {
+  gsiKillTracker = {};
+  killTrackCurrentRound = toNumber(getRoundCount(), 0);
+  killTrackRoundOpeningDone = false;
+}
+
+function ensureKillTrackerPlayer(steamId) {
+  if (!gsiKillTracker[steamId]) {
+    gsiKillTracker[steamId] = {
+      prevMatchKills:  0,
+      prevRoundKillHs: 0,
+      prevRoundKills:  0,
+      matchStats: {
+        firstKills: 0, firstDeaths: 0, headshots: 0,
+        awpKills: 0, rifleKills: 0, pistolKills: 0,
+        knifeKills: 0, zeusKills: 0, smgKills: 0,
+        multiKills_1k: 0, multiKills_2k: 0, multiKills_3k: 0,
+        multiKills_4k: 0, multiKills_5k: 0,
+      }
+    };
+  }
+  return gsiKillTracker[steamId];
+}
+
+function processGsiKillTracking() {
+  const currentRound  = toNumber(getRoundCount(), 0);
+  const roundAdvanced = currentRound > killTrackCurrentRound && killTrackCurrentRound > 0;
+
+  if (roundAdvanced) {
+    // Round just ended â€” record multi-kills from state.round_kills
+    for (const steamId in scoreboard.players) {
+      const pd = scoreboard.players[steamId];
+      if (!pd || (pd.team !== 'CT' && pd.team !== 'T')) continue;
+      const tr = ensureKillTrackerPlayer(steamId);
+      const rk = Math.max(toNumber(pd?.state?.round_kills, 0), tr.prevRoundKills);
+      if (rk >= 1) tr.matchStats['multiKills_' + Math.min(rk, 5) + 'k'] += 1;
+      tr.prevRoundKills  = 0;
+      tr.prevRoundKillHs = 0;
+    }
+    killTrackRoundOpeningDone = false;
+    killTrackCurrentRound     = currentRound;
+  } else if (killTrackCurrentRound === 0) {
+    killTrackCurrentRound = currentRound;
+  }
+
+  // Per-player intra-round delta tracking
+  for (const steamId in scoreboard.players) {
+    const pd = scoreboard.players[steamId];
+    if (!pd || (pd.team !== 'CT' && pd.team !== 'T')) continue;
+    const tr = ensureKillTrackerPlayer(steamId);
+
+    const curKills  = toNumber(pd?.match_stats?.kills, 0);
+    const curHs     = toNumber(pd?.state?.round_killhs, 0);
+    const curRndK   = toNumber(pd?.state?.round_kills,  0);
+    const killDelta = curKills - tr.prevMatchKills;
+
+    if (killDelta > 0) {
+      // Opening kill â€” first kill delta this round
+      if (!killTrackRoundOpeningDone) {
+        tr.matchStats.firstKills += 1;
+        killTrackRoundOpeningDone = true;
+      }
+      // Weapon kill â€” categorize by active weapon
+      const weapons = pd?.weapons;
+      if (weapons && typeof weapons === 'object') {
+        let activeName = null, activeType = null;
+        for (const slot of Object.keys(weapons)) {
+          const w = weapons[slot];
+          if (w && typeof w === 'object' && w.state === 'active') {
+            activeName = (w.name || '').toLowerCase();
+            activeType = (w.type || '').toLowerCase();
+            break;
+          }
+        }
+        if (activeName) {
+          if (activeName === 'weapon_awp')                              tr.matchStats.awpKills    += killDelta;
+          else if (activeName.includes('taser')||activeName.includes('zeus')) tr.matchStats.zeusKills   += killDelta;
+          else if (activeType === 'rifle')                              tr.matchStats.rifleKills  += killDelta;
+          else if (activeType === 'pistol')                             tr.matchStats.pistolKills += killDelta;
+          else if (activeType === 'knife')                              tr.matchStats.knifeKills  += killDelta;
+          else if (activeType === 'submachine gun' || activeType === 'smg') tr.matchStats.smgKills += killDelta;
+        }
+      }
+      tr.prevMatchKills = curKills;
+    }
+
+    // Headshot delta: round_killhs increases within a round
+    if (curHs > tr.prevRoundKillHs) {
+      tr.matchStats.headshots += curHs - tr.prevRoundKillHs;
+      tr.prevRoundKillHs = curHs;
+    }
+
+    // Track max round_kills seen (for multi-kill recording at round end)
+    if (curRndK > tr.prevRoundKills) tr.prevRoundKills = curRndK;
+
+    // Write tracked stats to player object for buildScoreboardOverallPlayer
+    scoreboard.players[steamId]._tracked = { ...tr.matchStats };
+  }
+}
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function ensureOverallTrackerPlayer(steamId) {
   if (!overallRoundTracker.players[steamId]) {
@@ -1689,6 +1808,7 @@ function updateOverallRoundTrackerFromScoreboard() {
 
   if (currentRound < overallRoundTracker.currentRound) {
     resetOverallRoundTracker();
+    resetGsiKillTracker();
   }
 
   const roundAdvanced = currentRound > overallRoundTracker.currentRound;
@@ -1783,7 +1903,7 @@ function getOverallRoundStatsForPlayer(steamId, roundsPlayed = 0) {
 }
 
 // ------------------------------
-// -�-�-+-�-�-+-� -+-�-�-�-�-+-�-+ -�-�-+-+-�-� -+-+ data.json
+// -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-+ data.json
 // ------------------------------
 function loadData() {
   if (fs.existsSync(DATA_FILE)) {
@@ -1792,29 +1912,29 @@ function loadData() {
       const jsonData = JSON.parse(raw);
       teams = jsonData.teams || [];
       players = jsonData.players || [];
-      console.log("-�-�-+-+-�-� -+-�-�-�-�-�-�-+-� -+-+ data.json");
+      console.log("-ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½ -+-+ data.json");
     } catch (err) {
-      console.error("-P-�-+-�-�-� -+-�-+ -�-�-�-+-+-+ data.json:", err);
+      console.error("-P-ï¿½-+-ï¿½-ï¿½-ï¿½ -+-ï¿½-+ -ï¿½-ï¿½-ï¿½-+-+-+ data.json:", err);
       teams = [];
       players = [];
     }
   } else {
-    console.log("-�-�-�-+ data.json -+-� -+-�-�-�-�-+, -+-�-�-+-+-�-�-+ -� -+-�-�-�-�-� -�-�-+-+-�-�");
+    console.log("-ï¿½-ï¿½-ï¿½-+ data.json -+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-+, -+-ï¿½-ï¿½-+-+-ï¿½-ï¿½-+ -ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½");
   }
 }
 
-// -�-�-+-�-�-+-� -�-+-�-�-�-+-�-+-+-� -�-�-+-+-�-� -� data.json
+// -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -ï¿½ data.json
 function saveData() {
   const jsonData = { teams, players };
   fs.writeFileSync(DATA_FILE, JSON.stringify(jsonData, null, 2), 'utf8');
-  console.log("-�-�-+-+-�-� -�-+-�-�-�-+-�-+-� -� data.json");
+  console.log("-ï¿½-ï¿½-+-+-ï¿½-ï¿½ -ï¿½-+-ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½ -ï¿½ data.json");
 }
 
-// -�-�-�-�-�-�-�-�-+ -�-�-+-+-�-� -+-�-+ -�-�-�-�-�-� -�-�-�-�-�-�-�
+// -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-ï¿½-+ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½
 loadData();
 
 // ------------------------------
-// -�-�-�-�-�-+-�-�-� Multer -�-+-� -+-�-�-�-�-+-�-+ -+-+-�-+-�-+-+-+-� -�-+-+-�-+-�
+// -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½ Multer -ï¿½-+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+ -+-+-ï¿½-+-ï¿½-+-+-+-ï¿½ -ï¿½-+-+-ï¿½-+-ï¿½
 // ------------------------------
 const storageTeams = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -1833,7 +1953,7 @@ const storageTeams = multer.diskStorage({
 const uploadTeams = multer({ storage: storageTeams });
 
 // ------------------------------
-// -�-�-�-�-�-+-�-�-� Multer -�-+-� -+-�-�-�-�-+-�-+ -�-+-�-+-�-�-�-�-+-� -+-�-�-+-�-+-�
+// -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½ Multer -ï¿½-+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+ -ï¿½-+-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½ -+-ï¿½-ï¿½-+-ï¿½-+-ï¿½
 // ------------------------------
 const storagePlayers = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -1867,7 +1987,7 @@ const uploadXlsx = multer({
 });
 
 function fixUrl(url) {
-  if (!url) return url; // -�-�-+-+ URL -+-�-�-�-+-�, -�-+-+-�-�-�-�-�-�-+ -�-�-� -�-�-�-�
+  if (!url) return url; // -ï¿½-ï¿½-+-+ URL -+-ï¿½-ï¿½-ï¿½-+-ï¿½, -ï¿½-+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½
   if ((url.startsWith("http:/") && !url.startsWith("http://")) ||
       (url.startsWith("https:/") && !url.startsWith("https://"))) {
     return url.replace(/^https?:\//, match => match + '/');
@@ -1877,9 +1997,9 @@ function fixUrl(url) {
 
 
 // ------------------------------
-// -�-�-�-�-+-+-�-�-�-�-+-�-+-+-�-� -+-�-�-+ -�-+-� Side_logo -+ winType_logo
+// -ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-+ -ï¿½-+-ï¿½ Side_logo -+ winType_logo
 // ------------------------------
-// -P-+-�-�-�-�-+-�-+-+-� baseUrl -�-+-+-�-+-+ -�-�-�-� -�-+-+-�-+-+-�-�-�-�-+-+ -+-+-+ -+-+ -+-�-�-�-+-�-+-+-�-� -+-�-�-�-�-�-+-+-�
+// -P-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½ baseUrl -ï¿½-+-+-ï¿½-+-+ -ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-+-+-ï¿½-+-+-ï¿½-ï¿½-ï¿½-ï¿½-+-+ -+-+-+ -+-+ -+-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½
 const runningInRailway = !!process.env.RAILWAY_STATIC_URL;
 const defaultBaseUrl = runningInRailway ? `https://${process.env.RAILWAY_STATIC_URL}` : `http://localhost:${port}`;
 const baseUrl = process.env.BASE_URL || defaultBaseUrl;
@@ -1896,36 +2016,36 @@ const winTypeLogos = {
   "defuse":      `${baseUrl}/winType_logos/defuse.png`
 };
 
-// -�-�-�-+-+-�-+-�-� -+-+-+-�-�-�-�-�-+-+-� -�-+-� -�-+-�-�-�-�-�, -�-+-�-�-� -+-+-�-+-�-+-+ -+-� -+-�-�-�-�-+
+// -ï¿½-ï¿½-ï¿½-+-+-ï¿½-+-ï¿½-ï¿½ -+-+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½ -ï¿½-+-ï¿½ -ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½, -ï¿½-+-ï¿½-ï¿½-ï¿½ -+-+-ï¿½-+-ï¿½-+-+ -+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-+
 const defaultSideLogo = `${baseUrl}/side_logos/none.png`;
 const defaultWinTypeLogo = `${baseUrl}/winType_logos/None.png`;
-const defaultImage = `${baseUrl}/winType_logos/None.png`; // -�-+-� -�-+-+-�-+-�, -�-�-+-+ -+-� -+-�-�-�-�-+ -+-+-�-+-�-+-+
+const defaultImage = `${baseUrl}/winType_logos/None.png`; // -ï¿½-+-ï¿½ -ï¿½-+-+-ï¿½-+-ï¿½, -ï¿½-ï¿½-+-+ -+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-+ -+-+-ï¿½-+-ï¿½-+-+
 const defaultPlayerImage = `${baseUrl}/NoneP.png`;
 // ------------------------------
-// 1) -P-�-+-+-�-+-�-+-+-�-� -�-�-+-�-�-+-� -�-+-� -+-+-�-�-�-�-+-�-+-+-� -�-+-+--�-� -�-�-�-�-�-+-+-�-� -�-�-�-+-�-+-�
+// 1) -P-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½-ï¿½ -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½ -+-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-+-+--ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½
 // ------------------------------
 function getRoundCount() {
   let roundsFromWins = scoreboard.map && scoreboard.map.round_wins ? Object.keys(scoreboard.map.round_wins).length : 0;
   let roundsFromMap = scoreboard.map && scoreboard.map.round ? scoreboard.map.round : 0;
-  // -�-�-+-+-+-�-+-�-�-+ -+-�-�-�-+-+-�-+-�-+-+-� -+-+-�-�-�-+-+-�, -�-�-+-�-� -�-+-�-�-�-�-�-+-+ -�-�-+-�-�-�-�-�-� -+-�-�-�-�-�-�-+
+  // -ï¿½-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ -+-ï¿½-ï¿½-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½ -+-+-ï¿½-ï¿½-ï¿½-+-+-ï¿½, -ï¿½-ï¿½-+-ï¿½-ï¿½ -ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+ -ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+
   return Math.max(roundsFromWins, roundsFromMap);
 }
 
 // ------------------------------
-// 2) -�-�-+-�-�-+-� -�-+-� -+-+-�-�-�-�-�-� ADR (accumulatedDmg / -�-+-+-+-�-�-�-�-�-+_-�-�-�-�-�-+-+-�-�_-�-�-�-+-�-+-�)
+// 2) -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½ -+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ ADR (accumulatedDmg / -ï¿½-+-+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+_-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½-ï¿½_-ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½)
 // ------------------------------
 function getAverageDamage(steamId) {
   const totalDamage = scoreboard.players[steamId]?.accumulatedDmg || 0;
   const roundsPlayed = getRoundCount();
   if (roundsPlayed > 0) {
-    // -�-+-+-�-�-�-�-�-�-+ -+-+-�-�-�-+-+-� -�-�-� -�-�-�-+-�-� -� -+-�-+-+-+ -+-+-�-�-+-+ -+-+-�-+-� -+-�-+-�-�-+-�
+    // -ï¿½-+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ -+-+-ï¿½-ï¿½-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½ -ï¿½ -+-ï¿½-+-+-+ -+-+-ï¿½-ï¿½-+-+ -+-+-ï¿½-+-ï¿½ -+-ï¿½-+-ï¿½-ï¿½-+-ï¿½
     return (totalDamage / roundsPlayed).toFixed(1);
   }
   return "0.0";
 }
 
 // ------------------------------
-// -�-�-+-�-�-+-� -�-�-�-+-�-+-�-+-+-� -+-�-+-�-+-�-+-�-+ ADR -�-+-� -�-�-�-� -+-�-�-+-�-+-�
+// -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½-+-+-ï¿½ -+-ï¿½-+-ï¿½-+-ï¿½-+-ï¿½-+ ADR -ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-ï¿½-+-ï¿½-+-ï¿½
 // ------------------------------
 function computeFinalADR() {
   const roundsPlayed = getRoundCount();
@@ -1942,11 +2062,11 @@ function computeFinalADR() {
 }
 
 // ------------------------------
-// -�-�-+-+-+-+-�-�-�-�-+-�-+-�-� -�-�-+-�-�-+-� -�-+-� -+-+-+-�-�-�-+-+-� -+-+-�-+-�-+-+-� -�-+-+-�-+-�-� -+-+ -�-�-+-+-�-+ -+-�-�-+-�-�
+// -ï¿½-ï¿½-+-+-+-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½ -+-+-+-ï¿½-ï¿½-ï¿½-+-+-ï¿½ -+-+-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-+-+-ï¿½-+-ï¿½-ï¿½ -+-+ -ï¿½-ï¿½-+-+-ï¿½-+ -+-ï¿½-ï¿½-+-ï¿½-ï¿½
 // ------------------------------
 function getTeamLogo(playerData) {
   let teamLogo = null;
-  // -�-+-�-�-�-+-� -+-�-�-+ -+-�-�-+-�-� -� -�-�-+-� -�-+-� -+-+-+-�-�-�-+-+-� teamId
+  // -ï¿½-+-ï¿½-ï¿½-ï¿½-+-ï¿½ -+-ï¿½-ï¿½-+ -+-ï¿½-ï¿½-+-ï¿½-ï¿½ -ï¿½ -ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½ -+-+-+-ï¿½-ï¿½-ï¿½-+-+-ï¿½ teamId
   const regPlayer = players.find(p => p.steamId?.toLowerCase() === playerData.steamid?.toLowerCase());
   if (regPlayer && regPlayer.teamId) {
     const teamObj = teams.find(t => t.id === regPlayer.teamId);
@@ -1954,7 +2074,7 @@ function getTeamLogo(playerData) {
       teamLogo = `${baseUrl}${teamObj.logo}`;
     }
   }
-  // -�-�-+-+ -+-� -+-�-�-+-+ -+-+ teamId, -+-�-�-�-�-+-�-� -+-�-�-�-+ -�-+-+-�-+-�-� -+-+ -+-+-�-+-+
+  // -ï¿½-ï¿½-+-+ -+-ï¿½ -+-ï¿½-ï¿½-+-+ -+-+ teamId, -+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-+ -ï¿½-+-+-ï¿½-+-ï¿½-ï¿½ -+-+ -+-+-ï¿½-+-+
   if (!teamLogo && playerData.team) {
     let teamName = playerData.team;
     if (teamName === "CT" && scoreboard.map.team_ct && scoreboard.map.team_ct.name) {
@@ -1971,7 +2091,7 @@ function getTeamLogo(playerData) {
 }
 
 // ------------------------------
-// -�-�-+-�-�-+-� -�-+-� -�-+-�-+-+-�-+-�-�-+-+-� -�-�-+-+-�-� -+-�-�-+-�-�-�-�-+-+-�-+ -+-�-�-+-�-�
+// -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½ -ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½-+ -+-ï¿½-ï¿½-+-ï¿½-ï¿½
 // ------------------------------
 function getObserverData() {
   let observedData = null;
@@ -2040,7 +2160,7 @@ function getObserverData() {
 }
 
 // ------------------------------
-// WebSocket -�-+-� -+-�-+-+-�-+-�-+-+-� -�-�-+-+-�-� -+-�-�-+-�-�-�-�-�-+-� -� -�-�-�-+-�-+-+-+ -�-�-�-+-�-+-+
+// WebSocket -ï¿½-+-ï¿½ -+-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-+ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-+
 // ------------------------------
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -2055,10 +2175,10 @@ function broadcastObserverUpdate() {
 }
 
 wss.on('connection', (ws) => {
-  console.log('WebSocket--�-+-�-�-+-+-�-+-+-� -�-�-�-�-+-+-�-+-�-+-+');
+  console.log('WebSocket--ï¿½-+-ï¿½-ï¿½-+-+-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½-+-ï¿½-+-+');
   ws.send(JSON.stringify([getObserverData()]));
   
-  // -�-�-+-�-�-�-+ -+-+-�-�-�-�-�-+, -+-�-+-+-�-+-�-+-+-� -�-�-�-�-� -+-+ GSI POST
+  // -ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-+ -+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+, -+-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -+-+ GSI POST
   // const intervalId = setInterval(() => {
   //   if (ws.readyState === WebSocket.OPEN) {
   //     ws.send(JSON.stringify([getObserverData()]));
@@ -2066,13 +2186,13 @@ wss.on('connection', (ws) => {
   // }, 1000);
   
   ws.on('close', () => {
-    // clearInterval(intervalId); // -�-+-+-�-�-�-�-�-�-�-�-+-+-+, -�-�-+ -�-+-�-� -�-�-+-�-�-�-+
-    console.log('WebSocket--�-+-�-�-+-+-�-+-+-� -+-�-�-�-�-�-+');
+    // clearInterval(intervalId); // -ï¿½-+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+-+, -ï¿½-ï¿½-+ -ï¿½-+-ï¿½-ï¿½ -ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-+
+    console.log('WebSocket--ï¿½-+-ï¿½-ï¿½-+-+-ï¿½-+-+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+');
   });
 });
 
 // ------------------------------
-// -�-�-+-�-�-+-� -�-+-� -�-+-�-+-+-�-+-�-�-+-+-� -+-+-�-+-�-+-�-�-+-+ -+ -�-�-�-+-�-�
+// -ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-+-ï¿½ -ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-ï¿½-+-+-ï¿½ -+-+-ï¿½-+-ï¿½-+-ï¿½-ï¿½-+-+ -+ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½
 // ------------------------------
 function createRoundInfo(roundNumber, winString) {
   let roundInfo = {
@@ -2096,8 +2216,8 @@ function createRoundInfo(roundNumber, winString) {
       side = parts[0].toUpperCase();
       winType = parts[1];
       
-      // -�-+-� -+-�-�-�-�-� 12 -�-�-�-+-�-+-� -+-�-+-+-+-�-+-�-�-+ -+-�-+-�-+-+-�-+-�-+-+-� -�-�-�-+-�-�-�-�-+-�-+-+-�
-      if (roundNumber <= 12) { // -�-�-�-� -+-�-+-�-+-+-�-+-�-+-�-� -+-+-�-+-�-�
+      // -ï¿½-+-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ 12 -ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½ -+-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½
+      if (roundNumber <= 12) { // -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -+-+-ï¿½-+-ï¿½-ï¿½
         if (side === "CT") {
           teamName = (scoreboard.map.original_team_ct && scoreboard.map.original_team_ct.name)
             ? scoreboard.map.original_team_ct.name
@@ -2116,7 +2236,7 @@ function createRoundInfo(roundNumber, winString) {
           }
         }
       } else {
-        // -�-+-� -�-�-�-+-�-+-� -� 13--�-+ -+-�-+-+-+-�-+-�-�-+ -�-�-�-�-�-+-� -�-�-+-+-�-�
+        // -ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-+-ï¿½ -ï¿½ 13--ï¿½-+ -+-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½
         if (side === "CT") {
           teamName = (scoreboard.map.team_ct && scoreboard.map.team_ct.name)
             ? scoreboard.map.team_ct.name
@@ -2156,43 +2276,45 @@ function createRoundInfo(roundNumber, winString) {
 }
 
 // ------------------------------
-// -P-�-�-�-�-+-�-�-+-� -�-�-+-+-�-� GSI -+-� CS:GO/CS2 (POST "/")
+// -P-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ GSI -+-ï¿½ CS:GO/CS2 (POST "/")
 // ------------------------------
 app.post('/', (req, res) => {
   const data = req.body;
   lastScoreboardUpdate = new Date().toISOString();
   if (!data) {
-    return res.status(400).json({ error: "-�-�-� -+-+-+-�-�-�-+-+-�-� -�-�-+-+-�-� -� -�-+-�-+-�-�-� JSON" });
+    return res.status(400).json({ error: "-ï¿½-ï¿½-ï¿½ -+-+-+-ï¿½-ï¿½-ï¿½-+-+-ï¿½-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -ï¿½ -ï¿½-+-ï¿½-+-ï¿½-ï¿½-ï¿½ JSON" });
   }
   
-  if (data.map && data.map.round === 1) { // -�-�-+-+ data.map.round === 1, -+-�-�-�-�-+-�-�-+ -�-�-� -�-�-�-�
+  if (data.map && data.map.round === 1) { // -ï¿½-ï¿½-+-+ data.map.round === 1, -+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½
     const finalStats = computeFinalADR();
-    console.log("-�-�-�-� -+-�-�-�-�-�-�-+. -�-�-+-�-+-�-�-� ADR:", finalStats);
+    console.log("-ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+. -ï¿½-ï¿½-+-ï¿½-+-ï¿½-ï¿½-ï¿½ ADR:", finalStats);
     scoreboard.players = {};
     roundsHistory = [];
     roundsAlive = [];
     resetOverallRoundTracker();
+    resetGsiKillTracker();
     // ??????? ???? ?????, ???? ??? ????? ????? ??????
     currentMatchKey = buildMatchKey(data.map);
-    // scoreboard.map = {}; // -�-�-+ -+-+-�-�-� -�-�-�-� -�-+-+-�-�-+-+ -�-�-+-+, -�-�-+-+ -�-�-� -+-�-�-+-� original_team_ct/t
+    // scoreboard.map = {}; // -ï¿½-ï¿½-+ -+-+-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-+-+-ï¿½-ï¿½-+-+ -ï¿½-ï¿½-+-+, -ï¿½-ï¿½-+-+ -ï¿½-ï¿½-ï¿½ -+-ï¿½-ï¿½-+-ï¿½ original_team_ct/t
   }
   
   if (data.map) {
     if (!scoreboard.map.name || scoreboard.map.name !== data.map.name) {
-      console.log("-�-+-�-�-� -�-�-�-�-�:", data.map.name, "G�� -�-�-+-+-+-+-�-�-�-�-� -�-�-�-+-� -�-�-+-+-�-�");
-      if (scoreboard.map.name) { // -�-�-+-+ -+-�-�-�-�-�-�-�-�-� -�-�-�-�-� -�-�-+-�
+      console.log("-ï¿½-+-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½:", data.map.name, "Gï¿½ï¿½ -ï¿½-ï¿½-+-+-+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½");
+      if (scoreboard.map.name) { // -ï¿½-ï¿½-+-+ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-+-ï¿½
         const finalStats = computeFinalADR();
-        console.log("-�-�-+-�-+-�-�-� ADR -+-�-�-�-�-�-�-+-+-+-�-+ -+-�-�-�-�:", finalStats);
+        console.log("-ï¿½-ï¿½-+-ï¿½-+-ï¿½-ï¿½-ï¿½ ADR -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+-+-ï¿½-+ -+-ï¿½-ï¿½-ï¿½-ï¿½:", finalStats);
       }
-      scoreboard.players = {}; // -�-�-�-�-�-�-�-�-�-+ -+-�-�-+-�-+-� -+-�-+ -�-+-�-+-� -�-�-�-�-�
+      scoreboard.players = {}; // -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ -+-ï¿½-ï¿½-+-ï¿½-+-ï¿½ -+-ï¿½-+ -ï¿½-+-ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½
       roundsHistory = [];
       roundsAlive = [];
       resetOverallRoundTracker();
-      // scoreboard.map = {}; // -�-�-�-�-�-�-�-�-�-+ -�-�-�-�-�
-      // -�-�-+ -+-+-�-+-+ -+-�-�-�-� -+-�-+-�-+-+-�-+-�-+-+-� -�-�-�-+-�-�-�-�-+-�-+-+-� -�-+-�-+-�-�-�-�-� -� -�-�-�-�-�-+-+
-      scoreboard.map = { // -�-�-�-�-+-�-�-+-+-�-�-�-+ -+-+-�-�-� -�-�-�-�-� -+ -+-�-+-�-+-+-�-+-�-+-�-� -�-+-+-�-+-�-�
+      resetGsiKillTracker();
+      // scoreboard.map = {}; // -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½
+      // -ï¿½-ï¿½-+ -+-+-ï¿½-+-+ -+-ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½ -ï¿½-+-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-+
+      scoreboard.map = { // -ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-+-+-ï¿½-ï¿½-ï¿½-+ -+-+-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -+ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -ï¿½-+-+-ï¿½-+-ï¿½-ï¿½
         ...data.map,
-        original_team_ct: data.map.team_ct ? {...data.map.team_ct} : null, // -�-+-+-+-�-�-�-+ -+-�-�-�-�-�-�
+        original_team_ct: data.map.team_ct ? {...data.map.team_ct} : null, // -ï¿½-+-+-+-ï¿½-ï¿½-ï¿½-+ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½
         original_team_t: data.map.team_t ? {...data.map.team_t} : null
       };
       currentMatchKey = buildMatchKey(data.map);
@@ -2207,6 +2329,7 @@ app.post('/', (req, res) => {
         roundsHistory = [];
         roundsAlive = [];
         resetOverallRoundTracker();
+        resetGsiKillTracker();
         // ??????????? ????? ? ??????????? ????? ???????????? ???????
         scoreboard.map = {
           ...data.map,
@@ -2236,10 +2359,10 @@ app.post('/', (req, res) => {
       }
       scoreboard.players[steamId] = { ...scoreboard.players[steamId], ...newPlayerData };
       
-      // -�-�-�-� -+-�-+-�-+-+-�-+-�-+-�-� -+-+-�-+-�-� ADR:
+      // -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -+-+-ï¿½-+-ï¿½-ï¿½ ADR:
       const roundDmgNow = newPlayerData?.state?.round_totaldmg || 0;
       const roundDmgPrev = scoreboard.players[steamId].previousRoundDmg || 0;
-      if (roundDmgNow < roundDmgPrev) { // -�-�-�-+-�, -�-�-+-+ -+-+-�-�-� -�-�-+-+ -+-�-+-�-�-� -+-�-�-�-�-�-�-�-�-�-+ (-+-�-�-�-+-+ -+-+-�-+-�-+ -�-�-�-+-�-�)
+      if (roundDmgNow < roundDmgPrev) { // -ï¿½-ï¿½-ï¿½-+-ï¿½, -ï¿½-ï¿½-+-+ -+-+-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-+-+ -+-ï¿½-+-ï¿½-ï¿½-ï¿½ -+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ (-+-ï¿½-ï¿½-ï¿½-+-+ -+-+-ï¿½-+-ï¿½-+ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½)
         scoreboard.players[steamId].previousRoundDmg = 0;
       } else {
         const diff = roundDmgNow - roundDmgPrev;
@@ -2251,7 +2374,7 @@ app.post('/', (req, res) => {
     }
   }
   
-  if (data.player) { // -P-�-�-�-�-+-�-�-� -�-�-+-+-�-� -+-�-�-+-�-�-�-�-+-+-�-+ -+-�-�-+-�-�, -�-�-+-+ -+-+-+ -+-� -� allplayers
+  if (data.player) { // -P-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½-ï¿½-+-+-ï¿½-+ -+-ï¿½-ï¿½-+-ï¿½-ï¿½, -ï¿½-ï¿½-+-+ -+-+-+ -+-ï¿½ -ï¿½ allplayers
     scoreboard.player = data.player;
     const pSteam = data.player.steamid;
     if (pSteam && (!data.allplayers || !data.allplayers[pSteam])) {
@@ -2259,7 +2382,7 @@ app.post('/', (req, res) => {
         scoreboard.players[pSteam] = { accumulatedDmg: 0, previousRoundDmg: 0 };
       }
       scoreboard.players[pSteam] = { ...scoreboard.players[pSteam], ...data.player };
-      // -�-�-�-� -+-�-+-�-+-+-�-+-�-+-�-� -+-+-�-+-�-� ADR -�-+-� data.player:
+      // -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -+-+-ï¿½-+-ï¿½-ï¿½ ADR -ï¿½-+-ï¿½ data.player:
       const roundDmgNow = data.player?.state?.round_totaldmg || 0;
       const roundDmgPrev = scoreboard.players[pSteam].previousRoundDmg || 0;
        if (roundDmgNow < roundDmgPrev) {
@@ -2275,11 +2398,12 @@ app.post('/', (req, res) => {
   }
 
   updateOverallRoundTrackerFromScoreboard();
+  processGsiKillTracking();
   
-  console.log("-�-+-+-�-�-�-+-� -�-�-+-+-�-� GSI (-�-�-�-�-�):", JSON.stringify(data, null, 2).substring(0, 300) + "...");
+  console.log("-ï¿½-+-+-ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-+-+-ï¿½-ï¿½ GSI (-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½):", JSON.stringify(data, null, 2).substring(0, 300) + "...");
 
   if (scoreboard.map && scoreboard.map.round_wins) {
-    // -P-�-�-�-�-+-�-�-+ -�-�-�-� -+-+-�-+-�-� -�-+-� roundsHistory
+    // -P-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½-ï¿½ -+-+-ï¿½-+-ï¿½-ï¿½ -ï¿½-+-ï¿½ roundsHistory
     Object.keys(scoreboard.map.round_wins).forEach(roundKey => {
       const roundNumber = parseInt(roundKey, 10);
       if (!roundsHistory.find(r => r.roundNumber === roundNumber)) {
@@ -2292,7 +2416,7 @@ app.post('/', (req, res) => {
   }
   
   if (scoreboard.map && scoreboard.map.round_wins) {
-    // -P-�-�-�-�-+-�-�-+ -�-�-�-� -+-+-�-+-�-� -�-+-� roundsAlive
+    // -P-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-+ -ï¿½-ï¿½-ï¿½-ï¿½ -+-+-ï¿½-+-ï¿½-ï¿½ -ï¿½-+-ï¿½ roundsAlive
     Object.keys(scoreboard.map.round_wins).forEach(roundKey => {
       const roundNumber = parseInt(roundKey, 10);
       if (!roundsAlive.find(r => r.round === roundNumber)) {
@@ -2314,11 +2438,11 @@ app.post('/', (req, res) => {
   
   broadcastObserverUpdate();
   stats.onGsiUpdate(data, players, teams);
-  res.status(200).json({ message: "-�-�-+-+-�-� -+-+-+-�-�-�-+-�" });
+  res.status(200).json({ message: "-ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-+-+-ï¿½-ï¿½-ï¿½-+-ï¿½" });
 });
 
 // ------------------------------
-// -�-�-+-�-+-� endpoints (REST API)
+// -ï¿½-ï¿½-+-ï¿½-+-ï¿½ endpoints (REST API)
 // ------------------------------
 app.get('/gsi', (req, res) => res.json(scoreboard));
 app.get('/scoreboard', (req, res) => res.json(scoreboard));
@@ -2434,7 +2558,7 @@ app.get('/teams', (req, res) => {
 });
 
 app.get('/rounds', (req, res) => {
-  const totalRounds = 24; // -�-�-�-� -+-�-+-�-+-+-�-+-�-+-+-� -+-+-�-�-�-+-+-�
+  const totalRounds = 24; // -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½ -+-+-ï¿½-ï¿½-ï¿½-+-+-ï¿½
   let roundsData = [];
   for (let i = 1; i <= totalRounds; i++) {
     let roundInfo = roundsHistory.find(r => r.roundNumber === i);
@@ -2455,11 +2579,11 @@ app.get('/mvp', (req, res) => {
   const roundsPlayed = getRoundCount();
 
   for (const steamId in scoreboard.players) {
-    let player = { ...scoreboard.players[steamId] }; // -�-�-+-+-�-� -+-+ GSI
-    const regPlayer = players.find(p => p.steamId?.toLowerCase() === steamId.toLowerCase()); // -�-�-+-+-�-� -+-+ -�-�-�-�-� -�-�-+-+-+-�-+
+    let player = { ...scoreboard.players[steamId] }; // -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-+ GSI
+    const regPlayer = players.find(p => p.steamId?.toLowerCase() === steamId.toLowerCase()); // -ï¿½-ï¿½-+-+-ï¿½-ï¿½ -+-+ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-+-+-+-ï¿½-+
 
-    const name = regPlayer?.name || player.name; // -�-�-+-+-�-+-�-�-� -+-+-�-+-+ -+-+ -�-�-+-+-+-�-+
-    const photoFromReg = regPlayer?.photo; // -�-+-�-+ -+-+ -�-�-+-+-+-�-+
+    const name = regPlayer?.name || player.name; // -ï¿½-ï¿½-+-+-ï¿½-+-ï¿½-ï¿½-ï¿½ -+-+-ï¿½-+-+ -+-+ -ï¿½-ï¿½-+-+-+-ï¿½-+
+    const photoFromReg = regPlayer?.photo; // -ï¿½-+-ï¿½-+ -+-+ -ï¿½-ï¿½-+-+-+-ï¿½-+
 
     const team = player.team;
     if (team === "CT" || team === "T") {
@@ -2467,16 +2591,16 @@ app.get('/mvp', (req, res) => {
       const assists = player.match_stats?.assists || 0;
       const adrNum = parseFloat(getAverageDamage(steamId));
       
-      const scoreValue = kills + assists + adrNum; // -�-�-�-� -+-�-+-�-+-+-�-+-�-+-�-� -�-+-�-+-�-+-� MVP
+      const scoreValue = kills + assists + adrNum; // -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -ï¿½-+-ï¿½-+-ï¿½-+-ï¿½ MVP
       
-      if (scoreValue > mvpScore && roundsPlayed > 0) { // MVP -�-+-+-�-�-+ -�-�-+-+ -�-�-+-+ -�-�-�-�-�-+-� -�-�-�-+-�-�
+      if (scoreValue > mvpScore && roundsPlayed > 0) { // MVP -ï¿½-+-+-ï¿½-ï¿½-+ -ï¿½-ï¿½-+-+ -ï¿½-ï¿½-+-+ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½ -ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½
         mvpScore = scoreValue;
         const photoFull = photoFromReg ? `${baseUrl}${photoFromReg.startsWith('/') ? '' : '/'}${photoFromReg}` : defaultPlayerImage;
         
-        let team_logo = defaultImage; // -�-�-+-+-+-�-+-�-�-+ defaultImage -+-+ -�-+-+-+-�-�-+-+-�
+        let team_logo = defaultImage; // -ï¿½-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ defaultImage -+-+ -ï¿½-+-+-+-ï¿½-ï¿½-+-+-ï¿½
         let team_name = "";
 
-        // -�-+-�-+-�-� -+-+-�-�-�-�-+-�-+-+-� -+-+-�-+-+ -�-+-+-�-+-�-� -+ -+-+-�-+-�-+-+-� -+-+ -�-�-�-�-�-+ -+-�-+-�-+-+-�-+-�-+-+-�-+ -�-+-�-�
+        // -ï¿½-+-ï¿½-+-ï¿½-ï¿½ -+-+-ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½ -+-+-ï¿½-+-+ -ï¿½-+-+-ï¿½-+-ï¿½-ï¿½ -+ -+-+-ï¿½-+-ï¿½-+-+-ï¿½ -+-+ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-+-ï¿½-+ -ï¿½-+-ï¿½-ï¿½
         if (regPlayer && regPlayer.teamId) {
           const teamObj = teams.find(t => t.id === regPlayer.teamId);
           if (teamObj) {
@@ -2484,7 +2608,7 @@ app.get('/mvp', (req, res) => {
             team_name = teamObj.name;
           }
         }
-        if (!team_name) { // -�-�-+-+ -+-+ teamId -+-� -+-�-�-+-+ -+-+-+ regPlayer -+-�-�
+        if (!team_name) { // -ï¿½-ï¿½-+-+ -+-+ teamId -+-ï¿½ -+-ï¿½-ï¿½-+-+ -+-+-+ regPlayer -+-ï¿½-ï¿½
           let actualTeamName = team;
           if (team === "CT" && scoreboard.map?.team_ct?.name) {
             actualTeamName = scoreboard.map.team_ct.name;
@@ -2496,23 +2620,23 @@ app.get('/mvp', (req, res) => {
             team_logo = regTeamByName.logo ? `${baseUrl}${regTeamByName.logo}` : defaultImage;
             team_name = regTeamByName.name;
           } else {
-            team_name = actualTeamName; // -�-�-+-+ -+ -+-+ -+-+-�-+-+ -+-� -+-�-�-+-+, -�-�-�-�-+ "CT" -+-+-+ "T"
+            team_name = actualTeamName; // -ï¿½-ï¿½-+-+ -+ -+-+ -+-+-ï¿½-+-+ -+-ï¿½ -+-ï¿½-ï¿½-+-+, -ï¿½-ï¿½-ï¿½-ï¿½-+ "CT" -+-+-+ "T"
           }
         }
         
         mvp = { 
           steamId, name, team, team_name, kills, assists, 
           deaths: player.match_stats?.deaths || 0, adr: adrNum, 
-          mvpScore, // -�-�-+-+ mvpScore: scoreValue, -+-+-+-�-+-+-+ -+-� mvpScore -�-+-� -�-+-+-�-+-�-�-�-+-�-+-+-�-�-+
+          mvpScore, // -ï¿½-ï¿½-+-+ mvpScore: scoreValue, -+-+-+-ï¿½-+-+-+ -+-ï¿½ mvpScore -ï¿½-+-ï¿½ -ï¿½-+-+-ï¿½-+-ï¿½-ï¿½-ï¿½-+-ï¿½-+-+-ï¿½-ï¿½-+
           photo: photoFull, team_logo,
-          // -�-�-�-� -+-�-+-�-+-+-�-+-�-+-�-� -�-�-�-�-+-�-�-+-�-�
+          // -ï¿½-ï¿½-ï¿½-ï¿½ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½-+-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-+-ï¿½-ï¿½-+-ï¿½-ï¿½
           kdRatio: parseFloat(player.match_stats?.deaths > 0 ? (kills / player.match_stats.deaths).toFixed(2) : kills.toFixed(2)),
           kpr: parseFloat(roundsPlayed > 0 ? (kills / roundsPlayed).toFixed(2) : "0.00"),
           kda: parseFloat(player.match_stats?.deaths > 0 ? ((kills + assists) / player.match_stats.deaths).toFixed(2) : (kills + assists).toFixed(2)),
           plusMinus: kills - (player.match_stats?.deaths || 0),
-          totalDMG: player.accumulatedDmg || 0, // -�-�-+-+-+-�-+-�-�-+ accumulatedDmg
-          kast: player.match_stats?.kast ?? "N/A", // -�-�-+-+-+-�-+-�-�-+ ?? -�-+-� N/A
-          dpr: parseFloat(adrNum.toFixed(2)), // -�-�-+ -�-+ -�-�, -�-�-+ -+ adr, -+-+ -� toFixed
+          totalDMG: player.accumulatedDmg || 0, // -ï¿½-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ accumulatedDmg
+          kast: player.match_stats?.kast ?? "N/A", // -ï¿½-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ ?? -ï¿½-+-ï¿½ N/A
+          dpr: parseFloat(adrNum.toFixed(2)), // -ï¿½-ï¿½-+ -ï¿½-+ -ï¿½-ï¿½, -ï¿½-ï¿½-+ -+ adr, -+-+ -ï¿½ toFixed
           hsPercent: parseFloat(kills > 0 && player.match_stats?.headshots ? ((player.match_stats.headshots / kills) * 100).toFixed(2) : "0.00"),
           headshots: player.match_stats?.headshots || 0,
           accuracy: player.match_stats?.shots > 0 && player.match_stats?.hits ? ((player.match_stats.hits / player.match_stats.shots) * 100).toFixed(2) : "N/A"
@@ -2520,7 +2644,7 @@ app.get('/mvp', (req, res) => {
       }
     }
   }
-  res.json(mvp ? [mvp] : []); // -�-+-+-�-�-�-�-�-�-+ -+-�-�-�-+-�
+  res.json(mvp ? [mvp] : []); // -ï¿½-+-+-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-+ -+-ï¿½-ï¿½-ï¿½-+-ï¿½
 });
 
 
@@ -2656,17 +2780,17 @@ app.get('/maps', (req, res) => {
 });
 
 // ==================================
-// === -�-�-�-�-�-P -�-�-�-�-�-� API -�-�-� CRUD ===
+// === -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-P -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ API -ï¿½-ï¿½-ï¿½ CRUD ===
 // ==================================
 
-// --- API -�-+-� -�-+-+-�-+-� ---
+// --- API -ï¿½-+-ï¿½ -ï¿½-+-+-ï¿½-+-ï¿½ ---
 app.get('/api/teams', (req, res) => {
   const base = req.protocol + '://' + req.get('host');
   const result = teams.map(t => ({ ...t, logo: t.logo && t.logo.startsWith('/') ? base + t.logo : t.logo }));
   res.json(result);
 });
 
-// -�-P-�-�-�-�-�-�-�-�-� -�-�-�-�-�-�-� -�-�-� -�-P-�-�-�-�-�-�-� -P-�-�-P-� -�-P-�-�-�-�-�
+// -ï¿½-P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½ -ï¿½-P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -P-ï¿½-ï¿½-P-ï¿½ -ï¿½-P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½
 app.get('/api/teams/:id', (req, res) => {
   const { id } = req.params;
   const team = teams.find(t => t.id === id);
@@ -2704,11 +2828,11 @@ app.put('/api/teams/:id', (req, res) => {
 app.delete('/api/teams/:id', (req, res) => {
   const { id } = req.params;
   const originalLength = teams.length;
-  teams = teams.filter(t => t.id !== id); // -�-�-+-+-+-�-+-�-�-+ filter, -�-�-� -� -�-�-�-�-+ -+-�-+-�-+-+-�-+-�
+  teams = teams.filter(t => t.id !== id); // -ï¿½-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ filter, -ï¿½-ï¿½-ï¿½ -ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-+ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½
   if (teams.length < originalLength) {
     players = players.map(p => p.teamId === id ? { ...p, teamId: null } : p);
     saveData();
-    res.status(200).json({ message: "Team deleted" }); // -�-�-�-�-�-� 200
+    res.status(200).json({ message: "Team deleted" }); // -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ 200
   } else {
     res.status(404).json({ error: "Team not found" });
   }
@@ -2720,14 +2844,14 @@ app.post('/api/teams/uploadLogo', uploadTeams.single('logoFile'), (req, res) => 
   res.json({ path: filePath });
 });
 
-// --- API -�-+-� -+-�-�-+-�-+-� ---
+// --- API -ï¿½-+-ï¿½ -+-ï¿½-ï¿½-+-ï¿½-+-ï¿½ ---
 app.get('/api/players', (req, res) => {
   const base = req.protocol + '://' + req.get('host');
   const result = players.map(p => ({ ...p, photo: p.photo && p.photo.startsWith('/') ? base + p.photo : p.photo }));
   res.json(result);
 });
 
-// -�-P-�-�-�-�-�-�-�-�-� -�-�-�-�-�-�-� -�-�-� -�-P-�-�-�-�-�-�-� -P-�-�-P-�-P -�-�-�-P-�-�
+// -ï¿½-P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½ -ï¿½-P-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ -P-ï¿½-ï¿½-P-ï¿½-P -ï¿½-ï¿½-ï¿½-P-ï¿½-ï¿½
 app.get('/api/players/:id', (req, res) => {
   const { id } = req.params;
   const player = players.find(p => p.id === id);
@@ -2739,25 +2863,25 @@ app.get('/api/players/:id', (req, res) => {
 });
 
 app.post('/api/players', (req, res) => {
-  const { name, steamId, photo, teamId, match_stats, firstName, lastName, country } = req.body; // -P-�-�-�-�-+-+ match_stats
+  const { name, steamId, photo, teamId, match_stats, firstName, lastName, country } = req.body; // -P-ï¿½-ï¿½-ï¿½-ï¿½-+-+ match_stats
   if (!name) return res.status(400).json({error: "Player name is required"});
   const newPlayer = { 
     id: Date.now().toString(), name, steamId: steamId || null, 
     photo: photo || null, teamId: teamId || null, 
-    match_stats: match_stats || {}, // -�-+-+-�-+-�-+-+-+-+-�-�-�-+, -�-�-� -� -�-�-�-�-+ -+-�-+-�-+-+-�-+-�
+    match_stats: match_stats || {}, // -ï¿½-+-+-ï¿½-+-ï¿½-+-+-+-+-ï¿½-ï¿½-ï¿½-+, -ï¿½-ï¿½-ï¿½ -ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-+ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½
     firstName: firstName || null,
     lastName: lastName || null,
     country: country ? country.toUpperCase() : null
   };
   players.push(newPlayer);
   saveData();
-  res.status(201).json(newPlayer); // -�-�-�-�-�-� 201
+  res.status(201).json(newPlayer); // -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ 201
 });
 
 app.put('/api/players/:id', (req, res) => {
   const { id } = req.params;
-  const { name, steamId, photo, teamId, match_stats, firstName, lastName, country } = req.body; // -P-�-�-�-�-+-+ match_stats
-  const playerIndex = players.findIndex(p => p.id === id); // -�-�-+-+-+-�-+-�-�-+ findIndex
+  const { name, steamId, photo, teamId, match_stats, firstName, lastName, country } = req.body; // -P-ï¿½-ï¿½-ï¿½-ï¿½-+-+ match_stats
+  const playerIndex = players.findIndex(p => p.id === id); // -ï¿½-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ findIndex
   if (playerIndex === -1) return res.status(404).json({ error: "Player not found" });
   
   players[playerIndex].name = name !== undefined ? name : players[playerIndex].name;
@@ -2775,10 +2899,10 @@ app.put('/api/players/:id', (req, res) => {
 app.delete('/api/players/:id', (req, res) => {
   const { id } = req.params;
   const originalLength = players.length;
-  players = players.filter(p => p.id !== id); // -�-�-+-+-+-�-+-�-�-+ filter, -�-�-� -� -�-�-�-�-+ -+-�-+-�-+-+-�-+-�
+  players = players.filter(p => p.id !== id); // -ï¿½-ï¿½-+-+-+-ï¿½-+-ï¿½-ï¿½-+ filter, -ï¿½-ï¿½-ï¿½ -ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-+ -+-ï¿½-+-ï¿½-+-+-ï¿½-+-ï¿½
   if (players.length < originalLength) {
     saveData();
-    res.status(200).json({ message: "Player deleted" }); // -�-�-�-�-�-� 200
+    res.status(200).json({ message: "Player deleted" }); // -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ 200
   } else {
     res.status(404).json({ error: "Player not found" });
   }
@@ -2798,7 +2922,7 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
 // === EXPORT JSON API ===
 // ======================================
 
-// GET /api/export/teams � ??? ??????? + ?????????? + ????? + VRS
+// GET /api/export/teams ï¿½ ??? ??????? + ?????????? + ????? + VRS
 app.get('/api/export/teams', (req, res) => {
   const history = stats.getMatchHistory();
   const teamRatings = stats.getGlobalTeamRatings(teams);
@@ -2866,7 +2990,7 @@ app.get('/api/export/teams', (req, res) => {
   res.json(result);
 });
 
-// GET /api/export/players � ??? ?????? + ?????? ??????????
+// GET /api/export/players ï¿½ ??? ?????? + ?????? ??????????
 app.get('/api/export/players', (req, res) => {
   const ratings = stats.getGlobalPlayerRatings(players);
 
@@ -2913,24 +3037,24 @@ app.get('/api/export/players', (req, res) => {
 
 // ======================================
 
-// GET /api/stats/match � ??????? ????
+// GET /api/stats/match ï¿½ ??????? ????
 app.get('/api/stats/match', (req, res) => {
   const match = stats.getCurrentMatchStats();
   if (!match) return res.json({ status: 'no_match', data: null });
   res.json({ status: 'live', data: match });
 });
 
-// GET /api/stats/players � ?????????? ??????? ???????
+// GET /api/stats/players ï¿½ ?????????? ??????? ???????
 app.get('/api/stats/players', (req, res) => {
   res.json(stats.getGlobalPlayerRatings(players));
 });
 
-// GET /api/stats/teams � ?????????? ??????? ??????
+// GET /api/stats/teams ï¿½ ?????????? ??????? ??????
 app.get('/api/stats/teams', (req, res) => {
   res.json(stats.getGlobalTeamRatings(teams));
 });
 
-// GET /api/stats/history � ??????? ??????
+// GET /api/stats/history ï¿½ ??????? ??????
 app.get('/api/stats/history', (req, res) => {
   const page  = Math.max(1, parseInt(req.query.page  || '1'));
   const limit = Math.min(50, parseInt(req.query.limit || '20'));
@@ -2943,38 +3067,38 @@ app.get('/api/stats/history', (req, res) => {
   });
 });
 
-// GET /api/stats/history/:id � ???? ???? ?? ???????
+// GET /api/stats/history/:id ï¿½ ???? ???? ?? ???????
 app.get('/api/stats/history/:id', (req, res) => {
   const match = stats.getMatchHistory().find(m => m.id === req.params.id);
   if (!match) return res.status(404).json({ error: 'Match not found' });
   res.json(match);
 });
 
-// DELETE /api/stats/history/:id � ??????? ???? ? ??????????? ?????????? ??????????
+// DELETE /api/stats/history/:id ï¿½ ??????? ???? ? ??????????? ?????????? ??????????
 app.delete('/api/stats/history/:id', (req, res) => {
   const ok = stats.deleteMatch(req.params.id);
   if (!ok) return res.status(404).json({ error: 'Match not found' });
   res.json({ ok: true });
 });
 
-// GET /api/stats/global � ????? ??????????? ??????
+// GET /api/stats/global ï¿½ ????? ??????????? ??????
 app.get('/api/stats/global', (req, res) => {
   res.json(stats.getGlobalStats());
 });
 
-// GET /api/stats/maps � ?????????? ?? ??????
+// GET /api/stats/maps ï¿½ ?????????? ?? ??????
 app.get('/api/stats/maps', (req, res) => {
   res.json(stats.getMapStats());
 });
 
-// GET /api/stats/player/:steamId � ??????? ??????
+// GET /api/stats/player/:steamId ï¿½ ??????? ??????
 app.get('/api/stats/player/:steamId', (req, res) => {
   const data = stats.getPlayerStats(req.params.steamId, players);
   if (!data) return res.status(404).json({ error: 'Player not found' });
   res.json(data);
 });
 
-// GET /api/stats/team/:name � ??????? ???????
+// GET /api/stats/team/:name ï¿½ ??????? ???????
 app.get('/api/stats/team/:name', (req, res) => {
   const data = stats.getTeamStats(req.params.name, teams, players);
   if (!data) return res.status(404).json({ error: 'Team not found' });
@@ -2992,7 +3116,7 @@ app.get('/stats/team',   (req, res) => res.render('stats-team'));
 /**
  * ????????? ?????????? ??????????? ?? xlsx-??????.
  * ?????????? ?????? { rowIndex: { data: Buffer, ext: string } },
- * ??? rowIndex � 0-based ?????? ?????? ? drawing (0 = ?????????, 1 = ?????? ?????? ??????).
+ * ??? rowIndex ï¿½ 0-based ?????? ?????? ? drawing (0 = ?????????, 1 = ?????? ?????? ??????).
  */
 function extractXlsxImageMap(buffer) {
   try {
@@ -3037,7 +3161,7 @@ function safeFilename(name) {
   return name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase();
 }
 
-// POST /api/import/teams � ?????? ?????? ?? xlsx
+// POST /api/import/teams ï¿½ ?????? ?????? ?? xlsx
 app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: '???? ?? ????????' });
 
@@ -3108,7 +3232,7 @@ app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
   }
 });
 
-// POST /api/import/players � ?????? ??????? ?? xlsx
+// POST /api/import/players ï¿½ ?????? ??????? ?? xlsx
 app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: '???? ?? ????????' });
 
@@ -3206,7 +3330,7 @@ app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
 });
 
 // ================================
-// === -�-P-�-�-� -�-�-�-�-�-� API -�-�-� CRUD ===
+// === -ï¿½-P-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ API -ï¿½-ï¿½-ï¿½ CRUD ===
 // ================================
 
 
@@ -4147,7 +4271,7 @@ app.get('/api/graphics/players', (req, res) => {
 
 /**
  * GET /api/graphics/live
- * Alias for /api/graphics/scoreboard — live GSI match data
+ * Alias for /api/graphics/scoreboard â€” live GSI match data
  */
 app.get('/api/graphics/live', (req, res) => {
   try {
@@ -4290,7 +4414,7 @@ app.get('/api/graphics/match/:matchId', (req, res) => {
 
 /**
  * GET /api/graphics/database
- * Full snapshot of all GGBB data — main datasource for GB Next Gen Overlay
+ * Full snapshot of all GGBB data â€” main datasource for GB Next Gen Overlay
  */
 app.get('/api/graphics/database', (req, res) => {
   try {
@@ -4362,7 +4486,7 @@ app.get('/api/graphics/database', (req, res) => {
 
 /**
  * GET /api/graphics/validate
- * Data quality check — shows warnings about missing data
+ * Data quality check â€” shows warnings about missing data
  */
 app.get('/api/graphics/validate', (req, res) => {
   try {
@@ -4560,6 +4684,7 @@ app.post('/api/admin/graphics/clear-live', (req, res) => {
     roundsAlive = [];
     currentMatchKey = null;
     resetOverallRoundTracker();
+    resetGsiKillTracker();
     lastScoreboardUpdate = null;
     res.json({ ok: true, message: 'Live match cache cleared', updatedAt: new Date().toISOString() });
   } catch (err) {
@@ -4593,7 +4718,7 @@ app.post('/api/admin/graphics/clear-completed-test', (req, res) => {
 
 
 // ------------------------------
-// -�-�-+-�-�-� -�-�-�-�-�-�-� (Express + WebSocket)
+// -ï¿½-ï¿½-+-ï¿½-ï¿½-ï¿½ -ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½-ï¿½ (Express + WebSocket)
 // ------------------------------
 server.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on ${baseUrl} (HTTP and WebSocket on port ${port})`);
