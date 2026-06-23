@@ -1117,6 +1117,8 @@
       <div class="toolbar-section">
         <button id="btn-import-teams" class="app-button tertiary"><i class="fas fa-file-excel"></i> Import Teams</button>
         <button id="btn-import-players" class="app-button tertiary"><i class="fas fa-file-excel"></i> Import Players</button>
+        <a href="/api/export/teams.xlsx" class="app-button tertiary"><i class="fas fa-file-download"></i> Export Teams XLSX</a>
+        <a href="/api/export/players.xlsx" class="app-button tertiary"><i class="fas fa-file-download"></i> Export Players XLSX</a>
       </div>
     </div>
 
@@ -1221,6 +1223,8 @@
           <div class="links-section-title"><i class="fas fa-file-export"></i> Export JSON (full data)</div>
           <div class="link-row"><span class="link-badge get">GET</span><span class="link-url">/api/export/teams</span><span class="link-desc">All teams + stats + map winrates + matches + VRS</span><a href="/api/export/teams" target="_blank" class="link-open"><i class="fas fa-external-link-alt"></i></a></div>
           <div class="link-row"><span class="link-badge get">GET</span><span class="link-url">/api/export/players</span><span class="link-desc">All players + full stats (Rating, KPR, DPR, KAST, MK, ADR...)</span><a href="/api/export/players" target="_blank" class="link-open"><i class="fas fa-external-link-alt"></i></a></div>
+          <div class="link-row"><span class="link-badge get">GET</span><span class="link-url">/api/export/teams.xlsx</span><span class="link-desc">Teams XLSX export (Team name, Short name, Country Code, Logo)</span><a href="/api/export/teams.xlsx" target="_blank" class="link-open"><i class="fas fa-external-link-alt"></i></a></div>
+          <div class="link-row"><span class="link-badge get">GET</span><span class="link-url">/api/export/players.xlsx</span><span class="link-desc">Players XLSX export (Username, SteamID, First Name, Last Name, Country Code, Team Name, Avatar)</span><a href="/api/export/players.xlsx" target="_blank" class="link-open"><i class="fas fa-external-link-alt"></i></a></div>
         </div>
 
         <div class="links-section">

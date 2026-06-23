@@ -4,9 +4,11 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
+const https = require('https');
 const WebSocket = require('ws');
 const cors = require('cors');
 const xlsx = require('xlsx');
+const ExcelJS = require('exceljs');
 const stats = require('./stats');
 const graphicsUtils = require('./lib/graphics-utils');
 const matchFinalization = require('./lib/match-finalization');
@@ -90,11 +92,15 @@ const DEFAULT_PLAYER_STATS = {
     CT: { rounds: 0, kills: 0, deaths: 0, adr: 0 },
     T: { rounds: 0, kills: 0, deaths: 0, adr: 0 }
   },
+  galaxyRating: 0,
+  galaxyRatingLabel: 'Galaxy Rating',
+  galaxyRatingTier: 'BAD',
   rating: 0,
   customRating: 0
 };
 
 const EMPTY_TOP_PLAYERS = {
+  galaxyRating: [],
   kills: [],
   adr: [],
   damage: [],
@@ -109,6 +115,7 @@ const EMPTY_TOP_PLAYERS = {
 
 function cloneEmptyTopPlayers() {
   return {
+    galaxyRating: [],
     kills: [],
     adr: [],
     damage: [],
@@ -317,6 +324,10 @@ function createPlaceholderPlayer() {
       CT: { rounds: 0, kills: 0, deaths: 0, adr: 0 },
       T: { rounds: 0, kills: 0, deaths: 0, adr: 0 }
     },
+    galaxyRating: 0,
+    galaxyRatingLabel: 'Galaxy Rating',
+    galaxyRatingTier: 'BAD',
+    galaxyRatingBreakdown: null,
     rating: 0,
     customRating: 0,
     isPlaceholder: true
@@ -503,8 +514,43 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.utilityDamage = source.utilityDamage ?? source.utility?.utilityDamage ?? null;
   result.utility_utilityDamage = source.utility_utilityDamage ?? result.utilityDamage;
 
-  result.rating = toNumber(source.rating, 0);
-  result.customRating = toNumber(source.customRating, 0);
+  const sourceGalaxyRating = source.galaxyRating ?? source.galaxyrating ?? source.rating ?? source.customRating;
+  const calculatedGalaxyRating = calculateGalaxyRating({
+    roundsPlayed: result.roundsPlayed,
+    kills: result.kills,
+    deaths: result.deaths,
+    assists: result.assists,
+    adr: result.adr,
+    opening_entryDiff: result.opening_entryDiff,
+    multiKills_total: result.multiKills_total,
+    clutches_wins: result.clutches_wins,
+    survivalRate: result.survivalRate
+  });
+  const normalizedGalaxyRating = Number.isFinite(Number(sourceGalaxyRating))
+    ? toNumber(sourceGalaxyRating, 0)
+    : calculatedGalaxyRating;
+  result.galaxyRating = normalizedGalaxyRating;
+  result.galaxyRatingLabel = 'Galaxy Rating';
+  result.galaxyRatingTier = getGalaxyRatingTier(normalizedGalaxyRating);
+  result.galaxyRatingBreakdown = source.galaxyRatingBreakdown && typeof source.galaxyRatingBreakdown === 'object'
+    ? {
+        ...source.galaxyRatingBreakdown,
+        finalGalaxyRating: Number(normalizedGalaxyRating.toFixed(2))
+      }
+    : buildGalaxyRatingBreakdown({
+        roundsPlayed: result.roundsPlayed,
+        kills: result.kills,
+        deaths: result.deaths,
+        assists: result.assists,
+        adr: result.adr,
+        opening_entryDiff: result.opening_entryDiff,
+        multiKills_total: result.multiKills_total,
+        clutches_wins: result.clutches_wins,
+        survivalRate: result.survivalRate
+      }, normalizedGalaxyRating);
+
+  result.rating = normalizedGalaxyRating;
+  result.customRating = normalizedGalaxyRating;
   result.isPlaceholder = !!source.isPlaceholder || placeholder;
 
   return result;
@@ -512,6 +558,7 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
 
 function normalizeTopPlayerEntry(player) {
   if (!player) return null;
+  const galaxyRating = toNumber(player.galaxyRating ?? player.rating ?? player.customRating, 0);
   return {
     id: player.id ?? null,
     name: player.name || player.nickname || '',
@@ -519,7 +566,12 @@ function normalizeTopPlayerEntry(player) {
     photo: player.photo || '',
     teamId: player.teamId ?? null,
     teamLogo: player.teamLogo || '',
-    value: toNumber(player.value, 0)
+    value: toNumber(player.value, 0),
+    galaxyRating,
+    galaxyRatingLabel: 'Galaxy Rating',
+    galaxyRatingTier: getGalaxyRatingTier(galaxyRating),
+    rating: galaxyRating,
+    customRating: galaxyRating
   };
 }
 
@@ -605,10 +657,72 @@ function hasPositiveNumeric(value) {
   return Number.isFinite(num) && num > 0;
 }
 
+function getGalaxyRatingTier(rating) {
+  const normalized = toNumber(rating, 0);
+  if (normalized >= 2.0) return 'INSANE';
+  if (normalized >= 1.6) return 'MONSTER';
+  if (normalized >= 1.3) return 'ELITE';
+  if (normalized >= 1.1) return 'GOOD';
+  if (normalized >= 1.0) return 'AVERAGE';
+  if (normalized >= 0.8) return 'BELOW_AVERAGE';
+  if (normalized >= 0.5) return 'WEAK';
+  return 'BAD';
+}
+
+function buildGalaxyRatingBreakdown(player, fallbackFinal = null) {
+  const rounds = Math.max(1, toNumber(player?.roundsPlayed, 0));
+  const kills = toNumber(player?.kills, 0);
+  const deaths = toNumber(player?.deaths, 0);
+  const assists = toNumber(player?.assists, 0);
+  const adr = toNumber(player?.adr, 0);
+  const kpr = kills / rounds;
+  const dpr = deaths / rounds;
+  const apr = assists / rounds;
+  const openingEntryDiff = toNumber(player?.opening_entryDiff, 0);
+  const multiKillsTotal = toNumber(player?.multiKills_total, 0);
+  const clutchWins = toNumber(player?.clutches_wins, 0);
+  const survivalRate = toNumber(player?.survivalRate, 0);
+
+  let rating =
+    0.70 +
+    (kpr * 0.45) +
+    (apr * 0.12) +
+    ((adr / 100) * 0.35) +
+    (openingEntryDiff * 0.07) +
+    (multiKillsTotal * 0.04) +
+    (clutchWins * 0.12) +
+    ((survivalRate / 100) * 0.12) -
+    (dpr * 0.25);
+
+  rating = Math.max(0, Math.min(3, rating));
+  const finalGalaxyRating = fallbackFinal != null
+    ? Number(toNumber(fallbackFinal, 0).toFixed(2))
+    : Number(rating.toFixed(2));
+
+  return {
+    base: 0.70,
+    kpr: Number(kpr.toFixed(3)),
+    dpr: Number(dpr.toFixed(3)),
+    apr: Number(apr.toFixed(3)),
+    adr: Number(adr.toFixed(1)),
+    openingEntryDiff,
+    multiKillsTotal,
+    clutchWins,
+    survivalRate: Number(survivalRate.toFixed(2)),
+    finalGalaxyRating
+  };
+}
+
+function calculateGalaxyRating(player) {
+  return buildGalaxyRatingBreakdown(player).finalGalaxyRating;
+}
+
 function getSortableRating(player) {
   if (!player || typeof player !== 'object') return null;
+  if (hasPositiveNumeric(player.galaxyRating)) return Number(player.galaxyRating);
   if (hasPositiveNumeric(player.rating)) return Number(player.rating);
   if (hasPositiveNumeric(player.customRating)) return Number(player.customRating);
+  if (hasPositiveNumeric(player.galaxyrating)) return Number(player.galaxyrating);
   return null;
 }
 
@@ -622,17 +736,13 @@ function sortPlayersBestToWorst(playersList) {
     if (aRating != null && bRating == null) return -1;
     if (aRating == null && bRating != null) return 1;
 
-    const aAdr = toNumber(a?.adr, 0);
-    const bAdr = toNumber(b?.adr, 0);
-    if (bAdr !== aAdr) return bAdr - aAdr;
-
-    const aKpr = toNumber(a?.kpr, 0);
-    const bKpr = toNumber(b?.kpr, 0);
-    if (bKpr !== aKpr) return bKpr - aKpr;
-
     const aKills = toNumber(a?.kills, 0);
     const bKills = toNumber(b?.kills, 0);
     if (bKills !== aKills) return bKills - aKills;
+
+    const aAdr = toNumber(a?.adr, 0);
+    const bAdr = toNumber(b?.adr, 0);
+    if (bAdr !== aAdr) return bAdr - aAdr;
 
     const aPlusMinus = toNumber(a?.plusMinus, 0);
     const bPlusMinus = toNumber(b?.plusMinus, 0);
@@ -661,14 +771,18 @@ function isPlayerInTeam(player, { teamId = null, teamName = '', side = '' } = {}
 }
 
 function calculateScoreboardCustomRating({ kills, adr, assists, survivalRate, multiKillRounds, deaths }) {
-  const rating =
-    (toNumber(kills, 0) * 0.35) +
-    (toNumber(adr, 0) * 0.02) +
-    (toNumber(assists, 0) * 0.1) +
-    (toNumber(survivalRate, 0) * 0.01) +
-    (toNumber(multiKillRounds, 0) * 0.2) -
-    (toNumber(deaths, 0) * 0.15);
-  return parseFloat(rating.toFixed(2));
+  // Legacy wrapper to avoid breaking internal calls.
+  return calculateGalaxyRating({
+    kills,
+    adr,
+    assists,
+    survivalRate,
+    multiKills_total: multiKillRounds,
+    deaths,
+    roundsPlayed: 0,
+    opening_entryDiff: 0,
+    clutches_wins: 0
+  });
 }
 
 function buildTopList(playersList, selector, { limit = 5 } = {}) {
@@ -689,7 +803,27 @@ function buildTopList(playersList, selector, { limit = 5 } = {}) {
       photo: entry.player?.photo,
       teamId: entry.player?.teamId,
       teamLogo: entry.player?.teamLogo,
+      galaxyRating: entry.player?.galaxyRating,
+      rating: entry.player?.rating,
+      customRating: entry.player?.customRating,
       value: Number(entry.value)
+    }));
+}
+
+function buildTopGalaxyList(playersList, { limit = 5 } = {}) {
+  return sortPlayersBestToWorst(playersList)
+    .slice(0, limit)
+    .map((player) => normalizeTopPlayerEntry({
+      id: player?.id,
+      name: player?.name,
+      nickname: player?.nickname,
+      photo: player?.photo,
+      teamId: player?.teamId,
+      teamLogo: player?.teamLogo,
+      galaxyRating: player?.galaxyRating,
+      rating: player?.rating,
+      customRating: player?.customRating,
+      value: toNumber(player?.galaxyRating ?? player?.rating ?? player?.customRating, 0)
     }));
 }
 
@@ -895,16 +1029,28 @@ function buildScoreboardOverallPlayer({
   const kast = null;
   const impact = null;
 
-  const ratingRaw = sourcePlayer?.match_stats?.rating ?? sourcePlayer?.rating ?? null;
-  const rating = Number.isFinite(Number(ratingRaw)) ? toNumber(ratingRaw, 0) : 0;
-  const customRating = calculateScoreboardCustomRating({
+  const galaxyRating = calculateGalaxyRating({
+    roundsPlayed,
     kills,
-    adr,
+    deaths,
     assists,
-    survivalRate,
-    multiKillRounds: totalMultiKillRounds,
-    deaths
+    adr,
+    opening_entryDiff: entryDiff,
+    multiKills_total: totalMultiKillRounds,
+    clutches_wins: clutchesWins,
+    survivalRate
   });
+  const galaxyRatingBreakdown = buildGalaxyRatingBreakdown({
+    roundsPlayed,
+    kills,
+    deaths,
+    assists,
+    adr,
+    opening_entryDiff: entryDiff,
+    multiKills_total: totalMultiKillRounds,
+    clutches_wins: clutchesWins,
+    survivalRate
+  }, galaxyRating);
 
   const playerTeamId = sourcePlayer?.teamId ?? regPlayer?.teamId ?? teamProfile?.id ?? null;
   const playerTeamName = sourcePlayer?.teamName || teamProfile?.name || '';
@@ -944,8 +1090,12 @@ function buildScoreboardOverallPlayer({
     kpr,
     apr,
     damagePerKill,
-    rating,
-    customRating,
+    galaxyRating,
+    galaxyRatingLabel: 'Galaxy Rating',
+    galaxyRatingTier: getGalaxyRatingTier(galaxyRating),
+    galaxyRatingBreakdown,
+    rating: galaxyRating,
+    customRating: galaxyRating,
     impact,
     roundsPlayed,
     survivedRounds,
@@ -1104,7 +1254,8 @@ function buildScoreboardOverallPlayer({
 
 function buildOverallTopPlayers(playersList) {
   const top = {
-    rating: buildTopList(playersList, (p) => p.rating > 0 ? p.rating : p.customRating),
+    galaxyRating: buildTopGalaxyList(playersList),
+    rating: buildTopGalaxyList(playersList),
     kills: buildTopList(playersList, (p) => p.kills),
     adr: buildTopList(playersList, (p) => p.adr),
     kpr: buildTopList(playersList, (p) => p.kpr),
@@ -1139,6 +1290,7 @@ function buildOverallStatAvailability(playersList) {
 
 function toScoreboardTableRow(player) {
   const source = player || {};
+  const galaxyRating = toNumber(source.galaxyRating ?? source.rating ?? source.customRating, 0);
   return {
     steamId: source.steamId || '',
     nickname: source.nickname || source.name || '',
@@ -1204,7 +1356,11 @@ function toScoreboardTableRow(player) {
     clutches_1v5_wins: source.clutches_1v5_wins != null ? toNumber(source.clutches_1v5_wins, 0) : null,
     clutches_1v5_losses: source.clutches_1v5_losses != null ? toNumber(source.clutches_1v5_losses, 0) : null,
     clutchWinRate: source.clutchWinRate != null ? toNumber(source.clutchWinRate, 0) : null,
-    customRating: toNumber(source.customRating, 0),
+    galaxyRating,
+    galaxyRatingLabel: 'Galaxy Rating',
+    galaxyRatingTier: getGalaxyRatingTier(galaxyRating),
+    rating: galaxyRating,
+    customRating: galaxyRating,
     scoreboardRank: source.scoreboardRank != null ? toNumber(source.scoreboardRank, null) : null,
     isPlaceholder: !!source.isPlaceholder
   };
@@ -1378,7 +1534,17 @@ function buildPlayerStatsSnapshot(steamId, baseUrl = '') {
       adr: toNumber(currentMatchStats.t_rounds, 0) > 0 ? parseFloat((toNumber(currentMatchStats.t_damage, 0) / toNumber(currentMatchStats.t_rounds, 0)).toFixed(1)) : 0
     }
   };
-  const customRating = parseFloat((0.5 + ((kills * 0.35) + (assists * 0.1) - (deaths * 0.2) + (adr * 0.015) + (plusMinus * 0.05)) / 20).toFixed(2));
+  const galaxyRating = calculateGalaxyRating({
+    roundsPlayed,
+    kills,
+    deaths,
+    assists,
+    adr,
+    opening_entryDiff: entryDiff,
+    multiKills_total: totalMultiKillRounds,
+    clutches_wins: 0,
+    survivalRate: 0
+  });
   const photo = graphicsUtils.resolvePlayerPhoto(regPlayer || { photo: gsiPlayer?.photo }, baseUrl, '/NoneP.png');
   const teamLogo = team ? graphicsUtils.resolveLogo(team, baseUrl, '/logos/none-team.png') : (regPlayer?.teamId ? graphicsUtils.resolveLogo(teams.find((t) => t.id === regPlayer.teamId), baseUrl, '/logos/none-team.png') : `${baseUrl}/logos/none-team.png`);
 
@@ -1449,8 +1615,22 @@ function buildPlayerStatsSnapshot(steamId, baseUrl = '') {
     },
     weaponStats: {},
     sideStats,
-    rating: customRating,
-    customRating
+    galaxyRating,
+    galaxyRatingLabel: 'Galaxy Rating',
+    galaxyRatingTier: getGalaxyRatingTier(galaxyRating),
+    galaxyRatingBreakdown: buildGalaxyRatingBreakdown({
+      roundsPlayed,
+      kills,
+      deaths,
+      assists,
+      adr,
+      opening_entryDiff: entryDiff,
+      multiKills_total: totalMultiKillRounds,
+      clutches_wins: 0,
+      survivalRate: 0
+    }, galaxyRating),
+    rating: galaxyRating,
+    customRating: galaxyRating
   };
 }
 
@@ -1479,6 +1659,21 @@ function buildLivePlayerStatsSnapshot(steamId, livePlayer, currentMatch, baseUrl
         totalMultiKillRounds: toNumber(livePlayer?.oneKillRounds, 0) + toNumber(livePlayer?.twoKillRounds, 0) + toNumber(livePlayer?.threeKills, 0) + toNumber(livePlayer?.fourKills, 0) + toNumber(livePlayer?.fiveKills, 0)
       }
     : DEFAULT_PLAYER_STATS.multiKills;
+
+  const sourceGalaxyRating = livePlayer?.galaxyRating ?? livePlayer?.galaxyrating ?? livePlayer?.rating ?? livePlayer?.customRating;
+  const galaxyRating = Number.isFinite(Number(sourceGalaxyRating))
+    ? toNumber(sourceGalaxyRating, 0)
+    : calculateGalaxyRating({
+        roundsPlayed,
+        kills,
+        deaths,
+        assists,
+        adr,
+        opening_entryDiff: livePlayer?.firstKills != null && livePlayer?.firstDeaths != null ? livePlayer.firstKills - livePlayer.firstDeaths : 0,
+        multiKills_total: toNumber(multiKills?.totalMultiKillRounds, 0),
+        clutches_wins: toNumber(livePlayer?.clutches?.wins ?? livePlayer?.clutches_wins, 0),
+        survivalRate: toNumber(livePlayer?.survivalRate, 0)
+      });
 
   return {
     ...DEFAULT_PLAYER_STATS,
@@ -1530,8 +1725,11 @@ function buildLivePlayerStatsSnapshot(steamId, livePlayer, currentMatch, baseUrl
       spendThisRound: livePlayer?.spendThisRound ?? null
     },
     sideStats: livePlayer?.sideStats || DEFAULT_PLAYER_STATS.sideStats,
-    rating: livePlayer?.galaxyRating ?? livePlayer?.rating ?? livePlayer?.customRating ?? 0,
-    customRating: livePlayer?.galaxyRating ?? livePlayer?.rating ?? livePlayer?.customRating ?? 0
+    galaxyRating,
+    galaxyRatingLabel: 'Galaxy Rating',
+    galaxyRatingTier: getGalaxyRatingTier(galaxyRating),
+    rating: galaxyRating,
+    customRating: galaxyRating
   };
 }
 
@@ -1642,24 +1840,39 @@ function buildPlayerStatsPayload(mode, req, options = {}) {
         adr: toNumber(player.match_stats?.t_rounds, 0) > 0 ? parseFloat((toNumber(player.match_stats?.t_damage, 0) / toNumber(player.match_stats?.t_rounds, 0)).toFixed(1)) : 0
       }
     },
-    rating: calcGalaxyRating({
+    galaxyRating: calculateGalaxyRating({
+      roundsPlayed: getRoundCount(),
       kills: toNumber(player.match_stats?.kills, 0),
       deaths: toNumber(player.match_stats?.deaths, 0),
       assists: toNumber(player.match_stats?.assists, 0),
-      damage: toNumber(player.accumulatedDmg, 0),
-      kastRounds: toNumber(player.match_stats?.kastRounds, 0),
-      rounds: getRoundCount()
+      adr: getRoundCount() > 0 ? parseFloat((toNumber(player.accumulatedDmg, 0) / getRoundCount()).toFixed(1)) : 0,
+      opening_entryDiff: player.match_stats?.firstKills != null && player.match_stats?.firstDeaths != null
+        ? toNumber(player.match_stats.firstKills, 0) - toNumber(player.match_stats.firstDeaths, 0)
+        : 0,
+      multiKills_total:
+        toNumber(player.match_stats?.oneKillRounds, 0) +
+        toNumber(player.match_stats?.twoKillRounds, 0) +
+        toNumber(player.match_stats?.threeKillRounds, 0) +
+        toNumber(player.match_stats?.fourKillRounds, 0) +
+        toNumber(player.match_stats?.fiveKillRounds, 0),
+      clutches_wins: toNumber(player.match_stats?.clutches_wins, 0),
+      survivalRate: 0
     }),
-    customRating: calcGalaxyRating({
-      kills: toNumber(player.match_stats?.kills, 0),
-      deaths: toNumber(player.match_stats?.deaths, 0),
-      assists: toNumber(player.match_stats?.assists, 0),
-      damage: toNumber(player.accumulatedDmg, 0),
-      kastRounds: toNumber(player.match_stats?.kastRounds, 0),
-      rounds: getRoundCount()
-    }),
+    galaxyRatingLabel: 'Galaxy Rating',
+    galaxyRatingTier: 'BAD',
+    rating: 0,
+    customRating: 0,
     isPlaceholder: false
   }));
+
+  liveFromScoreboard.forEach((player) => {
+    const galaxyRating = toNumber(player.galaxyRating, 0);
+    player.galaxyRating = galaxyRating;
+    player.galaxyRatingLabel = 'Galaxy Rating';
+    player.galaxyRatingTier = getGalaxyRatingTier(galaxyRating);
+    player.rating = galaxyRating;
+    player.customRating = galaxyRating;
+  });
 
   const liveMatchPlayers = Object.entries(scoreboard.players || {}).length > 0
     ? liveFromScoreboard
@@ -1731,12 +1944,13 @@ function buildPlayerStatsPayload(mode, req, options = {}) {
     }));
 
   const topPlayers = buildStableTopPlayers({
+    galaxyRating: buildTopGalaxyList(meaningfulPlayers),
     kills: topSelector((player) => toNumber(player.kills, 0)),
     adr: topSelector((player) => toNumber(player.adr, 0)),
     damage: topSelector((player) => toNumber(player.damage, 0)),
     kd: topSelector((player) => toNumber(player.kd, 0)),
     plusMinus: topSelector((player) => toNumber(player.plusMinus, 0)),
-    rating: topSelector((player) => toNumber(player.rating || player.customRating, 0)),
+    rating: buildTopGalaxyList(meaningfulPlayers),
     aces: topSelector((player) => toNumber(player.multiKills?.aces, 0)),
     multiKills: topSelector((player) => toNumber(player.multiKills?.totalMultiKillRounds, 0)),
     flashAssists: topSelector((player) => toNumber(player.utility?.flashAssists, 0)),
@@ -1804,6 +2018,7 @@ function buildPlayerStatsPayload(mode, req, options = {}) {
     teamBPlayers,
     topPlayers,
     mvp,
+    liveMvp: mvp,
     teamA: teamAValue,
     teamB: teamBValue,
     teamStats: mode === 'postmatch'
@@ -1893,8 +2108,11 @@ function buildPlayerStatsPayloadFromMatch(match, req) {
           },
           weaponStats: player.weaponStats || {},
           sideStats: player.sideStats || DEFAULT_PLAYER_STATS.sideStats,
-          rating: player.rating ?? player.customRating ?? 0,
-          customRating: player.customRating ?? player.rating ?? 0
+          galaxyRating: player.galaxyRating ?? player.rating ?? player.customRating ?? player.galaxyrating ?? 0,
+          galaxyRatingLabel: 'Galaxy Rating',
+          galaxyRatingTier: getGalaxyRatingTier(player.galaxyRating ?? player.rating ?? player.customRating ?? player.galaxyrating ?? 0),
+          rating: player.galaxyRating ?? player.rating ?? player.customRating ?? player.galaxyrating ?? 0,
+          customRating: player.galaxyRating ?? player.rating ?? player.customRating ?? player.galaxyrating ?? 0
         };
       })
     : [];
@@ -1917,19 +2135,20 @@ function buildPlayerStatsPayloadFromMatch(match, req) {
   }));
 
   const topPlayers = {
+    galaxyRating: buildTopGalaxyList(rankedPlayers),
     kills: topSelector((p) => p.kills || 0),
     adr: topSelector((p) => p.adr || 0),
     damage: topSelector((p) => p.damage || 0),
     kd: topSelector((p) => p.kd || 0),
     plusMinus: topSelector((p) => p.plusMinus || 0),
-    rating: topSelector((p) => p.rating || p.customRating || 0),
+    rating: buildTopGalaxyList(rankedPlayers),
     aces: topSelector((p) => p.multiKills?.aces || 0),
     multiKills: topSelector((p) => p.multiKills?.totalMultiKillRounds || 0),
     flashAssists: topSelector((p) => p.utility?.flashAssists || 0),
     enemiesFlashed: topSelector((p) => p.utility?.enemiesFlashed || 0)
   };
 
-  const mvp = rankedPlayers[0] || null;
+  const mvp = buildStableMvp(rankedPlayers[0] || null);
 
   const teamAName = extractTeamNameValue(teamA);
   const teamBName = extractTeamNameValue(teamB);
@@ -1956,6 +2175,7 @@ function buildPlayerStatsPayloadFromMatch(match, req) {
     players: buildStablePlayerList(rankedPlayers, 10),
     topPlayers,
     mvp,
+    liveMvp: mvp,
     teamA: match.teamA || null,
     teamB: match.teamB || null,
     teamAPlayers: buildTeamSlotList(rankedTeamAPlayers.length ? rankedTeamAPlayers : fallbackTeamA, 5),
@@ -1978,6 +2198,7 @@ function getIdlePostmatch() {
     teamAPlayers: [],
     teamBPlayers: [],
     topPlayers: {
+      galaxyRating: [],
       kills: [],
       adr: [],
       damage: [],
@@ -2015,6 +2236,7 @@ function getIdleLiveMatch() {
       tPlayers: []
     },
     topPlayers: {
+      galaxyRating: [],
       kills: [],
       adr: [],
       damage: []
@@ -3688,6 +3910,38 @@ app.post('/api/players/uploadPhoto', uploadPlayers.single('photoFile'), (req, re
 // === EXPORT JSON API ===
 // ======================================
 
+app.get('/api/export/teams.xlsx', async (req, res) => {
+  try {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const workbook = await buildTeamsExportWorkbook(baseUrl);
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="teams-export.xlsx"');
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error('Error in /api/export/teams.xlsx:', err);
+    res.status(500).json({ error: 'Failed to generate teams XLSX export' });
+  }
+});
+
+app.get('/api/export/players.xlsx', async (req, res) => {
+  try {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const workbook = await buildPlayersExportWorkbook(baseUrl);
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="players-export.xlsx"');
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error('Error in /api/export/players.xlsx:', err);
+    res.status(500).json({ error: 'Failed to generate players XLSX export' });
+  }
+});
+
 // GET /api/export/teams ï¿½ ??? ??????? + ?????????? + ????? + VRS
 app.get('/api/export/teams', (req, res) => {
   const history = stats.getMatchHistory();
@@ -3765,6 +4019,7 @@ app.get('/api/export/players', (req, res) => {
     const mkr = r.rounds
       ? +(((r.threeKills||0)*3 + (r.fourKills||0)*4 + (r.fiveKills||0)*5) / r.rounds).toFixed(4)
       : 0;
+    const galaxyRating = toNumber(r.galaxyRating, 0);
 
     return {
       id:       p.id,
@@ -3772,29 +4027,33 @@ app.get('/api/export/players', (req, res) => {
       steamId:  p.steamId || null,
       photo:    p.photo  || null,
       team:     p.teamId || null,
-      stats: r.matchesPlayed ? {
-        matchesPlayed:   r.matchesPlayed,
-        galaxyRating:    r.galaxyRating,
-        killsPerRound:   +r.kpr,
-        deathsPerRound:  +r.dpr,
-        kastPercent:     r.kast,
-        adr:             r.adr,
-        kdRatio:         +r.kd,
-        heatShotPercent: r.hsRate,
+      stats: {
+        matchesPlayed:   toNumber(r.matchesPlayed, 0),
+        galaxyRating,
+        galaxyRatingLabel: r.galaxyRatingLabel || 'Galaxy Rating',
+        galaxyRatingTier: r.galaxyRatingTier || getGalaxyRatingTier(galaxyRating),
+        rating:          galaxyRating,
+        customRating:    galaxyRating,
+        killsPerRound:   toNumber(r.kpr, 0),
+        deathsPerRound:  toNumber(r.dpr, 0),
+        kastPercent:     toNumber(r.kast, 0),
+        adr:             toNumber(r.adr, 0),
+        kdRatio:         toNumber(r.kd, 0),
+        heatShotPercent: toNumber(r.hsRate, 0),
         multikillRating: mkr,
-        kills:           r.kills,
-        deaths:          r.deaths,
-        assists:         r.assists,
-        rounds:          r.rounds,
-        mvps:            r.mvps    || 0,
-        firstKills:      r.firstKills  || 0,
-        firstDeaths:     r.firstDeaths || 0,
-        threeKillRounds: r.threeKills  || 0,
-        fourKillRounds:  r.fourKills   || 0,
-        aces:            r.fiveKills   || 0,
-        bombPlants:      r.bombPlants  || 0,
-        bombDefuses:     r.bombDefuses || 0,
-      } : null,
+        kills:           toNumber(r.kills, 0),
+        deaths:          toNumber(r.deaths, 0),
+        assists:         toNumber(r.assists, 0),
+        rounds:          toNumber(r.rounds, 0),
+        mvps:            toNumber(r.mvps, 0),
+        firstKills:      toNumber(r.firstKills, 0),
+        firstDeaths:     toNumber(r.firstDeaths, 0),
+        threeKillRounds: toNumber(r.threeKills, 0),
+        fourKillRounds:  toNumber(r.fourKills, 0),
+        aces:            toNumber(r.fiveKills, 0),
+        bombPlants:      toNumber(r.bombPlants, 0),
+        bombDefuses:     toNumber(r.bombDefuses, 0),
+      },
     };
   });
 
@@ -3925,6 +4184,191 @@ function extractXlsxImageMap(buffer) {
 /** Sanitize a string for use in filenames */
 function safeFilename(name) {
   return name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase();
+}
+
+function normalizeExcelImageExtension(ext) {
+  const value = (ext || '').toLowerCase().replace('.', '');
+  if (value === 'jpg' || value === 'jpeg') return 'jpeg';
+  if (value === 'png') return 'png';
+  if (value === 'gif') return 'gif';
+  return null;
+}
+
+function extensionFromContentType(contentType) {
+  const type = (contentType || '').toLowerCase();
+  if (type.includes('image/jpeg') || type.includes('image/jpg')) return 'jpeg';
+  if (type.includes('image/png')) return 'png';
+  if (type.includes('image/gif')) return 'gif';
+  return null;
+}
+
+function fetchBufferFromUrl(url) {
+  return new Promise((resolve) => {
+    try {
+      const client = url.startsWith('https://') ? https : http;
+      client.get(url, (resp) => {
+        if (!resp || resp.statusCode < 200 || resp.statusCode >= 300) {
+          resolve(null);
+          return;
+        }
+
+        const chunks = [];
+        resp.on('data', (chunk) => chunks.push(chunk));
+        resp.on('end', () => {
+          try {
+            const buffer = Buffer.concat(chunks);
+            const ext = normalizeExcelImageExtension(path.extname(url)) || extensionFromContentType(resp.headers['content-type']);
+            if (!ext || !buffer.length) {
+              resolve(null);
+              return;
+            }
+            resolve({ buffer, extension: ext });
+          } catch (err) {
+            resolve(null);
+          }
+        });
+      }).on('error', () => resolve(null));
+    } catch (err) {
+      resolve(null);
+    }
+  });
+}
+
+function tryReadLocalImage(relativePath) {
+  if (!relativePath || typeof relativePath !== 'string') return null;
+  const clean = relativePath.trim().replace(/^\/+/, '').replace(/\\/g, '/');
+  if (!clean) return null;
+
+  const candidates = [
+    path.join(__dirname, 'public', clean),
+    path.join(__dirname, clean)
+  ];
+
+  for (const fullPath of candidates) {
+    try {
+      if (!fs.existsSync(fullPath)) continue;
+      const ext = normalizeExcelImageExtension(path.extname(fullPath));
+      if (!ext) continue;
+      const buffer = fs.readFileSync(fullPath);
+      if (!buffer || !buffer.length) continue;
+      return { buffer, extension: ext };
+    } catch (err) {
+      // Continue to fallback path behavior.
+    }
+  }
+
+  return null;
+}
+
+async function resolveImageForXlsx(imagePathOrUrl, baseUrl) {
+  const value = (imagePathOrUrl || '').toString().trim();
+  if (!value) return null;
+
+  if (/^https?:\/\//i.test(value)) {
+    return fetchBufferFromUrl(value);
+  }
+
+  const local = tryReadLocalImage(value);
+  if (local) return local;
+
+  if (value.startsWith('/')) {
+    const absUrl = `${baseUrl}${value}`;
+    return fetchBufferFromUrl(absUrl);
+  }
+
+  return null;
+}
+
+async function buildTeamsExportWorkbook(baseUrl) {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Teams');
+
+  worksheet.columns = [
+    { header: 'Team name', key: 'teamName', width: 30 },
+    { header: 'Short name', key: 'shortName', width: 18 },
+    { header: 'Country Code', key: 'countryCode', width: 16 },
+    { header: 'Logo', key: 'logo', width: 34 }
+  ];
+
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true };
+  headerRow.height = 24;
+
+  for (const team of teams) {
+    const shortName = team.shortName || team.tag || '';
+    const countryCode = (team.countryCode || '').toString().trim().toUpperCase();
+    const logoValue = team.logo || '';
+    const row = worksheet.addRow({
+      teamName: team.name || '',
+      shortName,
+      countryCode,
+      logo: logoValue
+    });
+
+    row.height = 64;
+
+    const imageInfo = await resolveImageForXlsx(logoValue, baseUrl);
+    if (imageInfo) {
+      const imageId = workbook.addImage({ buffer: imageInfo.buffer, extension: imageInfo.extension });
+      const rowIndex = row.number;
+      worksheet.getCell(`D${rowIndex}`).value = '';
+      worksheet.addImage(imageId, {
+        tl: { col: 3 + 0.1, row: (rowIndex - 1) + 0.1 },
+        ext: { width: 130, height: 52 }
+      });
+    }
+  }
+
+  return workbook;
+}
+
+async function buildPlayersExportWorkbook(baseUrl) {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Players');
+
+  worksheet.columns = [
+    { header: 'Username', key: 'username', width: 26 },
+    { header: 'SteamID', key: 'steamId', width: 28 },
+    { header: 'First Name', key: 'firstName', width: 18 },
+    { header: 'Last Name', key: 'lastName', width: 18 },
+    { header: 'Country Code', key: 'countryCode', width: 16 },
+    { header: 'Team Name', key: 'teamName', width: 28 },
+    { header: 'Avatar', key: 'avatar', width: 34 }
+  ];
+
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true };
+  headerRow.height = 24;
+
+  for (const player of players) {
+    const teamName = teams.find((team) => team.id === player.teamId)?.name || player.teamName || '';
+    const avatarValue = player.photo || player.avatar || '';
+
+    const row = worksheet.addRow({
+      username: player.nickname || player.name || '',
+      steamId: player.steamId || '',
+      firstName: player.firstName || '',
+      lastName: player.lastName || '',
+      countryCode: (player.countryCode || player.country || '').toString().trim().toUpperCase(),
+      teamName,
+      avatar: avatarValue
+    });
+
+    row.height = 72;
+
+    const imageInfo = await resolveImageForXlsx(avatarValue, baseUrl);
+    if (imageInfo) {
+      const imageId = workbook.addImage({ buffer: imageInfo.buffer, extension: imageInfo.extension });
+      const rowIndex = row.number;
+      worksheet.getCell(`G${rowIndex}`).value = '';
+      worksheet.addImage(imageId, {
+        tl: { col: 6 + 0.1, row: (rowIndex - 1) + 0.1 },
+        ext: { width: 130, height: 60 }
+      });
+    }
+  }
+
+  return workbook;
 }
 
 // POST /api/import/teams ï¿½ ?????? ?????? ?? xlsx
@@ -4182,6 +4626,7 @@ app.get('/api/graphics/scoreboard', (req, res) => {
     const playersTable = buildPlayersTableRows(rankedStablePlayers);
     const teamAPlayersTable = buildPlayersTableRows(teamAPlayers);
     const teamBPlayersTable = buildPlayersTableRows(teamBPlayers);
+    const mvp = buildStableMvp(meaningfulPlayers[0] || null);
     const statsDebug = buildStatsDebug({
       players: rankedStablePlayers,
       playersTable,
@@ -4231,6 +4676,8 @@ app.get('/api/graphics/scoreboard', (req, res) => {
         tPlayers: teamBPlayers
       },
 
+      mvp,
+      liveMvp: mvp,
       topPlayers: buildOverallTopPlayers(meaningfulPlayers),
       statAvailability: buildOverallStatAvailability(meaningfulPlayers),
       statsDebug
@@ -4667,6 +5114,8 @@ app.get('/api/graphics/postmatch', (req, res) => {
     const topPlayers = buildOverallTopPlayers(meaningfulPlayers);
     const rankedForMvp = sortPlayersBestToWorst(meaningfulPlayers);
 
+    const normalizedMvp = buildStableMvp(rankedForMvp[0] || postmatch.mvp || null);
+
     res.json({
       ...postmatch,
       type: postmatch.type || 'overall_scoreboard',
@@ -4676,7 +5125,8 @@ app.get('/api/graphics/postmatch', (req, res) => {
       teamBPlayers,
       teamAPlayersTable,
       teamBPlayersTable,
-      mvp: rankedForMvp[0] || postmatch.mvp || null,
+      mvp: normalizedMvp,
+      liveMvp: normalizedMvp,
       topPlayers,
       statAvailability: buildOverallStatAvailability(meaningfulPlayers),
       statsDebug,

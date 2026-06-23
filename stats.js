@@ -72,6 +72,18 @@ function calcGalaxyRating({ kills, deaths, assists, damage, kastRounds, rounds }
   return Math.max(0, parseFloat(rating.toFixed(3)));
 }
 
+function getGalaxyRatingTier(rating) {
+  const value = Number.isFinite(Number(rating)) ? Number(rating) : 0;
+  if (value >= 2.0) return 'INSANE';
+  if (value >= 1.6) return 'MONSTER';
+  if (value >= 1.3) return 'ELITE';
+  if (value >= 1.1) return 'GOOD';
+  if (value >= 1.0) return 'AVERAGE';
+  if (value >= 0.8) return 'BELOW_AVERAGE';
+  if (value >= 0.5) return 'WEAK';
+  return 'BAD';
+}
+
 // ─── Persistent data ─────────────────────────────────────────────────────────
 
 let statsData = {
@@ -562,6 +574,8 @@ function getGlobalPlayerRatings(playersDb) {
       const kpr  = parseFloat((g.kills  / r).toFixed(3));
       const dpr  = parseFloat((g.deaths / r).toFixed(3));
       const kast = parseFloat(((g.kastRounds / r) * 100).toFixed(1));
+      const galaxyRating = calcGalaxyRating(g);
+      const plusMinus = g.kills - g.deaths;
       return {
         steamId: g.steamId,
         name:   db?.name  || g.name  || g.steamId,
@@ -580,11 +594,22 @@ function getGlobalPlayerRatings(playersDb) {
         bombDefuses: g.bombDefuses || 0,
         adr, kpr, dpr, kast,
         kd: g.deaths > 0 ? parseFloat((g.kills / g.deaths).toFixed(2)) : g.kills,
+        plusMinus,
         hsRate: g.kills > 0 ? parseFloat(((g.headshots / g.kills) * 100).toFixed(1)) : 0,
-        galaxyRating: calcGalaxyRating(g),
+        galaxyRating,
+        galaxyRatingLabel: 'Galaxy Rating',
+        galaxyRatingTier: getGalaxyRatingTier(galaxyRating),
+        rating: galaxyRating,
+        customRating: galaxyRating,
       };
     })
-    .sort((a, b) => b.galaxyRating - a.galaxyRating);
+    .sort((a, b) => {
+      if (b.galaxyRating !== a.galaxyRating) return b.galaxyRating - a.galaxyRating;
+      if (b.kills !== a.kills) return b.kills - a.kills;
+      if (b.adr !== a.adr) return b.adr - a.adr;
+      if (b.plusMinus !== a.plusMinus) return b.plusMinus - a.plusMinus;
+      return a.deaths - b.deaths;
+    });
 }
 
 function getGlobalTeamRatings(teamsDb) {
