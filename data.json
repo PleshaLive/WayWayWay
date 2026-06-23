@@ -3,7 +3,7 @@
     {
       "id": "1741167069740",
       "name": "9iNE",
-      "logo": "/logos/9ine.png",
+      "logo": "/logos/9INE.png",
       "score": 0,
       "shortName": "9INE"
     },
@@ -31,7 +31,7 @@
     {
       "id": "1741686771770",
       "name": "GUN5",
-      "logo": "/logos/gun5.png",
+      "logo": "/logos/GUN5.png",
       "score": 0,
       "shortName": "GUN5"
     },
@@ -52,7 +52,7 @@
     {
       "id": "1741686877630",
       "name": "Alliance",
-      "logo": "/logos/alliance.png",
+      "logo": "/logos/Alliance.png",
       "score": 0,
       "shortName": "Alliance"
     },
@@ -66,7 +66,7 @@
     {
       "id": "1741686907133",
       "name": "Monte",
-      "logo": "/logos/monte.png",
+      "logo": "/logos/Monte.png",
       "score": 0,
       "shortName": "Monte"
     },
@@ -143,7 +143,7 @@
     {
       "id": "1742992319651",
       "name": "Nexus",
-      "logo": "/logos/nexus.png",
+      "logo": "/logos/Nexus.png",
       "score": 0,
       "shortName": "Nexus"
     },
@@ -157,14 +157,14 @@
     {
       "id": "1743020192913",
       "name": "Partizan",
-      "logo": "/logos/partizan.png",
+      "logo": "/logos/Partizan.png",
       "score": 0,
       "shortName": "Partizan"
     },
     {
       "id": "1743065211372",
       "name": "ECLOT",
-      "logo": "/logos/eclot.png",
+      "logo": "/logos/Eclot.png",
       "score": 0,
       "shortName": "ECLOT"
     },
@@ -185,7 +185,7 @@
     {
       "id": "1744209022008",
       "name": "CYBERSHOKE",
-      "logo": "/logos/cybershoke.png",
+      "logo": "/logos/CYBERSHOKE.png",
       "score": 0,
       "shortName": "CYBERSHOKE"
     },
@@ -206,14 +206,14 @@
     {
       "id": "1744211594870",
       "name": "SINNERS",
-      "logo": "/logos/sinners.png",
+      "logo": "/logos/SINNERS.png",
       "score": 0,
       "shortName": "SINNERS"
     },
     {
       "id": "1744295990190",
       "name": "Novaq",
-      "logo": "/logos/novaq.png",
+      "logo": "/logos/Novaq.png",
       "score": 0,
       "shortName": "Novaq"
     },
@@ -227,14 +227,14 @@
     {
       "id": "1744296205095",
       "name": "ENCE",
-      "logo": "/logos/ence.png",
+      "logo": "/logos/ENCE.png",
       "score": 0,
       "shortName": "ENCE"
     },
     {
       "id": "1744296521251",
       "name": "Sangal",
-      "logo": "/logos/sangal.png",
+      "logo": "/logos/Sangal.png",
       "score": 0,
       "shortName": "Sangal"
     },
@@ -437,7 +437,7 @@
     {
       "id": "1782170446612_37",
       "name": "PARIVISION",
-      "logo": "/logos/parivision.png",
+      "logo": "/logos/PARIVISION.png",
       "score": 0,
       "shortName": "PARIVISION"
     },
@@ -676,7 +676,7 @@
       "id": "1741744623283",
       "name": "ScrunK",
       "steamId": "76561197974106188",
-      "photo": "/players/scrunk.png",
+      "photo": "/players/Scrunk.png",
       "teamId": "1741744617807",
       "match_stats": {},
       "nickname": "ScrunK"
@@ -711,7 +711,7 @@
       "id": "1741745651695",
       "name": "soulfly",
       "steamId": "76561198327068178",
-      "photo": "/players/soulfly.png",
+      "photo": "/players/Soulfly.png",
       "teamId": "1741744617807",
       "match_stats": {},
       "nickname": "soulfly"
@@ -736,7 +736,7 @@
       "id": "1741816907471",
       "name": "REDSTAR",
       "steamId": "76561198048720735",
-      "photo": "/players/redstar.png",
+      "photo": "/players/REDSTAR.png",
       "teamId": "1757098306814",
       "match_stats": {},
       "nickname": "REDSTAR"
@@ -878,7 +878,7 @@
       "id": "1741843441060",
       "name": "Marix",
       "steamId": "76561198176422667",
-      "photo": "/players/marix.png",
+      "photo": "/players/Marix.png",
       "teamId": "1741843023650",
       "match_stats": {},
       "nickname": "Marix"
@@ -931,7 +931,7 @@
       "id": "1741901240055",
       "name": "z1Nny",
       "steamId": "76561198237043662",
-      "photo": "/players/z1nny.png",
+      "photo": "/players/z1Nny.png",
       "teamId": "1782170446618_51",
       "match_stats": {},
       "nickname": "z1Nny"
@@ -966,7 +966,7 @@
       "id": "1741918277393",
       "name": "upE",
       "steamId": "76561198045056482",
-      "photo": "/players/upe.png",
+      "photo": "/players/upE.png",
       "teamId": "1741686877630",
       "match_stats": {},
       "nickname": "upE"
@@ -984,7 +984,7 @@
       "id": "1741918477880",
       "name": "Lucky",
       "steamId": "76561198110563159",
-      "photo": "/players/lucky.png",
+      "photo": "/players/Lucky.png",
       "teamId": "1741686867446",
       "match_stats": {},
       "nickname": "Lucky"
@@ -1002,7 +1002,7 @@
       "id": "1741918501084",
       "name": "Cabbi",
       "steamId": "76561198190930470",
-      "photo": "/players/cabbi.png",
+      "photo": "/players/Cabbi.png",
       "teamId": "1741686867446",
       "match_stats": {},
       "nickname": "Cabbi"
@@ -1011,7 +1011,7 @@
       "id": "1741918525690",
       "name": "Zyphon",
       "steamId": "76561198158377244",
-      "photo": "/players/zyphon.png",
+      "photo": "/players/Zyphon.png",
       "teamId": "1741686867446",
       "match_stats": {},
       "nickname": "Zyphon"
@@ -1028,7 +1028,7 @@
       "id": "1742080412697",
       "name": "xiELO",
       "steamId": "76561198141272052",
-      "photo": "/players/xielo.png",
+      "photo": "/players/xiELO.png",
       "teamId": "1782170446612_37",
       "match_stats": {},
       "nickname": "xiELO"
@@ -1087,7 +1087,7 @@
       "id": "1742061263732",
       "name": "Norwi",
       "steamId": "76561198154904607",
-      "photo": "/players/norwi.png",
+      "photo": "/players/Norwi.png",
       "teamId": "1744296521251",
       "match_stats": {},
       "nickname": "Norwi"
@@ -1105,7 +1105,7 @@
       "id": "1742061295621",
       "name": "KENSi",
       "steamId": "76561198400646282",
-      "photo": "/players/kensi.png",
+      "photo": "/players/KENSi.png",
       "teamId": "1782170446600_8",
       "match_stats": {},
       "nickname": "KENSi"
@@ -1114,7 +1114,7 @@
       "id": "1742061384470",
       "name": "aVN",
       "steamId": "76561198191567453",
-      "photo": "/players/avn.png",
+      "photo": "/players/AVN.png",
       "teamId": "1741686922092",
       "match_stats": {},
       "nickname": "aVN"
@@ -1123,7 +1123,7 @@
       "id": "1742061403453",
       "name": "Cjoffo",
       "steamId": "76561198283118254",
-      "photo": "/players/cjoffo.png",
+      "photo": "/players/Cjoffo.png",
       "teamId": "1741686922092",
       "match_stats": {},
       "nickname": "Cjoffo"
@@ -1132,7 +1132,7 @@
       "id": "1742061425575",
       "name": "nEMANHA",
       "steamId": "76561197982341849",
-      "photo": "/players/nemanha.png",
+      "photo": "/players/nEMANHA.png",
       "teamId": "1741686922092",
       "match_stats": {},
       "nickname": "nEMANHA"
@@ -1308,7 +1308,7 @@
       "id": "1742927878228",
       "name": "Topa",
       "steamId": "76561198134742883",
-      "photo": "/players/topa.png",
+      "photo": "/players/Topa.png",
       "teamId": "1742925193043",
       "match_stats": {},
       "nickname": "Topa"
@@ -1334,7 +1334,7 @@
       "id": "1742927935361",
       "name": "Kvem",
       "steamId": "76561198845436666",
-      "photo": "/players/kvem.png",
+      "photo": "/players/Kvem.png",
       "teamId": "1742925193043",
       "match_stats": {},
       "nickname": "Kvem"
@@ -1399,7 +1399,7 @@
       "id": "1742994835952",
       "name": "BTN",
       "steamId": "76561197981355847",
-      "photo": "/players/btn.png",
+      "photo": "/players/BTN.png",
       "teamId": "1742992319651",
       "match_stats": {},
       "nickname": "BTN"
@@ -1501,7 +1501,7 @@
       "id": "1743026037928",
       "name": "VLDN",
       "steamId": "76561198099198308",
-      "photo": "/players/vldn.png",
+      "photo": "/players/VLDN.png",
       "teamId": "1743020192913",
       "match_stats": {},
       "nickname": "VLDN"
@@ -1510,7 +1510,7 @@
       "id": "1743026054755",
       "name": "Dragon",
       "steamId": "76561198120215734",
-      "photo": "/players/dragon.png",
+      "photo": "/players/Dragon.png",
       "teamId": "1743020192913",
       "match_stats": {},
       "nickname": "Dragon"
@@ -1519,7 +1519,7 @@
       "id": "1743026068613",
       "name": "Kind0",
       "steamId": "76561198062283345",
-      "photo": "/players/kind0.png",
+      "photo": "/players/Kind0.png",
       "teamId": "1743020192913",
       "match_stats": {},
       "nickname": "Kind0"
@@ -1569,7 +1569,7 @@
       "id": "1743099822197",
       "name": "M1key",
       "steamId": "76561198182168605",
-      "photo": "/players/m1key.png",
+      "photo": "/players/M1key.png",
       "teamId": "1743065211372",
       "match_stats": {},
       "nickname": "M1key"
@@ -1587,7 +1587,7 @@
       "id": "1743099854178",
       "name": "Dytor",
       "steamId": "76561198201554338",
-      "photo": "/players/dytor.png",
+      "photo": "/players/Dytor.png",
       "teamId": "1743065211372",
       "match_stats": {},
       "nickname": "Dytor"

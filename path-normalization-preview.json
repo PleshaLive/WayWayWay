@@ -1,0 +1,186 @@
+{
+  "teams": [
+    {
+      "name": "9iNE",
+      "old": "/logos/9ine.png",
+      "new": "/logos/9INE.png"
+    },
+    {
+      "name": "GUN5",
+      "old": "/logos/gun5.png",
+      "new": "/logos/GUN5.png"
+    },
+    {
+      "name": "Alliance",
+      "old": "/logos/alliance.png",
+      "new": "/logos/Alliance.png"
+    },
+    {
+      "name": "Monte",
+      "old": "/logos/monte.png",
+      "new": "/logos/Monte.png"
+    },
+    {
+      "name": "Nexus",
+      "old": "/logos/nexus.png",
+      "new": "/logos/Nexus.png"
+    },
+    {
+      "name": "Partizan",
+      "old": "/logos/partizan.png",
+      "new": "/logos/Partizan.png"
+    },
+    {
+      "name": "ECLOT",
+      "old": "/logos/eclot.png",
+      "new": "/logos/Eclot.png"
+    },
+    {
+      "name": "CYBERSHOKE",
+      "old": "/logos/cybershoke.png",
+      "new": "/logos/CYBERSHOKE.png"
+    },
+    {
+      "name": "SINNERS",
+      "old": "/logos/sinners.png",
+      "new": "/logos/SINNERS.png"
+    },
+    {
+      "name": "Novaq",
+      "old": "/logos/novaq.png",
+      "new": "/logos/Novaq.png"
+    },
+    {
+      "name": "ENCE",
+      "old": "/logos/ence.png",
+      "new": "/logos/ENCE.png"
+    },
+    {
+      "name": "Sangal",
+      "old": "/logos/sangal.png",
+      "new": "/logos/Sangal.png"
+    },
+    {
+      "name": "PARIVISION",
+      "old": "/logos/parivision.png",
+      "new": "/logos/PARIVISION.png"
+    }
+  ],
+  "players": [
+    {
+      "name": "ScrunK",
+      "old": "/players/scrunk.png",
+      "new": "/players/Scrunk.png"
+    },
+    {
+      "name": "soulfly",
+      "old": "/players/soulfly.png",
+      "new": "/players/Soulfly.png"
+    },
+    {
+      "name": "REDSTAR",
+      "old": "/players/redstar.png",
+      "new": "/players/REDSTAR.png"
+    },
+    {
+      "name": "Marix",
+      "old": "/players/marix.png",
+      "new": "/players/Marix.png"
+    },
+    {
+      "name": "z1Nny",
+      "old": "/players/z1nny.png",
+      "new": "/players/z1Nny.png"
+    },
+    {
+      "name": "upE",
+      "old": "/players/upe.png",
+      "new": "/players/upE.png"
+    },
+    {
+      "name": "Lucky",
+      "old": "/players/lucky.png",
+      "new": "/players/Lucky.png"
+    },
+    {
+      "name": "Cabbi",
+      "old": "/players/cabbi.png",
+      "new": "/players/Cabbi.png"
+    },
+    {
+      "name": "Zyphon",
+      "old": "/players/zyphon.png",
+      "new": "/players/Zyphon.png"
+    },
+    {
+      "name": "xiELO",
+      "old": "/players/xielo.png",
+      "new": "/players/xiELO.png"
+    },
+    {
+      "name": "Norwi",
+      "old": "/players/norwi.png",
+      "new": "/players/Norwi.png"
+    },
+    {
+      "name": "KENSi",
+      "old": "/players/kensi.png",
+      "new": "/players/KENSi.png"
+    },
+    {
+      "name": "aVN",
+      "old": "/players/avn.png",
+      "new": "/players/AVN.png"
+    },
+    {
+      "name": "Cjoffo",
+      "old": "/players/cjoffo.png",
+      "new": "/players/Cjoffo.png"
+    },
+    {
+      "name": "nEMANHA",
+      "old": "/players/nemanha.png",
+      "new": "/players/nEMANHA.png"
+    },
+    {
+      "name": "Topa",
+      "old": "/players/topa.png",
+      "new": "/players/Topa.png"
+    },
+    {
+      "name": "Kvem",
+      "old": "/players/kvem.png",
+      "new": "/players/Kvem.png"
+    },
+    {
+      "name": "BTN",
+      "old": "/players/btn.png",
+      "new": "/players/BTN.png"
+    },
+    {
+      "name": "VLDN",
+      "old": "/players/vldn.png",
+      "new": "/players/VLDN.png"
+    },
+    {
+      "name": "Dragon",
+      "old": "/players/dragon.png",
+      "new": "/players/Dragon.png"
+    },
+    {
+      "name": "Kind0",
+      "old": "/players/kind0.png",
+      "new": "/players/Kind0.png"
+    },
+    {
+      "name": "M1key",
+      "old": "/players/m1key.png",
+      "new": "/players/M1key.png"
+    },
+    {
+      "name": "Dytor",
+      "old": "/players/dytor.png",
+      "new": "/players/Dytor.png"
+    }
+  ]
+}
