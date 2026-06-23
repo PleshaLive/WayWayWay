@@ -1801,12 +1801,8 @@
           $('#importResult')
             .removeClass('error')
             .css({ background: 'rgba(34,197,94,0.1)', border: '1px solid #22c55e', color: '#22c55e' })
-            .html('<i class="fas fa-check-circle"></i> ' + msg)
+            .html('<i class="fas fa-check-circle"></i> ' + msg + '<br><small style="opacity:0.8">Закройте окно и обновите страницу.</small>')
             .show();
-          setTimeout(function() {
-            hideImportModal();
-            location.reload();
-          }, 1800);
         },
         error: function(xhr) {
           const err = xhr.responseJSON ? xhr.responseJSON.error : xhr.statusText;
