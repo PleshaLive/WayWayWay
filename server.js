@@ -128,6 +128,10 @@ function createPlaceholderPlayer() {
     steamId: '',
     nickname: '',
     name: '',
+    firstName: null,
+    lastName: null,
+    fullName: '',
+    'First Name Last Name': '',
     photo: '',
     teamId: null,
     teamName: '',
@@ -383,6 +387,10 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.steamId = source.steamId != null ? String(source.steamId) : '';
   result.nickname = source.nickname != null ? String(source.nickname) : '';
   result.name = source.name != null ? String(source.name) : '';
+  result.firstName = source.firstName != null ? String(source.firstName) : null;
+  result.lastName = source.lastName != null ? String(source.lastName) : null;
+  result.fullName = source.fullName != null ? String(source.fullName) : (result.firstName && result.lastName ? `${result.firstName} ${result.lastName}` : result.firstName || result.lastName || result.nickname || result.name || '');
+  result['First Name Last Name'] = source['First Name Last Name'] != null ? String(source['First Name Last Name']) : result.fullName;
   result.photo = source.photo != null ? String(source.photo) : '';
   result.teamId = source.teamId ?? null;
   result.teamName = source.teamName != null ? String(source.teamName) : '';
@@ -901,12 +909,20 @@ function buildScoreboardOverallPlayer({
   const playerTeamId = sourcePlayer?.teamId ?? regPlayer?.teamId ?? teamProfile?.id ?? null;
   const playerTeamName = sourcePlayer?.teamName || teamProfile?.name || '';
   const playerTeamLogo = sourcePlayer?.teamLogo || teamProfile?.logo || '';
+  const profileSource = regPlayer || sourcePlayer;
+  const firstName = getPlayerFirstName(profileSource);
+  const lastName = getPlayerLastName(profileSource);
+  const fullName = buildPlayerFullName(profileSource);
 
   return normalizePlayerStatsShape({
     id: sourcePlayer?.id || regPlayer?.id || `temp_${steamId}`,
     steamId: steamId || sourcePlayer?.steamId || regPlayer?.steamId || '',
     nickname: sourcePlayer?.nickname || regPlayer?.nickname || regPlayer?.name || sourcePlayer?.name || 'Unknown',
     name: sourcePlayer?.name || regPlayer?.name || sourcePlayer?.nickname || 'Unknown',
+    firstName,
+    lastName,
+    fullName,
+    'First Name Last Name': fullName,
     photo: sourcePlayer?.photo || graphicsUtils.resolvePlayerPhoto(regPlayer || sourcePlayer, baseUrl, ''),
     teamId: playerTeamId,
     teamName: playerTeamName,
@@ -1126,6 +1142,10 @@ function toScoreboardTableRow(player) {
   return {
     steamId: source.steamId || '',
     nickname: source.nickname || source.name || '',
+    firstName: source.firstName ?? null,
+    lastName: source.lastName ?? null,
+    fullName: source.fullName || source['First Name Last Name'] || '',
+    'First Name Last Name': source['First Name Last Name'] || source.fullName || '',
     teamName: source.teamName || '',
     side: source.side || '',
     kills: toNumber(source.kills, 0),
