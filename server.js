@@ -207,11 +207,18 @@ function createPlaceholderPlayer() {
     },
     awpKills: null,
     awpKpr: null,
+    weapons_awpKills: null,
+    weapons_awpKpr: null,
     rifleKills: null,
+    weapons_rifleKills: null,
     knifeKills: null,
+    weapons_knifeKills: null,
     zeusKills: null,
+    weapons_zeusKills: null,
     pistolKills: null,
+    weapons_pistolKills: null,
     smgKills: null,
+    weapons_smgKills: null,
     clutches: {
       attempts: null,
       wins: null,
@@ -221,6 +228,14 @@ function createPlaceholderPlayer() {
       oneVsFour: null,
       oneVsFive: null
     },
+    clutches_attempts: null,
+    clutches_wins: null,
+    clutches_losses: null,
+    clutches_oneVsOne: null,
+    clutches_oneVsTwo: null,
+    clutches_oneVsThree: null,
+    clutches_oneVsFour: null,
+    clutches_oneVsFive: null,
     utility: {
       flashesThrown: null,
       enemiesFlashed: null,
@@ -232,6 +247,13 @@ function createPlaceholderPlayer() {
       utilityDamage: null,
       available: false
     },
+    utility_flashAssists: null,
+    utility_flashesThrown: null,
+    utility_enemiesFlashed: null,
+    utility_smokesThrown: null,
+    utility_heThrown: null,
+    utility_molotovsThrown: null,
+    utility_utilityDamage: null,
     flashAssists: null,
     flashesThrown: null,
     enemiesFlashed: null,
@@ -377,20 +399,49 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.opening_kpr = source.opening_kpr ?? source.opening?.openingKpr ?? null;
   result.opening_entryDiff = source.opening_entryDiff ?? source.opening?.entryDiff ?? null;
   result.openingKpr = source.openingKpr ?? result.opening_kpr;
+
   result.awpKills = source.awpKills ?? source.weapons?.awpKills ?? null;
   result.awpKpr = source.awpKpr ?? source.weapons?.awpKpr ?? null;
+  result.weapons_awpKills = source.weapons_awpKills ?? result.awpKills;
+  result.weapons_awpKpr = source.weapons_awpKpr ?? result.awpKpr;
+
   result.rifleKills = source.rifleKills ?? source.weapons?.rifleKills ?? null;
+  result.weapons_rifleKills = source.weapons_rifleKills ?? result.rifleKills;
   result.knifeKills = source.knifeKills ?? source.weapons?.knifeKills ?? null;
+  result.weapons_knifeKills = source.weapons_knifeKills ?? result.knifeKills;
   result.zeusKills = source.zeusKills ?? source.weapons?.zeusKills ?? null;
+  result.weapons_zeusKills = source.weapons_zeusKills ?? result.zeusKills;
   result.pistolKills = source.pistolKills ?? source.weapons?.pistolKills ?? null;
+  result.weapons_pistolKills = source.weapons_pistolKills ?? result.pistolKills;
   result.smgKills = source.smgKills ?? source.weapons?.smgKills ?? null;
+  result.weapons_smgKills = source.weapons_smgKills ?? result.smgKills;
+
+  result.clutches_attempts = source.clutches_attempts ?? source.clutches?.attempts ?? null;
+  result.clutches_wins = source.clutches_wins ?? source.clutches?.wins ?? null;
+  result.clutches_losses = source.clutches_losses
+    ?? source.clutches?.losses
+    ?? (result.clutches_attempts != null && result.clutches_wins != null ? (result.clutches_attempts - result.clutches_wins) : null);
+  result.clutches_oneVsOne = source.clutches_oneVsOne ?? source.clutches?.oneVsOne ?? null;
+  result.clutches_oneVsTwo = source.clutches_oneVsTwo ?? source.clutches?.oneVsTwo ?? null;
+  result.clutches_oneVsThree = source.clutches_oneVsThree ?? source.clutches?.oneVsThree ?? null;
+  result.clutches_oneVsFour = source.clutches_oneVsFour ?? source.clutches?.oneVsFour ?? null;
+  result.clutches_oneVsFive = source.clutches_oneVsFive ?? source.clutches?.oneVsFive ?? null;
+
   result.flashAssists = source.flashAssists ?? source.utility?.flashAssists ?? null;
+  result.utility_flashAssists = source.utility_flashAssists ?? result.flashAssists;
   result.flashesThrown = source.flashesThrown ?? source.utility?.flashesThrown ?? null;
+  result.utility_flashesThrown = source.utility_flashesThrown ?? result.flashesThrown;
   result.enemiesFlashed = source.enemiesFlashed ?? source.utility?.enemiesFlashed ?? null;
+  result.utility_enemiesFlashed = source.utility_enemiesFlashed ?? result.enemiesFlashed;
   result.smokesThrown = source.smokesThrown ?? source.utility?.smokesThrown ?? null;
+  result.utility_smokesThrown = source.utility_smokesThrown ?? result.smokesThrown;
   result.heThrown = source.heThrown ?? source.utility?.heThrown ?? null;
+  result.utility_heThrown = source.utility_heThrown ?? result.heThrown;
   result.molotovsThrown = source.molotovsThrown ?? source.utility?.molotovsThrown ?? null;
+  result.utility_molotovsThrown = source.utility_molotovsThrown ?? result.molotovsThrown;
   result.utilityDamage = source.utilityDamage ?? source.utility?.utilityDamage ?? null;
+  result.utility_utilityDamage = source.utility_utilityDamage ?? result.utilityDamage;
+
   result.rating = toNumber(source.rating, 0);
   result.customRating = toNumber(source.customRating, 0);
   result.isPlaceholder = !!source.isPlaceholder || placeholder;
@@ -666,19 +717,23 @@ function buildScoreboardOverallPlayer({
     : toNumber(sourcePlayer?.match_stats?.fiveKillRounds ?? tracked.multiKills_5k ?? sourcePlayer?.multiKills?.fiveKCount ?? sourcePlayer?.multiKills?.fiveKillRounds, 0);
   const totalMultiKillRounds = twoKCount + threeKCount + fourKCount + fiveKCount;
 
-  const headshotsCountRaw = tracked.headshots != null && tracked.headshots > 0
-    ? tracked.headshots
+  const headshotsCountRaw = tracked.hasRoundKillHsField
+    ? toNumber(tracked.headshots, 0)
     : (sourcePlayer?.match_stats?.headshots ?? sourcePlayer?.headshots?.count ?? null);
-  const headshotsAvailable = Number.isFinite(Number(headshotsCountRaw));
+  const headshotsAvailable = tracked.hasRoundKillHsField || Number.isFinite(Number(sourcePlayer?.match_stats?.headshots ?? sourcePlayer?.headshots?.count));
   const headshotsCount = headshotsAvailable ? toNumber(headshotsCountRaw, 0) : null;
   const headshotRate = headshotsAvailable && kills > 0 ? parseFloat(((headshotsCount / kills) * 100).toFixed(2)) : null;
 
   // Opening kills: prefer tracked delta, then match_stats fallback
-  const firstKillsRaw  = tracked.firstKills  != null && tracked.firstKills  > 0 ? tracked.firstKills
+  const trackedFirstKills = Number.isFinite(Number(tracked.firstKills)) ? toNumber(tracked.firstKills, 0) : null;
+  const trackedFirstDeaths = Number.isFinite(Number(tracked.firstDeaths)) ? toNumber(tracked.firstDeaths, 0) : null;
+  const firstKillsRaw  = trackedFirstKills != null
+    ? trackedFirstKills
     : (sourcePlayer?.match_stats?.firstKills  ?? sourcePlayer?.opening?.firstKills  ?? null);
-  const firstDeathsRaw = tracked.firstDeaths != null && tracked.firstDeaths > 0 ? tracked.firstDeaths
+  const firstDeathsRaw = trackedFirstDeaths != null
+    ? trackedFirstDeaths
     : (sourcePlayer?.match_stats?.firstDeaths ?? sourcePlayer?.opening?.firstDeaths ?? null);
-  const openingAvailable = Number.isFinite(Number(firstKillsRaw));
+  const openingAvailable = trackedFirstKills != null || Number.isFinite(Number(sourcePlayer?.match_stats?.firstKills ?? sourcePlayer?.opening?.firstKills));
   const firstKills  = openingAvailable ? toNumber(firstKillsRaw,  0) : null;
   const firstDeaths = Number.isFinite(Number(firstDeathsRaw)) ? toNumber(firstDeathsRaw, 0) : null;
   const openingKpr  = openingAvailable && roundsPlayed > 0 ? parseFloat((firstKills  / roundsPlayed).toFixed(3)) : null;
@@ -695,18 +750,16 @@ function buildScoreboardOverallPlayer({
   };
   const utilityAvailable = Object.values(utilityRaw).some((value) => Number.isFinite(Number(value)));
 
+  const weaponsAvailable = !!tracked.weaponTrackingAvailable;
   const weaponsRaw = {
-    awpKills:    tracked.awpKills    > 0 ? tracked.awpKills    : (sourcePlayer?.match_stats?.awpKills    ?? sourcePlayer?.weapons?.awpKills    ?? null),
-    rifleKills:  tracked.rifleKills  > 0 ? tracked.rifleKills  : (sourcePlayer?.match_stats?.rifleKills  ?? sourcePlayer?.weapons?.rifleKills  ?? null),
-    knifeKills:  tracked.knifeKills  > 0 ? tracked.knifeKills  : (sourcePlayer?.match_stats?.knifeKills  ?? sourcePlayer?.weapons?.knifeKills  ?? null),
-    zeusKills:   tracked.zeusKills   > 0 ? tracked.zeusKills   : (sourcePlayer?.match_stats?.zeusKills   ?? sourcePlayer?.weapons?.zeusKills   ?? null),
-    pistolKills: tracked.pistolKills > 0 ? tracked.pistolKills : (sourcePlayer?.match_stats?.pistolKills ?? sourcePlayer?.weapons?.pistolKills ?? null),
-    smgKills:    tracked.smgKills    > 0 ? tracked.smgKills    : (sourcePlayer?.match_stats?.smgKills    ?? sourcePlayer?.weapons?.smgKills    ?? null),
+    awpKills:    weaponsAvailable ? toNumber(tracked.awpKills, 0)    : null,
+    rifleKills:  weaponsAvailable ? toNumber(tracked.rifleKills, 0)  : null,
+    knifeKills:  weaponsAvailable ? toNumber(tracked.knifeKills, 0)  : null,
+    zeusKills:   weaponsAvailable ? toNumber(tracked.zeusKills, 0)   : null,
+    pistolKills: weaponsAvailable ? toNumber(tracked.pistolKills, 0) : null,
+    smgKills:    weaponsAvailable ? toNumber(tracked.smgKills, 0)    : null
   };
-  // weaponsAvailable: true if any weapon kill tracked (even 0 is meaningful if tracker ran)
-  const weaponsAvailable = Object.values(tracked).some(v => typeof v === 'number') ||
-    Object.values(weaponsRaw).some((v) => Number.isFinite(Number(v)));
-  const awpKills = Number.isFinite(Number(weaponsRaw.awpKills)) ? toNumber(weaponsRaw.awpKills, 0) : null;
+  const awpKills = weaponsRaw.awpKills;
   const awpKpr   = awpKills != null && roundsPlayed > 0 ? parseFloat((awpKills / roundsPlayed).toFixed(3)) : null;
 
   const kastRaw = sourcePlayer?.match_stats?.kast ?? sourcePlayer?.kast ?? null;
@@ -810,6 +863,7 @@ function buildScoreboardOverallPlayer({
       zeusKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.zeusKills)) ? toNumber(weaponsRaw.zeusKills, 0) : null,
       pistolKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.pistolKills)) ? toNumber(weaponsRaw.pistolKills, 0) : null,
       smgKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.smgKills)) ? toNumber(weaponsRaw.smgKills, 0) : null,
+      unknownKills: weaponsAvailable ? toNumber(tracked.weaponUnknownKills, 0) : null,
       available: weaponsAvailable
     },
     awpKills,
@@ -1671,19 +1725,25 @@ function resetOverallRoundTracker() {
 let gsiKillTracker = {};
 let killTrackCurrentRound  = 0;
 let killTrackRoundOpeningDone = false;
+let killTrackRoundFirstDeathDone = false;
 
 function resetGsiKillTracker() {
   gsiKillTracker = {};
   killTrackCurrentRound = toNumber(getRoundCount(), 0);
   killTrackRoundOpeningDone = false;
+  killTrackRoundFirstDeathDone = false;
 }
 
 function ensureKillTrackerPlayer(steamId) {
   if (!gsiKillTracker[steamId]) {
     gsiKillTracker[steamId] = {
       prevMatchKills:  0,
+      prevMatchDeaths: 0,
       prevRoundKillHs: 0,
       prevRoundKills:  0,
+      hasRoundKillHsField: false,
+      weaponTrackingAvailable: false,
+      weaponUnknownKills: 0,
       matchStats: {
         firstKills: 0, firstDeaths: 0, headshots: 0,
         awpKills: 0, rifleKills: 0, pistolKills: 0,
@@ -1712,31 +1772,70 @@ function processGsiKillTracking() {
       tr.prevRoundKillHs = 0;
     }
     killTrackRoundOpeningDone = false;
+    killTrackRoundFirstDeathDone = false;
     killTrackCurrentRound     = currentRound;
   } else if (killTrackCurrentRound === 0) {
     killTrackCurrentRound = currentRound;
   }
 
+  const deltas = [];
+  for (const steamId in scoreboard.players || {}) {
+    const pd = scoreboard.players[steamId];
+    if (!pd || (pd.team !== 'CT' && pd.team !== 'T')) continue;
+    const tr = ensureKillTrackerPlayer(steamId);
+    const curKills = toNumber(pd?.match_stats?.kills, 0);
+    const curDeaths = toNumber(pd?.match_stats?.deaths, 0);
+    deltas.push({
+      steamId,
+      killDelta: Math.max(0, curKills - toNumber(tr.prevMatchKills, 0)),
+      deathDelta: Math.max(0, curDeaths - toNumber(tr.prevMatchDeaths, 0))
+    });
+  }
+
+  if (!killTrackRoundOpeningDone) {
+    const killerEntry = deltas
+      .filter((entry) => entry.killDelta > 0)
+      .sort((a, b) => b.killDelta - a.killDelta)[0] || null;
+    if (killerEntry) {
+      const killerTracker = ensureKillTrackerPlayer(killerEntry.steamId);
+      killerTracker.matchStats.firstKills += 1;
+      killTrackRoundOpeningDone = true;
+    }
+  }
+
+  if (!killTrackRoundFirstDeathDone) {
+    const victimEntry = deltas
+      .filter((entry) => entry.deathDelta > 0)
+      .sort((a, b) => b.deathDelta - a.deathDelta)[0] || null;
+    if (victimEntry) {
+      const victimTracker = ensureKillTrackerPlayer(victimEntry.steamId);
+      victimTracker.matchStats.firstDeaths += 1;
+      killTrackRoundFirstDeathDone = true;
+    }
+  }
+
   // Per-player intra-round delta tracking
-  for (const steamId in scoreboard.players) {
+  for (const steamId in scoreboard.players || {}) {
     const pd = scoreboard.players[steamId];
     if (!pd || (pd.team !== 'CT' && pd.team !== 'T')) continue;
     const tr = ensureKillTrackerPlayer(steamId);
 
     const curKills  = toNumber(pd?.match_stats?.kills, 0);
+    const curDeaths = toNumber(pd?.match_stats?.deaths, 0);
     const curHs     = toNumber(pd?.state?.round_killhs, 0);
     const curRndK   = toNumber(pd?.state?.round_kills,  0);
     const killDelta = curKills - tr.prevMatchKills;
 
+    if (pd?.state && Object.prototype.hasOwnProperty.call(pd.state, 'round_killhs')) {
+      tr.hasRoundKillHsField = true;
+    }
+
     if (killDelta > 0) {
-      // Opening kill â€” first kill delta this round
-      if (!killTrackRoundOpeningDone) {
-        tr.matchStats.firstKills += 1;
-        killTrackRoundOpeningDone = true;
-      }
-      // Weapon kill â€” categorize by active weapon
+      // Weapon kill â€” categorize by active weapon snapshot at kill delta moment
       const weapons = pd?.weapons;
+      let classifiedKills = 0;
       if (weapons && typeof weapons === 'object') {
+        tr.weaponTrackingAvailable = true;
         let activeName = null, activeType = null;
         for (const slot of Object.keys(weapons)) {
           const w = weapons[slot];
@@ -1747,15 +1846,35 @@ function processGsiKillTracking() {
           }
         }
         if (activeName) {
-          if (activeName === 'weapon_awp')                              tr.matchStats.awpKills    += killDelta;
-          else if (activeName.includes('taser')||activeName.includes('zeus')) tr.matchStats.zeusKills   += killDelta;
-          else if (activeType === 'rifle')                              tr.matchStats.rifleKills  += killDelta;
-          else if (activeType === 'pistol')                             tr.matchStats.pistolKills += killDelta;
-          else if (activeType === 'knife')                              tr.matchStats.knifeKills  += killDelta;
-          else if (activeType === 'submachine gun' || activeType === 'smg') tr.matchStats.smgKills += killDelta;
+          if (activeName === 'weapon_awp') {
+            tr.matchStats.awpKills += killDelta;
+            classifiedKills = killDelta;
+          } else if (activeName.includes('taser') || activeName.includes('zeus')) {
+            tr.matchStats.zeusKills += killDelta;
+            classifiedKills = killDelta;
+          } else if (activeType === 'rifle') {
+            tr.matchStats.rifleKills += killDelta;
+            classifiedKills = killDelta;
+          } else if (activeType === 'pistol') {
+            tr.matchStats.pistolKills += killDelta;
+            classifiedKills = killDelta;
+          } else if (activeType === 'knife') {
+            tr.matchStats.knifeKills += killDelta;
+            classifiedKills = killDelta;
+          } else if (activeType === 'submachine gun' || activeType === 'smg') {
+            tr.matchStats.smgKills += killDelta;
+            classifiedKills = killDelta;
+          }
         }
       }
+      if (killDelta - classifiedKills > 0) {
+        tr.weaponUnknownKills += (killDelta - classifiedKills);
+      }
       tr.prevMatchKills = curKills;
+    }
+
+    if (curDeaths >= 0) {
+      tr.prevMatchDeaths = curDeaths;
     }
 
     // Headshot delta: round_killhs increases within a round
@@ -1768,7 +1887,12 @@ function processGsiKillTracking() {
     if (curRndK > tr.prevRoundKills) tr.prevRoundKills = curRndK;
 
     // Write tracked stats to player object for buildScoreboardOverallPlayer
-    scoreboard.players[steamId]._tracked = { ...tr.matchStats };
+    scoreboard.players[steamId]._tracked = {
+      ...tr.matchStats,
+      hasRoundKillHsField: tr.hasRoundKillHsField,
+      weaponTrackingAvailable: tr.weaponTrackingAvailable,
+      weaponUnknownKills: tr.weaponUnknownKills
+    };
   }
 }
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
