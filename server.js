@@ -9,6 +9,7 @@ const WebSocket = require('ws');
 const cors = require('cors');
 const xlsx = require('xlsx');
 const ExcelJS = require('exceljs');
+const { imageSize } = require('image-size');
 const stats = require('./stats');
 const graphicsUtils = require('./lib/graphics-utils');
 const matchFinalization = require('./lib/match-finalization');
@@ -4194,6 +4195,16 @@ function normalizeExcelImageExtension(ext) {
   return null;
 }
 
+function getFittedImageSize(width, height, maxWidth, maxHeight) {
+  const safeWidth = Number(width) > 0 ? Number(width) : maxWidth;
+  const safeHeight = Number(height) > 0 ? Number(height) : maxHeight;
+  const ratio = Math.min(maxWidth / safeWidth, maxHeight / safeHeight, 1);
+  return {
+    width: Math.max(1, Math.round(safeWidth * ratio)),
+    height: Math.max(1, Math.round(safeHeight * ratio))
+  };
+}
+
 function extensionFromContentType(contentType) {
   const type = (contentType || '').toLowerCase();
   if (type.includes('image/jpeg') || type.includes('image/jpg')) return 'jpeg';
@@ -4287,12 +4298,11 @@ async function buildTeamsExportWorkbook(baseUrl) {
     { header: 'Team name', key: 'teamName', width: 30 },
     { header: 'Short name', key: 'shortName', width: 18 },
     { header: 'Country Code', key: 'countryCode', width: 16 },
-    { header: 'Logo', key: 'logo', width: 34 }
+    { header: 'Logo', key: 'logo', width: 18 }
   ];
 
   const headerRow = worksheet.getRow(1);
   headerRow.font = { bold: true };
-  headerRow.height = 24;
 
   for (const team of teams) {
     const shortName = team.shortName || team.tag || '';
@@ -4305,16 +4315,18 @@ async function buildTeamsExportWorkbook(baseUrl) {
       logo: logoValue
     });
 
-    row.height = 64;
+    row.height = 100;
 
     const imageInfo = await resolveImageForXlsx(logoValue, baseUrl);
     if (imageInfo) {
       const imageId = workbook.addImage({ buffer: imageInfo.buffer, extension: imageInfo.extension });
       const rowIndex = row.number;
+      const meta = imageSize(imageInfo.buffer);
+      const fitted = getFittedImageSize(meta?.width, meta?.height, 100, 100);
       worksheet.getCell(`D${rowIndex}`).value = '';
       worksheet.addImage(imageId, {
-        tl: { col: 3 + 0.1, row: (rowIndex - 1) + 0.1 },
-        ext: { width: 130, height: 52 }
+        tl: { col: 3, row: rowIndex - 1 },
+        ext: { width: fitted.width, height: fitted.height }
       });
     }
   }
@@ -4328,17 +4340,16 @@ async function buildPlayersExportWorkbook(baseUrl) {
 
   worksheet.columns = [
     { header: 'Username', key: 'username', width: 26 },
-    { header: 'SteamID', key: 'steamId', width: 28 },
+    { header: 'SteamID', key: 'steamId', width: 30 },
     { header: 'First Name', key: 'firstName', width: 18 },
     { header: 'Last Name', key: 'lastName', width: 18 },
     { header: 'Country Code', key: 'countryCode', width: 16 },
     { header: 'Team Name', key: 'teamName', width: 28 },
-    { header: 'Avatar', key: 'avatar', width: 34 }
+    { header: 'Avatar', key: 'avatar', width: 18 }
   ];
 
   const headerRow = worksheet.getRow(1);
   headerRow.font = { bold: true };
-  headerRow.height = 24;
 
   for (const player of players) {
     const teamName = teams.find((team) => team.id === player.teamId)?.name || player.teamName || '';
@@ -4354,16 +4365,18 @@ async function buildPlayersExportWorkbook(baseUrl) {
       avatar: avatarValue
     });
 
-    row.height = 72;
+    row.height = 100;
 
     const imageInfo = await resolveImageForXlsx(avatarValue, baseUrl);
     if (imageInfo) {
       const imageId = workbook.addImage({ buffer: imageInfo.buffer, extension: imageInfo.extension });
       const rowIndex = row.number;
+      const meta = imageSize(imageInfo.buffer);
+      const fitted = getFittedImageSize(meta?.width, meta?.height, 100, 100);
       worksheet.getCell(`G${rowIndex}`).value = '';
       worksheet.addImage(imageId, {
-        tl: { col: 6 + 0.1, row: (rowIndex - 1) + 0.1 },
-        ext: { width: 130, height: 60 }
+        tl: { col: 6, row: rowIndex - 1 },
+        ext: { width: fitted.width, height: fitted.height }
       });
     }
   }
