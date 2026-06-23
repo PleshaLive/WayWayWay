@@ -146,8 +146,12 @@ function createPlaceholderPlayer() {
     roundsPlayed: 0,
     survivedRounds: 0,
     survivalRate: 0,
+    survivedRoundsCount: 0,
+    survivalPercentage: 0,
     kast: null,
+    kastPercentage: null,
     impact: null,
+    scoreboardRank: null,
     multiKills: {
       oneKillRounds: 0,
       twoKillRounds: 0,
@@ -174,6 +178,11 @@ function createPlaceholderPlayer() {
       percentage: null,
       available: false
     },
+    headshots_count: null,
+    headshots_rate: null,
+    headshots_percentage: null,
+    hsCount: null,
+    hsPercentage: null,
     opening: {
       firstKills: null,
       firstDeaths: null,
@@ -181,6 +190,11 @@ function createPlaceholderPlayer() {
       entryDiff: null,
       available: false
     },
+    opening_firstKills: null,
+    opening_firstDeaths: null,
+    opening_kpr: null,
+    opening_entryDiff: null,
+    openingKpr: null,
     weapons: {
       awpKills: null,
       awpKpr: null,
@@ -191,6 +205,13 @@ function createPlaceholderPlayer() {
       smgKills: null,
       available: false
     },
+    awpKills: null,
+    awpKpr: null,
+    rifleKills: null,
+    knifeKills: null,
+    zeusKills: null,
+    pistolKills: null,
+    smgKills: null,
     clutches: {
       attempts: null,
       wins: null,
@@ -211,6 +232,13 @@ function createPlaceholderPlayer() {
       utilityDamage: null,
       available: false
     },
+    flashAssists: null,
+    flashesThrown: null,
+    enemiesFlashed: null,
+    smokesThrown: null,
+    heThrown: null,
+    molotovsThrown: null,
+    utilityDamage: null,
     economy: {
       money: null,
       equipmentValue: null,
@@ -326,8 +354,12 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.roundsPlayed = toNumber(source.roundsPlayed, 0);
   result.survivedRounds = toNumber(source.survivedRounds, 0);
   result.survivalRate = toNumber(source.survivalRate, 0);
+  result.survivedRoundsCount = toNumber(source.survivedRoundsCount, result.survivedRounds);
+  result.survivalPercentage = toNumber(source.survivalPercentage, result.survivalRate);
   result.kast = source.kast ?? null;
+  result.kastPercentage = source.kastPercentage ?? result.kast;
   result.impact = source.impact ?? null;
+  result.scoreboardRank = source.scoreboardRank != null ? toNumber(source.scoreboardRank, null) : null;
   result.multiKills_1k = toNumber(source.multiKills_1k, toNumber(source.multiKills?.oneKillRounds, 0));
   result.multiKills_2k = toNumber(source.multiKills_2k, toNumber(source.multiKills?.twoKCount ?? source.multiKills?.twoKillRounds, 0));
   result.multiKills_3k = toNumber(source.multiKills_3k, toNumber(source.multiKills?.threeKCount ?? source.multiKills?.threeKillRounds, 0));
@@ -335,6 +367,30 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.multiKills_5k = toNumber(source.multiKills_5k, toNumber(source.multiKills?.fiveKCount ?? source.multiKills?.fiveKillRounds, 0));
   result.multiKills_aces = toNumber(source.multiKills_aces, toNumber(source.multiKills?.aces, 0));
   result.multiKills_total = toNumber(source.multiKills_total, toNumber(source.multiKills?.totalMultiKillRounds, 0));
+  result.headshots_count = source.headshots_count ?? source.headshots?.count ?? null;
+  result.headshots_rate = source.headshots_rate ?? source.headshots?.rate ?? null;
+  result.headshots_percentage = source.headshots_percentage ?? source.headshots?.percentage ?? null;
+  result.hsCount = source.hsCount ?? result.headshots_count;
+  result.hsPercentage = source.hsPercentage ?? result.headshots_percentage;
+  result.opening_firstKills = source.opening_firstKills ?? source.opening?.firstKills ?? null;
+  result.opening_firstDeaths = source.opening_firstDeaths ?? source.opening?.firstDeaths ?? null;
+  result.opening_kpr = source.opening_kpr ?? source.opening?.openingKpr ?? null;
+  result.opening_entryDiff = source.opening_entryDiff ?? source.opening?.entryDiff ?? null;
+  result.openingKpr = source.openingKpr ?? result.opening_kpr;
+  result.awpKills = source.awpKills ?? source.weapons?.awpKills ?? null;
+  result.awpKpr = source.awpKpr ?? source.weapons?.awpKpr ?? null;
+  result.rifleKills = source.rifleKills ?? source.weapons?.rifleKills ?? null;
+  result.knifeKills = source.knifeKills ?? source.weapons?.knifeKills ?? null;
+  result.zeusKills = source.zeusKills ?? source.weapons?.zeusKills ?? null;
+  result.pistolKills = source.pistolKills ?? source.weapons?.pistolKills ?? null;
+  result.smgKills = source.smgKills ?? source.weapons?.smgKills ?? null;
+  result.flashAssists = source.flashAssists ?? source.utility?.flashAssists ?? null;
+  result.flashesThrown = source.flashesThrown ?? source.utility?.flashesThrown ?? null;
+  result.enemiesFlashed = source.enemiesFlashed ?? source.utility?.enemiesFlashed ?? null;
+  result.smokesThrown = source.smokesThrown ?? source.utility?.smokesThrown ?? null;
+  result.heThrown = source.heThrown ?? source.utility?.heThrown ?? null;
+  result.molotovsThrown = source.molotovsThrown ?? source.utility?.molotovsThrown ?? null;
+  result.utilityDamage = source.utilityDamage ?? source.utility?.utilityDamage ?? null;
   result.rating = toNumber(source.rating, 0);
   result.customRating = toNumber(source.customRating, 0);
   result.isPlaceholder = !!source.isPlaceholder || placeholder;
@@ -578,9 +634,11 @@ function buildScoreboardOverallPlayer({
   const assists = toNumber(sourcePlayer?.assists ?? sourcePlayer?.match_stats?.assists, 0);
   const damage = toNumber(sourcePlayer?.damage ?? sourcePlayer?.accumulatedDmg, 0);
   const plusMinus = kills - deaths;
+  const kd = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
   const adr = roundsPlayed > 0 ? parseFloat((damage / roundsPlayed).toFixed(2)) : 0;
   const kpr = roundsPlayed > 0 ? parseFloat((kills / roundsPlayed).toFixed(3)) : 0;
   const apr = roundsPlayed > 0 ? parseFloat((assists / roundsPlayed).toFixed(3)) : 0;
+  const damagePerKill = kills > 0 ? parseFloat((damage / kills).toFixed(2)) : 0;
 
   const survivedCumulative = sourcePlayer?.match_stats?.survived_rounds ?? sourcePlayer?.match_stats?.survivedRounds;
   const survivedRounds = Number.isFinite(Number(survivedCumulative))
@@ -675,17 +733,22 @@ function buildScoreboardOverallPlayer({
     deaths,
     assists,
     plusMinus,
+    kd,
     damage,
     adr,
     kpr,
     apr,
+    damagePerKill,
     rating,
     customRating,
     impact,
     roundsPlayed,
     survivedRounds,
     survivalRate,
+    survivedRoundsCount: survivedRounds,
+    survivalPercentage: survivalRate,
     kast,
+    kastPercentage: kast,
     multiKills: {
       oneKillRounds,
       twoKillRounds: twoKCount,
@@ -712,6 +775,11 @@ function buildScoreboardOverallPlayer({
       percentage: headshotRate,
       available: headshotsAvailable
     },
+    headshots_count: headshotsCount,
+    headshots_rate: headshotRate,
+    headshots_percentage: headshotRate,
+    hsCount: headshotsCount,
+    hsPercentage: headshotRate,
     opening: {
       firstKills,
       firstDeaths,
@@ -719,6 +787,11 @@ function buildScoreboardOverallPlayer({
       entryDiff,
       available: openingAvailable
     },
+    opening_firstKills: firstKills,
+    opening_firstDeaths: firstDeaths,
+    opening_kpr: openingKpr,
+    opening_entryDiff: entryDiff,
+    openingKpr,
     weapons: {
       awpKills,
       awpKpr,
@@ -729,6 +802,13 @@ function buildScoreboardOverallPlayer({
       smgKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.smgKills)) ? toNumber(weaponsRaw.smgKills, 0) : null,
       available: weaponsAvailable
     },
+    awpKills,
+    awpKpr,
+    rifleKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.rifleKills)) ? toNumber(weaponsRaw.rifleKills, 0) : null,
+    knifeKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.knifeKills)) ? toNumber(weaponsRaw.knifeKills, 0) : null,
+    zeusKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.zeusKills)) ? toNumber(weaponsRaw.zeusKills, 0) : null,
+    pistolKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.pistolKills)) ? toNumber(weaponsRaw.pistolKills, 0) : null,
+    smgKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.smgKills)) ? toNumber(weaponsRaw.smgKills, 0) : null,
     utility: {
       flashAssists: utilityAvailable && Number.isFinite(Number(utilityRaw.flashAssists)) ? toNumber(utilityRaw.flashAssists, 0) : null,
       flashesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.flashesThrown)) ? toNumber(utilityRaw.flashesThrown, 0) : null,
@@ -739,6 +819,14 @@ function buildScoreboardOverallPlayer({
       utilityDamage: utilityAvailable && Number.isFinite(Number(utilityRaw.utilityDamage)) ? toNumber(utilityRaw.utilityDamage, 0) : null,
       available: utilityAvailable
     },
+    flashAssists: utilityAvailable && Number.isFinite(Number(utilityRaw.flashAssists)) ? toNumber(utilityRaw.flashAssists, 0) : null,
+    flashesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.flashesThrown)) ? toNumber(utilityRaw.flashesThrown, 0) : null,
+    enemiesFlashed: utilityAvailable && Number.isFinite(Number(utilityRaw.enemiesFlashed)) ? toNumber(utilityRaw.enemiesFlashed, 0) : null,
+    smokesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.smokesThrown)) ? toNumber(utilityRaw.smokesThrown, 0) : null,
+    heThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.heThrown)) ? toNumber(utilityRaw.heThrown, 0) : null,
+    molotovsThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.molotovsThrown)) ? toNumber(utilityRaw.molotovsThrown, 0) : null,
+    utilityDamage: utilityAvailable && Number.isFinite(Number(utilityRaw.utilityDamage)) ? toNumber(utilityRaw.utilityDamage, 0) : null,
+    scoreboardRank: null,
     roundStats: {
       killsByRound: roundStats?.killsByRound || [],
       damageByRound: roundStats?.damageByRound || [],
@@ -3180,8 +3268,24 @@ app.get('/api/graphics/scoreboard', (req, res) => {
     // Team slices for overlay bindings: always 5 slots, sorted best -> worst
     const rankedTeamAPlayers = sortPlayersBestToWorst(meaningfulPlayers.filter((p) => p.side === 'CT')).slice(0, 5);
     const rankedTeamBPlayers = sortPlayersBestToWorst(meaningfulPlayers.filter((p) => p.side === 'T')).slice(0, 5);
-    const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers, 5);
-    const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers, 5);
+    const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers, 5).map((player, index) => normalizePlayerStatsShape({ ...player, scoreboardRank: index + 1 }, { placeholder: !!player?.isPlaceholder }));
+    const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers, 5).map((player, index) => normalizePlayerStatsShape({ ...player, scoreboardRank: index + 1 }, { placeholder: !!player?.isPlaceholder }));
+
+    const rankByKey = new Map();
+    teamAPlayers.forEach((player) => {
+      const key = normalizeSteamId(player.steamId || player.id);
+      if (key) rankByKey.set(key, player.scoreboardRank);
+    });
+    teamBPlayers.forEach((player) => {
+      const key = normalizeSteamId(player.steamId || player.id);
+      if (key) rankByKey.set(key, player.scoreboardRank);
+    });
+
+    const rankedStablePlayers = stablePlayers.map((player) => {
+      const key = normalizeSteamId(player.steamId || player.id);
+      const teamRank = key ? rankByKey.get(key) : null;
+      return normalizePlayerStatsShape({ ...player, scoreboardRank: teamRank ?? player.scoreboardRank ?? null }, { placeholder: !!player?.isPlaceholder });
+    });
 
     // Prepare response
     const response = {
@@ -3211,7 +3315,7 @@ app.get('/api/graphics/scoreboard', (req, res) => {
         }
       },
 
-      players: stablePlayers,
+      players: rankedStablePlayers,
 
       teamAPlayers,
       teamBPlayers,
@@ -3373,11 +3477,63 @@ app.get('/api/graphics/team/:teamId', (req, res) => {
 app.get('/api/graphics/prematch', (req, res) => {
   try {
     const { teamA: teamAId, teamB: teamBId } = req.query;
+    const protocol = req.protocol || 'http';
+    const host = req.get('host') || `localhost:${port}`;
+    const requestBaseUrl = `${protocol}://${host}`;
+
+    const teamStats = readJsonSafe(STORAGE_FILES.teamStats, {});
+    const h2hData = readJsonSafe(STORAGE_FILES.headToHead, {});
+    const playerStatsData = readJsonSafe(STORAGE_FILES.playerStats, {});
+    const mapStatsData = readJsonSafe(STORAGE_FILES.mapStats, {});
+    const completedMatches = readJsonSafe(STORAGE_FILES.completedMatches, []);
+
+    if (!teamAId && !teamBId) {
+      const normalizedTeams = teams
+        .map((team) => graphicsUtils.normalizeTeamForGraphics(team, players, requestBaseUrl))
+        .filter((team) => team !== null);
+
+      const normalizedPlayers = players
+        .map((player) => {
+          const playerTeam = teams.find((team) => team.id === player.teamId) || null;
+          return graphicsUtils.normalizePlayerForGraphics(player, playerTeam, requestBaseUrl);
+        })
+        .filter((player) => player !== null);
+
+      const rosters = normalizedTeams.map((team) => ({
+        id: team.id,
+        name: team.name,
+        shortName: team.shortName,
+        logo: team.logo,
+        playersCount: team.playersCount,
+        players: team.players
+      }));
+
+      return res.json({
+        mode: 'prematch',
+        type: 'prematch_database',
+        updatedAt: new Date().toISOString(),
+        teams: normalizedTeams,
+        players: normalizedPlayers,
+        rosters,
+        teamStats,
+        playerStats: playerStatsData,
+        mapStats: mapStatsData,
+        headToHead: h2hData,
+        completedMatches: Array.isArray(completedMatches) ? completedMatches : [],
+        upcomingMatches: [],
+        availableTeams: normalizedTeams.map((team) => ({
+          id: team.id,
+          name: team.name,
+          shortName: team.shortName,
+          logo: team.logo
+        }))
+      });
+    }
 
     if (!teamAId || !teamBId) {
       return res.status(400).json({
         error: 'Missing required parameters',
-        message: 'Please provide teamA and teamB query parameters'
+        message: 'Provide both teamA and teamB for comparison mode, or no params for prematch database mode'
       });
     }
 
@@ -3387,10 +3543,6 @@ app.get('/api/graphics/prematch', (req, res) => {
     if (!teamA || !teamB) {
       return res.status(404).json({ error: 'One or both teams not found' });
     }
-
-    const teamStats = readJsonSafe(STORAGE_FILES.teamStats, {});
-    const h2hData = readJsonSafe(STORAGE_FILES.headToHead, {});
-    const playerStatsData = readJsonSafe(STORAGE_FILES.playerStats, {});
 
     // H2H key check both directions
     const h2hKey = `${teamAId}_vs_${teamBId}`;
@@ -3575,8 +3727,26 @@ app.get('/api/graphics/postmatch', (req, res) => {
       meaningfulPlayers.filter((player) => (player.side || '').toUpperCase() === 'T')
     );
 
-    const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers.length ? rankedTeamAPlayers : fallbackTeamA, 5);
-    const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers.length ? rankedTeamBPlayers : fallbackTeamB, 5);
+    const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers.length ? rankedTeamAPlayers : fallbackTeamA, 5)
+      .map((player, index) => normalizePlayerStatsShape({ ...player, scoreboardRank: index + 1 }, { placeholder: !!player?.isPlaceholder }));
+    const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers.length ? rankedTeamBPlayers : fallbackTeamB, 5)
+      .map((player, index) => normalizePlayerStatsShape({ ...player, scoreboardRank: index + 1 }, { placeholder: !!player?.isPlaceholder }));
+
+    const rankByKey = new Map();
+    teamAPlayers.forEach((player) => {
+      const key = normalizeSteamId(player.steamId || player.id);
+      if (key) rankByKey.set(key, player.scoreboardRank);
+    });
+    teamBPlayers.forEach((player) => {
+      const key = normalizeSteamId(player.steamId || player.id);
+      if (key) rankByKey.set(key, player.scoreboardRank);
+    });
+
+    const rankedPostPlayers = normalizedPlayers.map((player) => {
+      const key = normalizeSteamId(player.steamId || player.id);
+      const teamRank = key ? rankByKey.get(key) : null;
+      return normalizePlayerStatsShape({ ...player, scoreboardRank: teamRank ?? player.scoreboardRank ?? null }, { placeholder: !!player?.isPlaceholder });
+    });
 
     const topPlayers = buildOverallTopPlayers(meaningfulPlayers);
     const rankedForMvp = sortPlayersBestToWorst(meaningfulPlayers);
@@ -3584,7 +3754,7 @@ app.get('/api/graphics/postmatch', (req, res) => {
     res.json({
       ...postmatch,
       type: postmatch.type || 'overall_scoreboard',
-      players: normalizedPlayers,
+      players: rankedPostPlayers,
       teamAPlayers,
       teamBPlayers,
       mvp: rankedForMvp[0] || postmatch.mvp || null,
