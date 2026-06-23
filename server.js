@@ -139,6 +139,10 @@ function createPlaceholderPlayer() {
     plusMinus: 0,
     kd: 0,
     damage: 0,
+    damageTotal: 0,
+    damageCurrentRound: null,
+    damagePreviousRound: null,
+    damageByRound: [],
     adr: 0,
     kpr: 0,
     apr: 0,
@@ -219,6 +223,8 @@ function createPlaceholderPlayer() {
     weapons_pistolKills: null,
     smgKills: null,
     weapons_smgKills: null,
+    weaponUnknownKills: null,
+    weapons_weaponUnknownKills: null,
     clutches: {
       attempts: null,
       wins: null,
@@ -231,11 +237,27 @@ function createPlaceholderPlayer() {
     clutches_attempts: null,
     clutches_wins: null,
     clutches_losses: null,
+    clutches_1v1_attempts: null,
+    clutches_1v1_wins: null,
+    clutches_1v1_losses: null,
+    clutches_1v2_attempts: null,
+    clutches_1v2_wins: null,
+    clutches_1v2_losses: null,
+    clutches_1v3_attempts: null,
+    clutches_1v3_wins: null,
+    clutches_1v3_losses: null,
+    clutches_1v4_attempts: null,
+    clutches_1v4_wins: null,
+    clutches_1v4_losses: null,
+    clutches_1v5_attempts: null,
+    clutches_1v5_wins: null,
+    clutches_1v5_losses: null,
     clutches_oneVsOne: null,
     clutches_oneVsTwo: null,
     clutches_oneVsThree: null,
     clutches_oneVsFour: null,
     clutches_oneVsFive: null,
+    clutchWinRate: null,
     utility: {
       flashesThrown: null,
       enemiesFlashed: null,
@@ -280,6 +302,7 @@ function createPlaceholderPlayer() {
       opening: false,
       weapons: false,
       utility: false,
+      clutches: false,
       kast: false,
       impact: false
     },
@@ -369,6 +392,12 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.kd = toNumber(source.kd, 0);
   result.plusMinus = toNumber(source.plusMinus, 0);
   result.damage = toNumber(source.damage, 0);
+  result.damageTotal = toNumber(source.damageTotal ?? source.damage, 0);
+  result.damageCurrentRound = source.damageCurrentRound != null ? toNumber(source.damageCurrentRound, 0) : null;
+  result.damagePreviousRound = source.damagePreviousRound != null ? toNumber(source.damagePreviousRound, 0) : null;
+  result.damageByRound = Array.isArray(source.damageByRound)
+    ? source.damageByRound.map((value) => toNumber(value, 0))
+    : (Array.isArray(source.roundStats?.damageByRound) ? source.roundStats.damageByRound.map((value) => toNumber(value, 0)) : []);
   result.adr = toNumber(source.adr, 0);
   result.kpr = toNumber(source.kpr, 0);
   result.apr = toNumber(source.apr, 0);
@@ -415,17 +444,37 @@ function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
   result.weapons_pistolKills = source.weapons_pistolKills ?? result.pistolKills;
   result.smgKills = source.smgKills ?? source.weapons?.smgKills ?? null;
   result.weapons_smgKills = source.weapons_smgKills ?? result.smgKills;
+  result.weaponUnknownKills = source.weaponUnknownKills ?? source.weapons?.unknownKills ?? null;
+  result.weapons_weaponUnknownKills = source.weapons_weaponUnknownKills ?? result.weaponUnknownKills;
 
   result.clutches_attempts = source.clutches_attempts ?? source.clutches?.attempts ?? null;
   result.clutches_wins = source.clutches_wins ?? source.clutches?.wins ?? null;
   result.clutches_losses = source.clutches_losses
     ?? source.clutches?.losses
     ?? (result.clutches_attempts != null && result.clutches_wins != null ? (result.clutches_attempts - result.clutches_wins) : null);
+  result.clutches_1v1_attempts = source.clutches_1v1_attempts ?? source.clutches?.oneVsOne ?? null;
+  result.clutches_1v1_wins = source.clutches_1v1_wins ?? source.clutches?.oneVsOneWins ?? null;
+  result.clutches_1v1_losses = source.clutches_1v1_losses ?? source.clutches?.oneVsOneLosses ?? null;
+  result.clutches_1v2_attempts = source.clutches_1v2_attempts ?? source.clutches?.oneVsTwo ?? null;
+  result.clutches_1v2_wins = source.clutches_1v2_wins ?? source.clutches?.oneVsTwoWins ?? null;
+  result.clutches_1v2_losses = source.clutches_1v2_losses ?? source.clutches?.oneVsTwoLosses ?? null;
+  result.clutches_1v3_attempts = source.clutches_1v3_attempts ?? source.clutches?.oneVsThree ?? null;
+  result.clutches_1v3_wins = source.clutches_1v3_wins ?? source.clutches?.oneVsThreeWins ?? null;
+  result.clutches_1v3_losses = source.clutches_1v3_losses ?? source.clutches?.oneVsThreeLosses ?? null;
+  result.clutches_1v4_attempts = source.clutches_1v4_attempts ?? source.clutches?.oneVsFour ?? null;
+  result.clutches_1v4_wins = source.clutches_1v4_wins ?? source.clutches?.oneVsFourWins ?? null;
+  result.clutches_1v4_losses = source.clutches_1v4_losses ?? source.clutches?.oneVsFourLosses ?? null;
+  result.clutches_1v5_attempts = source.clutches_1v5_attempts ?? source.clutches?.oneVsFive ?? null;
+  result.clutches_1v5_wins = source.clutches_1v5_wins ?? source.clutches?.oneVsFiveWins ?? null;
+  result.clutches_1v5_losses = source.clutches_1v5_losses ?? source.clutches?.oneVsFiveLosses ?? null;
   result.clutches_oneVsOne = source.clutches_oneVsOne ?? source.clutches?.oneVsOne ?? null;
   result.clutches_oneVsTwo = source.clutches_oneVsTwo ?? source.clutches?.oneVsTwo ?? null;
   result.clutches_oneVsThree = source.clutches_oneVsThree ?? source.clutches?.oneVsThree ?? null;
   result.clutches_oneVsFour = source.clutches_oneVsFour ?? source.clutches?.oneVsFour ?? null;
   result.clutches_oneVsFive = source.clutches_oneVsFive ?? source.clutches?.oneVsFive ?? null;
+  result.clutchWinRate = source.clutchWinRate
+    ?? source.clutches?.winRate
+    ?? (result.clutches_attempts > 0 && result.clutches_wins != null ? parseFloat(((result.clutches_wins / result.clutches_attempts) * 100).toFixed(2)) : null);
 
   result.flashAssists = source.flashAssists ?? source.utility?.flashAssists ?? null;
   result.utility_flashAssists = source.utility_flashAssists ?? result.flashAssists;
@@ -677,18 +726,36 @@ function buildScoreboardOverallPlayer({
   teamProfile,
   side,
   roundsPlayed,
+  completedRounds,
   roundStats,
   baseUrl
 }) {
   const kills = toNumber(sourcePlayer?.kills ?? sourcePlayer?.match_stats?.kills, 0);
   const deaths = toNumber(sourcePlayer?.deaths ?? sourcePlayer?.match_stats?.deaths, 0);
   const assists = toNumber(sourcePlayer?.assists ?? sourcePlayer?.match_stats?.assists, 0);
-  const damage = toNumber(sourcePlayer?.damage ?? sourcePlayer?.accumulatedDmg, 0);
+  const tracked = sourcePlayer?._tracked || {};
+  const trackedDamageByRound = Array.isArray(tracked?.roundStats?.damageByRound) ? tracked.roundStats.damageByRound : null;
+  const fallbackDamageByRound = Array.isArray(roundStats?.damageByRound) ? roundStats.damageByRound : [];
+  const damageByRound = trackedDamageByRound || fallbackDamageByRound;
+  const trackedDamageTotal = Number.isFinite(Number(tracked.damageTotal ?? tracked.matchStats?.damageTotal))
+    ? toNumber(tracked.damageTotal ?? tracked.matchStats?.damageTotal, 0)
+    : null;
+  const fallbackDamageTotal = Number.isFinite(Number(sourcePlayer?.accumulatedDmg))
+    ? toNumber(sourcePlayer.accumulatedDmg, 0)
+    : damageByRound.reduce((sum, value) => sum + toNumber(value, 0), 0);
+  const damageTotal = trackedDamageTotal != null ? trackedDamageTotal : fallbackDamageTotal;
+  const damageCurrentRoundRaw = tracked.damageCurrentRound ?? sourcePlayer?.state?.round_totaldmg ?? null;
+  const damageCurrentRound = Number.isFinite(Number(damageCurrentRoundRaw)) ? toNumber(damageCurrentRoundRaw, 0) : null;
+  const damagePreviousRoundRaw = tracked.previousRoundDamage
+    ?? (Array.isArray(damageByRound) && damageByRound.length > 0 ? damageByRound[damageByRound.length - 1] : null);
+  const damagePreviousRound = Number.isFinite(Number(damagePreviousRoundRaw)) ? toNumber(damagePreviousRoundRaw, 0) : null;
+  const damage = damageTotal;
   const plusMinus = kills - deaths;
   const kd = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
-  const adr = roundsPlayed > 0 ? parseFloat((damage / roundsPlayed).toFixed(2)) : 0;
-  const kpr = roundsPlayed > 0 ? parseFloat((kills / roundsPlayed).toFixed(3)) : 0;
-  const apr = roundsPlayed > 0 ? parseFloat((assists / roundsPlayed).toFixed(3)) : 0;
+  const roundsForRates = completedRounds > 0 ? completedRounds : roundsPlayed;
+  const adr = roundsForRates > 0 ? parseFloat((damage / roundsForRates).toFixed(2)) : 0;
+  const kpr = roundsForRates > 0 ? parseFloat((kills / roundsForRates).toFixed(3)) : 0;
+  const apr = roundsForRates > 0 ? parseFloat((assists / roundsForRates).toFixed(3)) : 0;
   const damagePerKill = kills > 0 ? parseFloat((damage / kills).toFixed(2)) : 0;
 
   const survivedCumulative = sourcePlayer?.match_stats?.survived_rounds ?? sourcePlayer?.match_stats?.survivedRounds;
@@ -696,9 +763,6 @@ function buildScoreboardOverallPlayer({
     ? toNumber(survivedCumulative, 0)
     : (Array.isArray(roundStats?.survivedByRound) ? roundStats.survivedByRound.filter((value) => value === true).length : 0);
   const survivalRate = roundsPlayed > 0 ? parseFloat(((survivedRounds / roundsPlayed) * 100).toFixed(2)) : 0;
-
-  // _tracked is written by processGsiKillTracking() — live delta stats from GSI
-  const tracked = sourcePlayer?._tracked || {};
 
   const oneKillRounds = Array.isArray(roundStats?.killsByRound)
     ? roundStats.killsByRound.filter((value) => value === 1).length
@@ -736,19 +800,54 @@ function buildScoreboardOverallPlayer({
   const openingAvailable = trackedFirstKills != null || Number.isFinite(Number(sourcePlayer?.match_stats?.firstKills ?? sourcePlayer?.opening?.firstKills));
   const firstKills  = openingAvailable ? toNumber(firstKillsRaw,  0) : null;
   const firstDeaths = Number.isFinite(Number(firstDeathsRaw)) ? toNumber(firstDeathsRaw, 0) : null;
-  const openingKpr  = openingAvailable && roundsPlayed > 0 ? parseFloat((firstKills  / roundsPlayed).toFixed(3)) : null;
+  const openingKpr  = openingAvailable && roundsForRates > 0 ? parseFloat((firstKills  / roundsForRates).toFixed(3)) : null;
   const entryDiff   = openingAvailable && firstDeaths != null ? firstKills - firstDeaths : null;
 
-  const utilityRaw = {
-    flashAssists: sourcePlayer?.match_stats?.flashAssists ?? sourcePlayer?.utility?.flashAssists ?? null,
-    flashesThrown: sourcePlayer?.match_stats?.flashesThrown ?? sourcePlayer?.utility?.flashesThrown ?? null,
-    enemiesFlashed: sourcePlayer?.match_stats?.enemiesFlashed ?? sourcePlayer?.utility?.enemiesFlashed ?? null,
-    smokesThrown: sourcePlayer?.match_stats?.smokesThrown ?? sourcePlayer?.utility?.smokesThrown ?? null,
-    heThrown: sourcePlayer?.match_stats?.heThrown ?? sourcePlayer?.utility?.heThrown ?? null,
-    molotovsThrown: sourcePlayer?.match_stats?.molotovsThrown ?? sourcePlayer?.utility?.molotovsThrown ?? null,
-    utilityDamage: sourcePlayer?.match_stats?.utilityDamage ?? sourcePlayer?.utility?.utilityDamage ?? null
+  const utilityAvailable = false;
+
+  const clutchFromSource = sourcePlayer?.clutches || {};
+  const trackedClutchAttempts = Number.isFinite(Number(tracked.clutches_attempts)) ? toNumber(tracked.clutches_attempts, 0) : null;
+  const clutchesAttempts = trackedClutchAttempts != null
+    ? trackedClutchAttempts
+    : (Number.isFinite(Number(sourcePlayer?.clutches_attempts ?? clutchFromSource.attempts)) ? toNumber(sourcePlayer?.clutches_attempts ?? clutchFromSource.attempts, 0) : null);
+  const clutchesWins = Number.isFinite(Number(tracked.clutches_wins))
+    ? toNumber(tracked.clutches_wins, 0)
+    : (Number.isFinite(Number(sourcePlayer?.clutches_wins ?? clutchFromSource.wins)) ? toNumber(sourcePlayer?.clutches_wins ?? clutchFromSource.wins, 0) : null);
+  const clutchesLosses = Number.isFinite(Number(tracked.clutches_losses))
+    ? toNumber(tracked.clutches_losses, 0)
+    : (Number.isFinite(Number(sourcePlayer?.clutches_losses ?? clutchFromSource.losses))
+      ? toNumber(sourcePlayer?.clutches_losses ?? clutchFromSource.losses, 0)
+      : (clutchesAttempts != null && clutchesWins != null ? Math.max(0, clutchesAttempts - clutchesWins) : null));
+
+  const readClutchNumber = (...values) => {
+    for (const value of values) {
+      if (Number.isFinite(Number(value))) return toNumber(value, 0);
+    }
+    return null;
   };
-  const utilityAvailable = Object.values(utilityRaw).some((value) => Number.isFinite(Number(value)));
+
+  const clutches1v1Attempts = readClutchNumber(tracked.clutches_1v1_attempts, sourcePlayer?.clutches_1v1_attempts, clutchFromSource.oneVsOne);
+  const clutches1v2Attempts = readClutchNumber(tracked.clutches_1v2_attempts, sourcePlayer?.clutches_1v2_attempts, clutchFromSource.oneVsTwo);
+  const clutches1v3Attempts = readClutchNumber(tracked.clutches_1v3_attempts, sourcePlayer?.clutches_1v3_attempts, clutchFromSource.oneVsThree);
+  const clutches1v4Attempts = readClutchNumber(tracked.clutches_1v4_attempts, sourcePlayer?.clutches_1v4_attempts, clutchFromSource.oneVsFour);
+  const clutches1v5Attempts = readClutchNumber(tracked.clutches_1v5_attempts, sourcePlayer?.clutches_1v5_attempts, clutchFromSource.oneVsFive);
+
+  const clutches1v1Wins = readClutchNumber(tracked.clutches_1v1_wins, sourcePlayer?.clutches_1v1_wins, clutchFromSource.oneVsOneWins);
+  const clutches1v2Wins = readClutchNumber(tracked.clutches_1v2_wins, sourcePlayer?.clutches_1v2_wins, clutchFromSource.oneVsTwoWins);
+  const clutches1v3Wins = readClutchNumber(tracked.clutches_1v3_wins, sourcePlayer?.clutches_1v3_wins, clutchFromSource.oneVsThreeWins);
+  const clutches1v4Wins = readClutchNumber(tracked.clutches_1v4_wins, sourcePlayer?.clutches_1v4_wins, clutchFromSource.oneVsFourWins);
+  const clutches1v5Wins = readClutchNumber(tracked.clutches_1v5_wins, sourcePlayer?.clutches_1v5_wins, clutchFromSource.oneVsFiveWins);
+
+  const clutches1v1Losses = readClutchNumber(tracked.clutches_1v1_losses, sourcePlayer?.clutches_1v1_losses, clutchFromSource.oneVsOneLosses);
+  const clutches1v2Losses = readClutchNumber(tracked.clutches_1v2_losses, sourcePlayer?.clutches_1v2_losses, clutchFromSource.oneVsTwoLosses);
+  const clutches1v3Losses = readClutchNumber(tracked.clutches_1v3_losses, sourcePlayer?.clutches_1v3_losses, clutchFromSource.oneVsThreeLosses);
+  const clutches1v4Losses = readClutchNumber(tracked.clutches_1v4_losses, sourcePlayer?.clutches_1v4_losses, clutchFromSource.oneVsFourLosses);
+  const clutches1v5Losses = readClutchNumber(tracked.clutches_1v5_losses, sourcePlayer?.clutches_1v5_losses, clutchFromSource.oneVsFiveLosses);
+
+  const clutchesAvailable = clutchesAttempts != null;
+  const clutchWinRate = clutchesAttempts > 0 && clutchesWins != null
+    ? parseFloat(((clutchesWins / clutchesAttempts) * 100).toFixed(2))
+    : null;
 
   const weaponsAvailable = !!tracked.weaponTrackingAvailable;
   const weaponsRaw = {
@@ -760,12 +859,11 @@ function buildScoreboardOverallPlayer({
     smgKills:    weaponsAvailable ? toNumber(tracked.smgKills, 0)    : null
   };
   const awpKills = weaponsRaw.awpKills;
-  const awpKpr   = awpKills != null && roundsPlayed > 0 ? parseFloat((awpKills / roundsPlayed).toFixed(3)) : null;
+  const awpKpr   = awpKills != null && roundsForRates > 0 ? parseFloat((awpKills / roundsForRates).toFixed(3)) : null;
+  const weaponUnknownKills = weaponsAvailable ? toNumber(tracked.weaponUnknownKills, 0) : null;
 
-  const kastRaw = sourcePlayer?.match_stats?.kast ?? sourcePlayer?.kast ?? null;
-  const kast = Number.isFinite(Number(kastRaw)) ? toNumber(kastRaw, 0) : null;
-  const impactRaw = sourcePlayer?.match_stats?.impact ?? sourcePlayer?.impact ?? null;
-  const impact = Number.isFinite(Number(impactRaw)) ? toNumber(impactRaw, 0) : null;
+  const kast = null;
+  const impact = null;
 
   const ratingRaw = sourcePlayer?.match_stats?.rating ?? sourcePlayer?.rating ?? null;
   const rating = Number.isFinite(Number(ratingRaw)) ? toNumber(ratingRaw, 0) : 0;
@@ -798,6 +896,10 @@ function buildScoreboardOverallPlayer({
     plusMinus,
     kd,
     damage,
+    damageTotal,
+    damageCurrentRound,
+    damagePreviousRound,
+    damageByRound,
     adr,
     kpr,
     apr,
@@ -863,7 +965,7 @@ function buildScoreboardOverallPlayer({
       zeusKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.zeusKills)) ? toNumber(weaponsRaw.zeusKills, 0) : null,
       pistolKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.pistolKills)) ? toNumber(weaponsRaw.pistolKills, 0) : null,
       smgKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.smgKills)) ? toNumber(weaponsRaw.smgKills, 0) : null,
-      unknownKills: weaponsAvailable ? toNumber(tracked.weaponUnknownKills, 0) : null,
+      unknownKills: weaponUnknownKills,
       available: weaponsAvailable
     },
     awpKills,
@@ -873,27 +975,74 @@ function buildScoreboardOverallPlayer({
     zeusKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.zeusKills)) ? toNumber(weaponsRaw.zeusKills, 0) : null,
     pistolKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.pistolKills)) ? toNumber(weaponsRaw.pistolKills, 0) : null,
     smgKills: weaponsAvailable && Number.isFinite(Number(weaponsRaw.smgKills)) ? toNumber(weaponsRaw.smgKills, 0) : null,
+    weaponUnknownKills,
     utility: {
-      flashAssists: utilityAvailable && Number.isFinite(Number(utilityRaw.flashAssists)) ? toNumber(utilityRaw.flashAssists, 0) : null,
-      flashesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.flashesThrown)) ? toNumber(utilityRaw.flashesThrown, 0) : null,
-      enemiesFlashed: utilityAvailable && Number.isFinite(Number(utilityRaw.enemiesFlashed)) ? toNumber(utilityRaw.enemiesFlashed, 0) : null,
-      smokesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.smokesThrown)) ? toNumber(utilityRaw.smokesThrown, 0) : null,
-      heThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.heThrown)) ? toNumber(utilityRaw.heThrown, 0) : null,
-      molotovsThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.molotovsThrown)) ? toNumber(utilityRaw.molotovsThrown, 0) : null,
-      utilityDamage: utilityAvailable && Number.isFinite(Number(utilityRaw.utilityDamage)) ? toNumber(utilityRaw.utilityDamage, 0) : null,
+      flashAssists: null,
+      flashesThrown: null,
+      enemiesFlashed: null,
+      smokesThrown: null,
+      heThrown: null,
+      molotovsThrown: null,
+      utilityDamage: null,
       available: utilityAvailable
     },
-    flashAssists: utilityAvailable && Number.isFinite(Number(utilityRaw.flashAssists)) ? toNumber(utilityRaw.flashAssists, 0) : null,
-    flashesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.flashesThrown)) ? toNumber(utilityRaw.flashesThrown, 0) : null,
-    enemiesFlashed: utilityAvailable && Number.isFinite(Number(utilityRaw.enemiesFlashed)) ? toNumber(utilityRaw.enemiesFlashed, 0) : null,
-    smokesThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.smokesThrown)) ? toNumber(utilityRaw.smokesThrown, 0) : null,
-    heThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.heThrown)) ? toNumber(utilityRaw.heThrown, 0) : null,
-    molotovsThrown: utilityAvailable && Number.isFinite(Number(utilityRaw.molotovsThrown)) ? toNumber(utilityRaw.molotovsThrown, 0) : null,
-    utilityDamage: utilityAvailable && Number.isFinite(Number(utilityRaw.utilityDamage)) ? toNumber(utilityRaw.utilityDamage, 0) : null,
+    clutches: {
+      attempts: clutchesAttempts,
+      wins: clutchesWins,
+      losses: clutchesLosses,
+      oneVsOne: clutches1v1Attempts,
+      oneVsTwo: clutches1v2Attempts,
+      oneVsThree: clutches1v3Attempts,
+      oneVsFour: clutches1v4Attempts,
+      oneVsFive: clutches1v5Attempts,
+      oneVsOneWins: clutches1v1Wins,
+      oneVsTwoWins: clutches1v2Wins,
+      oneVsThreeWins: clutches1v3Wins,
+      oneVsFourWins: clutches1v4Wins,
+      oneVsFiveWins: clutches1v5Wins,
+      oneVsOneLosses: clutches1v1Losses,
+      oneVsTwoLosses: clutches1v2Losses,
+      oneVsThreeLosses: clutches1v3Losses,
+      oneVsFourLosses: clutches1v4Losses,
+      oneVsFiveLosses: clutches1v5Losses,
+      winRate: clutchWinRate,
+      available: clutchesAvailable
+    },
+    clutches_attempts: clutchesAttempts,
+    clutches_wins: clutchesWins,
+    clutches_losses: clutchesLosses,
+    clutches_1v1_attempts: clutches1v1Attempts,
+    clutches_1v1_wins: clutches1v1Wins,
+    clutches_1v1_losses: clutches1v1Losses,
+    clutches_1v2_attempts: clutches1v2Attempts,
+    clutches_1v2_wins: clutches1v2Wins,
+    clutches_1v2_losses: clutches1v2Losses,
+    clutches_1v3_attempts: clutches1v3Attempts,
+    clutches_1v3_wins: clutches1v3Wins,
+    clutches_1v3_losses: clutches1v3Losses,
+    clutches_1v4_attempts: clutches1v4Attempts,
+    clutches_1v4_wins: clutches1v4Wins,
+    clutches_1v4_losses: clutches1v4Losses,
+    clutches_1v5_attempts: clutches1v5Attempts,
+    clutches_1v5_wins: clutches1v5Wins,
+    clutches_1v5_losses: clutches1v5Losses,
+    clutches_oneVsOne: clutches1v1Attempts,
+    clutches_oneVsTwo: clutches1v2Attempts,
+    clutches_oneVsThree: clutches1v3Attempts,
+    clutches_oneVsFour: clutches1v4Attempts,
+    clutches_oneVsFive: clutches1v5Attempts,
+    clutchWinRate,
+    flashAssists: null,
+    flashesThrown: null,
+    enemiesFlashed: null,
+    smokesThrown: null,
+    heThrown: null,
+    molotovsThrown: null,
+    utilityDamage: null,
     scoreboardRank: null,
     roundStats: {
       killsByRound: roundStats?.killsByRound || [],
-      damageByRound: roundStats?.damageByRound || [],
+      damageByRound: damageByRound || [],
       survivedByRound: roundStats?.survivedByRound || [],
       kastByRound: roundStats?.kastByRound || []
     },
@@ -905,6 +1054,7 @@ function buildScoreboardOverallPlayer({
       opening: openingAvailable,
       weapons: weaponsAvailable,
       utility: utilityAvailable,
+      clutches: clutchesAvailable,
       kast: kast != null,
       impact: impact != null
     },
@@ -944,6 +1094,179 @@ function buildOverallStatAvailability(playersList) {
     utility: source.some((p) => p.utility?.available),
     kast: source.some((p) => p.availability?.kast),
     impact: source.some((p) => p.availability?.impact)
+  };
+}
+
+function toScoreboardTableRow(player) {
+  const source = player || {};
+  return {
+    steamId: source.steamId || '',
+    nickname: source.nickname || source.name || '',
+    teamName: source.teamName || '',
+    side: source.side || '',
+    kills: toNumber(source.kills, 0),
+    deaths: toNumber(source.deaths, 0),
+    assists: toNumber(source.assists, 0),
+    plusMinus: toNumber(source.plusMinus, 0),
+    kd: toNumber(source.kd, 0),
+    damageTotal: toNumber(source.damageTotal ?? source.damage, 0),
+    damageCurrentRound: source.damageCurrentRound != null ? toNumber(source.damageCurrentRound, 0) : null,
+    damagePreviousRound: source.damagePreviousRound != null ? toNumber(source.damagePreviousRound, 0) : null,
+    adr: toNumber(source.adr, 0),
+    kpr: toNumber(source.kpr, 0),
+    apr: toNumber(source.apr, 0),
+    roundsPlayed: toNumber(source.roundsPlayed, 0),
+    survivedRounds: toNumber(source.survivedRounds, 0),
+    survivalRate: toNumber(source.survivalRate, 0),
+    multiKills_1k: toNumber(source.multiKills_1k, 0),
+    multiKills_2k: toNumber(source.multiKills_2k, 0),
+    multiKills_3k: toNumber(source.multiKills_3k, 0),
+    multiKills_4k: toNumber(source.multiKills_4k, 0),
+    multiKills_5k: toNumber(source.multiKills_5k, 0),
+    multiKills_aces: toNumber(source.multiKills_aces, 0),
+    multiKills_total: toNumber(source.multiKills_total, 0),
+    hsCount: source.hsCount != null ? toNumber(source.hsCount, 0) : null,
+    hsPercentage: source.hsPercentage != null ? toNumber(source.hsPercentage, 0) : null,
+    opening_firstKills: source.opening_firstKills != null ? toNumber(source.opening_firstKills, 0) : null,
+    opening_firstDeaths: source.opening_firstDeaths != null ? toNumber(source.opening_firstDeaths, 0) : null,
+    openingKpr: source.openingKpr != null ? toNumber(source.openingKpr, 0) : null,
+    opening_entryDiff: source.opening_entryDiff != null ? toNumber(source.opening_entryDiff, 0) : null,
+    awpKills: source.awpKills != null ? toNumber(source.awpKills, 0) : null,
+    awpKpr: source.awpKpr != null ? toNumber(source.awpKpr, 0) : null,
+    rifleKills: source.rifleKills != null ? toNumber(source.rifleKills, 0) : null,
+    pistolKills: source.pistolKills != null ? toNumber(source.pistolKills, 0) : null,
+    knifeKills: source.knifeKills != null ? toNumber(source.knifeKills, 0) : null,
+    zeusKills: source.zeusKills != null ? toNumber(source.zeusKills, 0) : null,
+    smgKills: source.smgKills != null ? toNumber(source.smgKills, 0) : null,
+    weaponUnknownKills: source.weaponUnknownKills != null ? toNumber(source.weaponUnknownKills, 0) : null,
+    clutches_attempts: source.clutches_attempts != null ? toNumber(source.clutches_attempts, 0) : null,
+    clutches_wins: source.clutches_wins != null ? toNumber(source.clutches_wins, 0) : null,
+    clutches_losses: source.clutches_losses != null ? toNumber(source.clutches_losses, 0) : null,
+    clutches_1v1_attempts: source.clutches_1v1_attempts != null ? toNumber(source.clutches_1v1_attempts, 0) : null,
+    clutches_1v1_wins: source.clutches_1v1_wins != null ? toNumber(source.clutches_1v1_wins, 0) : null,
+    clutches_1v1_losses: source.clutches_1v1_losses != null ? toNumber(source.clutches_1v1_losses, 0) : null,
+    clutches_1v2_attempts: source.clutches_1v2_attempts != null ? toNumber(source.clutches_1v2_attempts, 0) : null,
+    clutches_1v2_wins: source.clutches_1v2_wins != null ? toNumber(source.clutches_1v2_wins, 0) : null,
+    clutches_1v2_losses: source.clutches_1v2_losses != null ? toNumber(source.clutches_1v2_losses, 0) : null,
+    clutches_1v3_attempts: source.clutches_1v3_attempts != null ? toNumber(source.clutches_1v3_attempts, 0) : null,
+    clutches_1v3_wins: source.clutches_1v3_wins != null ? toNumber(source.clutches_1v3_wins, 0) : null,
+    clutches_1v3_losses: source.clutches_1v3_losses != null ? toNumber(source.clutches_1v3_losses, 0) : null,
+    clutches_1v4_attempts: source.clutches_1v4_attempts != null ? toNumber(source.clutches_1v4_attempts, 0) : null,
+    clutches_1v4_wins: source.clutches_1v4_wins != null ? toNumber(source.clutches_1v4_wins, 0) : null,
+    clutches_1v4_losses: source.clutches_1v4_losses != null ? toNumber(source.clutches_1v4_losses, 0) : null,
+    clutches_1v5_attempts: source.clutches_1v5_attempts != null ? toNumber(source.clutches_1v5_attempts, 0) : null,
+    clutches_1v5_wins: source.clutches_1v5_wins != null ? toNumber(source.clutches_1v5_wins, 0) : null,
+    clutches_1v5_losses: source.clutches_1v5_losses != null ? toNumber(source.clutches_1v5_losses, 0) : null,
+    clutchWinRate: source.clutchWinRate != null ? toNumber(source.clutchWinRate, 0) : null,
+    customRating: toNumber(source.customRating, 0),
+    scoreboardRank: source.scoreboardRank != null ? toNumber(source.scoreboardRank, null) : null,
+    isPlaceholder: !!source.isPlaceholder
+  };
+}
+
+function buildPlayersTableRows(playersList) {
+  return (Array.isArray(playersList) ? playersList : []).map((player) => toScoreboardTableRow(player));
+}
+
+function buildStatsDebug({
+  players,
+  playersTable,
+  rawScoreboardPlayers
+}) {
+  const sourcePlayers = Array.isArray(players) ? players : [];
+  const table = Array.isArray(playersTable) ? playersTable : [];
+  const raw = rawScoreboardPlayers && typeof rawScoreboardPlayers === 'object' ? rawScoreboardPlayers : {};
+
+  const warnings = [];
+  const unavailableStats = ['utility', 'kast', 'impact'];
+
+  let hasRoundKills = false;
+  let hasRoundKillHs = false;
+  let hasRoundTotalDmg = false;
+  let weaponTrackingAvailable = false;
+  let trackedPlayersCount = 0;
+
+  Object.values(raw).forEach((rawPlayer) => {
+    if (!rawPlayer || typeof rawPlayer !== 'object') return;
+    const tracked = rawPlayer._tracked || null;
+    if (tracked) trackedPlayersCount += 1;
+
+    if (Object.prototype.hasOwnProperty.call(rawPlayer?.state || {}, 'round_kills') || tracked?.hasRoundKillsField) {
+      hasRoundKills = true;
+    }
+    if (Object.prototype.hasOwnProperty.call(rawPlayer?.state || {}, 'round_killhs') || tracked?.hasRoundKillHsField) {
+      hasRoundKillHs = true;
+    }
+    if (Object.prototype.hasOwnProperty.call(rawPlayer?.state || {}, 'round_totaldmg') || tracked?.hasRoundTotalDmgField) {
+      hasRoundTotalDmg = true;
+    }
+    if (tracked?.weaponTrackingAvailable) {
+      weaponTrackingAvailable = true;
+    }
+    if (Array.isArray(tracked?.clutchPendingRounds) && tracked.clutchPendingRounds.length > 0) {
+      tracked.clutchPendingRounds.forEach((roundNo) => warnings.push(`clutch_pending_round_${roundNo}`));
+    }
+  });
+
+  if (Array.isArray(clutchTrackerState?.unresolvedWarnings)) {
+    clutchTrackerState.unresolvedWarnings.forEach((entry) => warnings.push(entry));
+  }
+
+  sourcePlayers.forEach((player) => {
+    const steamId = player.steamId || player.id || 'unknown';
+    const rawPlayer = raw[player.steamId] || null;
+
+    if (rawPlayer && Number.isFinite(Number(rawPlayer?.match_stats?.kills))) {
+      const gsiKills = toNumber(rawPlayer.match_stats.kills, 0);
+      if (toNumber(player.kills, 0) !== gsiKills) {
+        warnings.push(`kills_mismatch:${steamId}`);
+      }
+    }
+
+    if (rawPlayer && Object.prototype.hasOwnProperty.call(rawPlayer?.state || {}, 'round_totaldmg')) {
+      const gsiRoundDmg = toNumber(rawPlayer.state.round_totaldmg, 0);
+      if (player.damageCurrentRound != null && toNumber(player.damageCurrentRound, 0) !== gsiRoundDmg) {
+        warnings.push(`damageCurrentRound_mismatch:${steamId}`);
+      }
+    }
+
+    if (player.hsCount != null && player.hsCount > player.kills) {
+      warnings.push(`hs_gt_kills:${steamId}`);
+    }
+
+    if (!player.isPlaceholder && toNumber(player.roundsPlayed, 0) > 1 && player.damagePreviousRound == null) {
+      warnings.push(`damagePreviousRound_missing:${steamId}`);
+    }
+
+    const weaponsTotal = [player.awpKills, player.rifleKills, player.pistolKills, player.knifeKills, player.zeusKills, player.smgKills, player.weaponUnknownKills]
+      .reduce((sum, value) => sum + toNumber(value, 0), 0);
+    if (weaponsTotal > toNumber(player.kills, 0)) {
+      warnings.push(`weaponKills_gt_kills:${steamId}`);
+    }
+
+    const multiTotal = toNumber(player.multiKills_2k, 0) + toNumber(player.multiKills_3k, 0) + toNumber(player.multiKills_4k, 0) + toNumber(player.multiKills_5k, 0);
+    if (toNumber(player.multiKills_total, 0) !== multiTotal) {
+      warnings.push(`multikill_total_mismatch:${steamId}`);
+    }
+  });
+
+  table.forEach((row, index) => {
+    for (const [key, value] of Object.entries(row || {})) {
+      const type = typeof value;
+      if (value !== null && type !== 'string' && type !== 'number' && type !== 'boolean') {
+        warnings.push(`playersTable_non_primitive:${index}:${key}`);
+      }
+    }
+  });
+
+  return {
+    trackedPlayersCount,
+    hasRoundKills,
+    hasRoundKillHs,
+    hasRoundTotalDmg,
+    weaponTrackingAvailable,
+    unavailableStats,
+    warnings: Array.from(new Set(warnings))
   };
 }
 
@@ -1726,34 +2049,199 @@ let gsiKillTracker = {};
 let killTrackCurrentRound  = 0;
 let killTrackRoundOpeningDone = false;
 let killTrackRoundFirstDeathDone = false;
+let clutchTrackerState = {
+  currentRound: 0,
+  roundAttempts: {},
+  pendingRounds: {},
+  previousScore: { CT: 0, T: 0 },
+  unresolvedWarnings: []
+};
 
 function resetGsiKillTracker() {
   gsiKillTracker = {};
   killTrackCurrentRound = toNumber(getRoundCount(), 0);
   killTrackRoundOpeningDone = false;
   killTrackRoundFirstDeathDone = false;
+  clutchTrackerState = {
+    currentRound: toNumber(getRoundCount(), 0),
+    roundAttempts: {},
+    pendingRounds: {},
+    previousScore: {
+      CT: toNumber(scoreboard.map?.team_ct?.score, 0),
+      T: toNumber(scoreboard.map?.team_t?.score, 0)
+    },
+    unresolvedWarnings: []
+  };
+}
+
+function getAlivePlayersBySide() {
+  const aliveCT = [];
+  const aliveT = [];
+  for (const steamId in scoreboard.players || {}) {
+    const player = scoreboard.players[steamId];
+    if (!player || (player.team !== 'CT' && player.team !== 'T')) continue;
+    const hp = toNumber(player?.state?.health, 0);
+    if (hp > 0) {
+      if (player.team === 'CT') aliveCT.push(steamId);
+      if (player.team === 'T') aliveT.push(steamId);
+    }
+  }
+  return { aliveCT, aliveT };
+}
+
+function getRoundWinnerSide(roundNumber) {
+  const roundWins = scoreboard.map?.round_wins;
+  const key = String(roundNumber);
+  const value = roundWins && typeof roundWins === 'object' ? roundWins[key] : null;
+  if (typeof value === 'string') {
+    const token = value.toLowerCase();
+    if (token.includes('ct_win')) return 'CT';
+    if (token.includes('t_win')) return 'T';
+  }
+
+  const currentCtScore = toNumber(scoreboard.map?.team_ct?.score, 0);
+  const currentTScore = toNumber(scoreboard.map?.team_t?.score, 0);
+  const prevCtScore = toNumber(clutchTrackerState.previousScore?.CT, 0);
+  const prevTScore = toNumber(clutchTrackerState.previousScore?.T, 0);
+  if (currentCtScore > prevCtScore) return 'CT';
+  if (currentTScore > prevTScore) return 'T';
+  return null;
+}
+
+function finalizePendingClutchRound(roundNumber, winnerSide) {
+  const pending = clutchTrackerState.pendingRounds?.[roundNumber];
+  if (!pending) return;
+
+  const trackerPlayer = ensureKillTrackerPlayer(pending.steamId);
+  if (!winnerSide || (winnerSide !== 'CT' && winnerSide !== 'T')) {
+    const warning = `clutch_winner_unknown_round_${roundNumber}`;
+    if (!clutchTrackerState.unresolvedWarnings.includes(warning)) {
+      clutchTrackerState.unresolvedWarnings.push(warning);
+    }
+    return;
+  }
+
+  const size = Math.max(1, Math.min(5, toNumber(pending.clutchSize, 0)));
+  const sizeNames = {
+    1: 'One',
+    2: 'Two',
+    3: 'Three',
+    4: 'Four',
+    5: 'Five'
+  };
+  const suffix = sizeNames[size];
+
+  if (pending.teamSide === winnerSide) {
+    trackerPlayer.matchStats.clutches_wins += 1;
+    trackerPlayer.matchStats[`clutches_1v${size}_wins`] += 1;
+    trackerPlayer.matchStats[`clutches_oneVs${suffix}Wins`] += 1;
+  } else {
+    trackerPlayer.matchStats.clutches_losses += 1;
+    trackerPlayer.matchStats[`clutches_1v${size}_losses`] += 1;
+    trackerPlayer.matchStats[`clutches_oneVs${suffix}Losses`] += 1;
+  }
+
+  const warning = `clutch_winner_unknown_round_${roundNumber}`;
+  clutchTrackerState.unresolvedWarnings = (clutchTrackerState.unresolvedWarnings || []).filter((entry) => entry !== warning);
+  delete clutchTrackerState.pendingRounds[roundNumber];
 }
 
 function ensureKillTrackerPlayer(steamId) {
   if (!gsiKillTracker[steamId]) {
     gsiKillTracker[steamId] = {
-      prevMatchKills:  0,
-      prevMatchDeaths: 0,
-      prevRoundKillHs: 0,
-      prevRoundKills:  0,
+      previousKills: 0,
+      previousDeaths: 0,
+      previousAssists: 0,
+      previousRoundKills: 0,
+      previousRoundHs: 0,
+      previousRoundDamage: null,
+      currentRoundDamage: 0,
+      currentRoundDamageMax: 0,
+      lastActiveWeapon: null,
       hasRoundKillHsField: false,
+      hasRoundKillsField: false,
+      hasRoundTotalDmgField: false,
       weaponTrackingAvailable: false,
       weaponUnknownKills: 0,
+      roundStats: {
+        killsByRound: [],
+        damageByRound: []
+      },
       matchStats: {
-        firstKills: 0, firstDeaths: 0, headshots: 0,
+        firstKills: 0,
+        firstDeaths: 0,
+        headshots: 0,
+        damageTotal: 0,
         awpKills: 0, rifleKills: 0, pistolKills: 0,
         knifeKills: 0, zeusKills: 0, smgKills: 0,
         multiKills_1k: 0, multiKills_2k: 0, multiKills_3k: 0,
         multiKills_4k: 0, multiKills_5k: 0,
+        clutches_attempts: 0,
+        clutches_wins: 0,
+        clutches_losses: 0,
+        clutches_1v1_attempts: 0,
+        clutches_1v1_wins: 0,
+        clutches_1v1_losses: 0,
+        clutches_1v2_attempts: 0,
+        clutches_1v2_wins: 0,
+        clutches_1v2_losses: 0,
+        clutches_1v3_attempts: 0,
+        clutches_1v3_wins: 0,
+        clutches_1v3_losses: 0,
+        clutches_1v4_attempts: 0,
+        clutches_1v4_wins: 0,
+        clutches_1v4_losses: 0,
+        clutches_1v5_attempts: 0,
+        clutches_1v5_wins: 0,
+        clutches_1v5_losses: 0,
+        clutches_oneVsOne: 0,
+        clutches_oneVsTwo: 0,
+        clutches_oneVsThree: 0,
+        clutches_oneVsFour: 0,
+        clutches_oneVsFive: 0,
+        clutches_oneVsOneWins: 0,
+        clutches_oneVsTwoWins: 0,
+        clutches_oneVsThreeWins: 0,
+        clutches_oneVsFourWins: 0,
+        clutches_oneVsFiveWins: 0,
+        clutches_oneVsOneLosses: 0,
+        clutches_oneVsTwoLosses: 0,
+        clutches_oneVsThreeLosses: 0,
+        clutches_oneVsFourLosses: 0,
+        clutches_oneVsFiveLosses: 0
       }
     };
   }
   return gsiKillTracker[steamId];
+}
+
+function resolveActiveWeapon(weapons, fallbackWeapon = null) {
+  if (weapons && typeof weapons === 'object') {
+    for (const slot of Object.keys(weapons)) {
+      const weapon = weapons[slot];
+      if (weapon && typeof weapon === 'object' && weapon.state === 'active') {
+        return {
+          name: (weapon.name || '').toLowerCase(),
+          type: (weapon.type || '').toLowerCase()
+        };
+      }
+    }
+  }
+  return fallbackWeapon || null;
+}
+
+function classifyWeaponKillCounter(activeWeapon) {
+  if (!activeWeapon || typeof activeWeapon !== 'object') return null;
+  const name = (activeWeapon.name || '').toLowerCase();
+  const type = (activeWeapon.type || '').toLowerCase();
+  if (!name && !type) return null;
+  if (name === 'weapon_awp') return 'awpKills';
+  if (name.includes('taser') || name.includes('zeus')) return 'zeusKills';
+  if (type === 'rifle') return 'rifleKills';
+  if (type === 'pistol') return 'pistolKills';
+  if (type === 'knife') return 'knifeKills';
+  if (type === 'submachine gun' || type === 'smg') return 'smgKills';
+  return null;
 }
 
 function processGsiKillTracking() {
@@ -1761,16 +2249,35 @@ function processGsiKillTracking() {
   const roundAdvanced = currentRound > killTrackCurrentRound && killTrackCurrentRound > 0;
 
   if (roundAdvanced) {
-    // Round just ended â€” record multi-kills from state.round_kills
-    for (const steamId in scoreboard.players) {
+    const finishedRound = Math.max(0, currentRound - 1);
+    const pendingRounds = Object.keys(clutchTrackerState.pendingRounds || {})
+      .map((value) => toNumber(value, 0))
+      .filter((value) => value > 0 && value <= finishedRound)
+      .sort((a, b) => a - b);
+    pendingRounds.forEach((roundNo) => {
+      const winnerSide = getRoundWinnerSide(roundNo);
+      finalizePendingClutchRound(roundNo, winnerSide);
+    });
+
+    // Round just ended: persist per-round stats and multi-kill bucket.
+    for (const steamId in scoreboard.players || {}) {
       const pd = scoreboard.players[steamId];
       if (!pd || (pd.team !== 'CT' && pd.team !== 'T')) continue;
       const tr = ensureKillTrackerPlayer(steamId);
-      const rk = Math.max(toNumber(pd?.state?.round_kills, 0), tr.prevRoundKills);
+
+      const rk = Math.max(toNumber(pd?.state?.round_kills, 0), tr.previousRoundKills);
       if (rk >= 1) tr.matchStats['multiKills_' + Math.min(rk, 5) + 'k'] += 1;
-      tr.prevRoundKills  = 0;
-      tr.prevRoundKillHs = 0;
+
+      tr.roundStats.killsByRound.push(rk);
+      tr.roundStats.damageByRound.push(toNumber(tr.currentRoundDamageMax, 0));
+      tr.previousRoundDamage = toNumber(tr.currentRoundDamageMax, 0);
+
+      tr.previousRoundKills = 0;
+      tr.previousRoundHs = 0;
+      tr.currentRoundDamage = 0;
+      tr.currentRoundDamageMax = 0;
     }
+
     killTrackRoundOpeningDone = false;
     killTrackRoundFirstDeathDone = false;
     killTrackCurrentRound     = currentRound;
@@ -1778,17 +2285,73 @@ function processGsiKillTracking() {
     killTrackCurrentRound = currentRound;
   }
 
+  const { aliveCT, aliveT } = getAlivePlayersBySide();
+  const hasAttemptThisRound = !!clutchTrackerState.roundAttempts[currentRound];
+  if (!hasAttemptThisRound) {
+    let clutchSteamId = null;
+    let clutchSide = null;
+    let clutchSize = null;
+
+    if (aliveCT.length === 1 && aliveT.length >= 1 && aliveT.length <= 5) {
+      clutchSteamId = aliveCT[0];
+      clutchSide = 'CT';
+      clutchSize = aliveT.length;
+    } else if (aliveT.length === 1 && aliveCT.length >= 1 && aliveCT.length <= 5) {
+      clutchSteamId = aliveT[0];
+      clutchSide = 'T';
+      clutchSize = aliveCT.length;
+    }
+
+    if (clutchSteamId && clutchSize != null) {
+      const trackerPlayer = ensureKillTrackerPlayer(clutchSteamId);
+      const size = Math.max(1, Math.min(5, toNumber(clutchSize, 0)));
+      const sizeNames = {
+        1: 'One',
+        2: 'Two',
+        3: 'Three',
+        4: 'Four',
+        5: 'Five'
+      };
+      const suffix = sizeNames[size];
+
+      trackerPlayer.matchStats.clutches_attempts += 1;
+      trackerPlayer.matchStats[`clutches_1v${size}_attempts`] += 1;
+      trackerPlayer.matchStats[`clutches_oneVs${suffix}`] += 1;
+
+      clutchTrackerState.roundAttempts[currentRound] = {
+        steamId: clutchSteamId,
+        teamSide: clutchSide,
+        clutchSize: size,
+        recordedAt: Date.now()
+      };
+      clutchTrackerState.pendingRounds[currentRound] = {
+        steamId: clutchSteamId,
+        teamSide: clutchSide,
+        clutchSize: size,
+        status: 'pending'
+      };
+    }
+  }
+
   const deltas = [];
   for (const steamId in scoreboard.players || {}) {
     const pd = scoreboard.players[steamId];
     if (!pd || (pd.team !== 'CT' && pd.team !== 'T')) continue;
     const tr = ensureKillTrackerPlayer(steamId);
+
     const curKills = toNumber(pd?.match_stats?.kills, 0);
     const curDeaths = toNumber(pd?.match_stats?.deaths, 0);
+    const curAssists = toNumber(pd?.match_stats?.assists, 0);
+
+    const killDelta = Math.max(0, curKills - toNumber(tr.previousKills, 0));
+    const deathDelta = Math.max(0, curDeaths - toNumber(tr.previousDeaths, 0));
+    const assistDelta = Math.max(0, curAssists - toNumber(tr.previousAssists, 0));
+
     deltas.push({
       steamId,
-      killDelta: Math.max(0, curKills - toNumber(tr.prevMatchKills, 0)),
-      deathDelta: Math.max(0, curDeaths - toNumber(tr.prevMatchDeaths, 0))
+      killDelta,
+      deathDelta,
+      assistDelta
     });
   }
 
@@ -1822,78 +2385,87 @@ function processGsiKillTracking() {
 
     const curKills  = toNumber(pd?.match_stats?.kills, 0);
     const curDeaths = toNumber(pd?.match_stats?.deaths, 0);
+    const curAssists = toNumber(pd?.match_stats?.assists, 0);
     const curHs     = toNumber(pd?.state?.round_killhs, 0);
     const curRndK   = toNumber(pd?.state?.round_kills,  0);
-    const killDelta = curKills - tr.prevMatchKills;
+    const curRoundDamage = toNumber(pd?.state?.round_totaldmg, tr.currentRoundDamage);
+    const killDelta = Math.max(0, curKills - toNumber(tr.previousKills, 0));
 
     if (pd?.state && Object.prototype.hasOwnProperty.call(pd.state, 'round_killhs')) {
       tr.hasRoundKillHsField = true;
     }
+    if (pd?.state && Object.prototype.hasOwnProperty.call(pd.state, 'round_kills')) {
+      tr.hasRoundKillsField = true;
+    }
+    if (pd?.state && Object.prototype.hasOwnProperty.call(pd.state, 'round_totaldmg')) {
+      tr.hasRoundTotalDmgField = true;
+    }
+
+    const activeWeapon = resolveActiveWeapon(pd?.weapons, tr.lastActiveWeapon);
+    if (activeWeapon) {
+      tr.lastActiveWeapon = activeWeapon;
+      tr.weaponTrackingAvailable = true;
+    }
 
     if (killDelta > 0) {
       // Weapon kill â€” categorize by active weapon snapshot at kill delta moment
-      const weapons = pd?.weapons;
-      let classifiedKills = 0;
-      if (weapons && typeof weapons === 'object') {
-        tr.weaponTrackingAvailable = true;
-        let activeName = null, activeType = null;
-        for (const slot of Object.keys(weapons)) {
-          const w = weapons[slot];
-          if (w && typeof w === 'object' && w.state === 'active') {
-            activeName = (w.name || '').toLowerCase();
-            activeType = (w.type || '').toLowerCase();
-            break;
-          }
-        }
-        if (activeName) {
-          if (activeName === 'weapon_awp') {
-            tr.matchStats.awpKills += killDelta;
-            classifiedKills = killDelta;
-          } else if (activeName.includes('taser') || activeName.includes('zeus')) {
-            tr.matchStats.zeusKills += killDelta;
-            classifiedKills = killDelta;
-          } else if (activeType === 'rifle') {
-            tr.matchStats.rifleKills += killDelta;
-            classifiedKills = killDelta;
-          } else if (activeType === 'pistol') {
-            tr.matchStats.pistolKills += killDelta;
-            classifiedKills = killDelta;
-          } else if (activeType === 'knife') {
-            tr.matchStats.knifeKills += killDelta;
-            classifiedKills = killDelta;
-          } else if (activeType === 'submachine gun' || activeType === 'smg') {
-            tr.matchStats.smgKills += killDelta;
-            classifiedKills = killDelta;
-          }
-        }
+      const weaponBucket = classifyWeaponKillCounter(activeWeapon);
+      if (weaponBucket) {
+        tr.matchStats[weaponBucket] += killDelta;
+      } else {
+        tr.weaponUnknownKills += killDelta;
       }
-      if (killDelta - classifiedKills > 0) {
-        tr.weaponUnknownKills += (killDelta - classifiedKills);
-      }
-      tr.prevMatchKills = curKills;
     }
 
-    if (curDeaths >= 0) {
-      tr.prevMatchDeaths = curDeaths;
+    tr.previousKills = curKills;
+    tr.previousDeaths = curDeaths;
+    tr.previousAssists = curAssists;
+
+    if (curRoundDamage < tr.currentRoundDamage) {
+      tr.currentRoundDamage = curRoundDamage;
+      tr.currentRoundDamageMax = Math.max(tr.currentRoundDamageMax, curRoundDamage);
+    } else {
+      tr.currentRoundDamage = curRoundDamage;
+      tr.currentRoundDamageMax = Math.max(tr.currentRoundDamageMax, curRoundDamage);
     }
+    tr.matchStats.damageTotal = toNumber(pd?.accumulatedDmg, tr.matchStats.damageTotal);
 
     // Headshot delta: round_killhs increases within a round
-    if (curHs > tr.prevRoundKillHs) {
-      tr.matchStats.headshots += curHs - tr.prevRoundKillHs;
-      tr.prevRoundKillHs = curHs;
+    if (curHs > tr.previousRoundHs) {
+      tr.matchStats.headshots += curHs - tr.previousRoundHs;
+      tr.previousRoundHs = curHs;
     }
 
     // Track max round_kills seen (for multi-kill recording at round end)
-    if (curRndK > tr.prevRoundKills) tr.prevRoundKills = curRndK;
+    if (curRndK > tr.previousRoundKills) tr.previousRoundKills = curRndK;
 
     // Write tracked stats to player object for buildScoreboardOverallPlayer
     scoreboard.players[steamId]._tracked = {
       ...tr.matchStats,
+      previousKills: tr.previousKills,
+      previousDeaths: tr.previousDeaths,
+      previousAssists: tr.previousAssists,
+      previousRoundKills: tr.previousRoundKills,
+      previousRoundHs: tr.previousRoundHs,
+      previousRoundDamage: tr.previousRoundDamage,
+      damageCurrentRound: tr.currentRoundDamage,
+      lastActiveWeapon: tr.lastActiveWeapon,
+      roundStats: tr.roundStats,
+      matchStats: tr.matchStats,
       hasRoundKillHsField: tr.hasRoundKillHsField,
+      hasRoundKillsField: tr.hasRoundKillsField,
+      hasRoundTotalDmgField: tr.hasRoundTotalDmgField,
       weaponTrackingAvailable: tr.weaponTrackingAvailable,
-      weaponUnknownKills: tr.weaponUnknownKills
+      weaponUnknownKills: tr.weaponUnknownKills,
+      clutchPendingRounds: Object.keys(clutchTrackerState.pendingRounds || {}).map((round) => toNumber(round, 0))
     };
   }
+
+  clutchTrackerState.previousScore = {
+    CT: toNumber(scoreboard.map?.team_ct?.score, 0),
+    T: toNumber(scoreboard.map?.team_t?.score, 0)
+  };
+  clutchTrackerState.currentRound = currentRound;
 }
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -3480,6 +4052,7 @@ app.get('/api/graphics/scoreboard', (req, res) => {
     const teamBProfile = graphicsUtils.resolveTeamProfileFromGSI(teamT, 'T', teams, baseUrl);
 
     const roundsPlayed = toNumber(getRoundCount(), 0);
+    const completedRounds = scoreboard.map?.round_wins ? Object.keys(scoreboard.map.round_wins).length : Math.max(0, roundsPlayed - 1);
 
     // Collect all live players from active sides
     const playersData = [];
@@ -3501,6 +4074,7 @@ app.get('/api/graphics/scoreboard', (req, res) => {
         teamProfile: side === 'CT' ? teamAProfile : teamBProfile,
         side,
         roundsPlayed,
+        completedRounds,
         roundStats,
         baseUrl
       });
@@ -3535,6 +4109,15 @@ app.get('/api/graphics/scoreboard', (req, res) => {
       return normalizePlayerStatsShape({ ...player, scoreboardRank: teamRank ?? player.scoreboardRank ?? null }, { placeholder: !!player?.isPlaceholder });
     });
 
+    const playersTable = buildPlayersTableRows(rankedStablePlayers);
+    const teamAPlayersTable = buildPlayersTableRows(teamAPlayers);
+    const teamBPlayersTable = buildPlayersTableRows(teamBPlayers);
+    const statsDebug = buildStatsDebug({
+      players: rankedStablePlayers,
+      playersTable,
+      rawScoreboardPlayers: scoreboard.players
+    });
+
     // Prepare response
     const response = {
       mode: 'scoreboard',
@@ -3564,9 +4147,12 @@ app.get('/api/graphics/scoreboard', (req, res) => {
       },
 
       players: rankedStablePlayers,
+      playersTable,
 
       teamAPlayers,
       teamBPlayers,
+      teamAPlayersTable,
+      teamBPlayersTable,
 
       teams: {
         teamAPlayers,
@@ -3576,7 +4162,8 @@ app.get('/api/graphics/scoreboard', (req, res) => {
       },
 
       topPlayers: buildOverallTopPlayers(meaningfulPlayers),
-      statAvailability: buildOverallStatAvailability(meaningfulPlayers)
+      statAvailability: buildOverallStatAvailability(meaningfulPlayers),
+      statsDebug
     };
 
     res.json(response);
@@ -3929,6 +4516,7 @@ app.get('/api/graphics/postmatch', (req, res) => {
       : { id: teamBId, name: teamBName || 'Team B', logo: '', score: 0 };
 
     const roundsPlayed = toNumber(postmatch.round, 0) || Math.max(...(Array.isArray(postmatch.players) ? postmatch.players.map((p) => toNumber(p?.roundsPlayed ?? p?.rounds, 0)) : [0]), 0);
+    const completedRounds = roundsPlayed;
     const rawPlayers = Array.isArray(postmatch.players) ? postmatch.players : [];
     const enrichedPlayers = rawPlayers.map((player, index) => {
       const steamId = player?.steamId || `postmatch_${index}`;
@@ -3949,6 +4537,7 @@ app.get('/api/graphics/postmatch', (req, res) => {
         teamProfile: side === 'CT' ? teamAProfile : teamBProfile,
         side,
         roundsPlayed,
+        completedRounds,
         roundStats,
         baseUrl
       });
@@ -3996,6 +4585,15 @@ app.get('/api/graphics/postmatch', (req, res) => {
       return normalizePlayerStatsShape({ ...player, scoreboardRank: teamRank ?? player.scoreboardRank ?? null }, { placeholder: !!player?.isPlaceholder });
     });
 
+    const playersTable = buildPlayersTableRows(rankedPostPlayers);
+    const teamAPlayersTable = buildPlayersTableRows(teamAPlayers);
+    const teamBPlayersTable = buildPlayersTableRows(teamBPlayers);
+    const statsDebug = buildStatsDebug({
+      players: rankedPostPlayers,
+      playersTable,
+      rawScoreboardPlayers: null
+    });
+
     const topPlayers = buildOverallTopPlayers(meaningfulPlayers);
     const rankedForMvp = sortPlayersBestToWorst(meaningfulPlayers);
 
@@ -4003,11 +4601,15 @@ app.get('/api/graphics/postmatch', (req, res) => {
       ...postmatch,
       type: postmatch.type || 'overall_scoreboard',
       players: rankedPostPlayers,
+      playersTable,
       teamAPlayers,
       teamBPlayers,
+      teamAPlayersTable,
+      teamBPlayersTable,
       mvp: rankedForMvp[0] || postmatch.mvp || null,
       topPlayers,
       statAvailability: buildOverallStatAvailability(meaningfulPlayers),
+      statsDebug,
       teamStats: postmatch.teamStats || { teamA: null, teamB: null }
     });
   } catch (err) {
