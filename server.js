@@ -4384,171 +4384,202 @@ async function buildPlayersExportWorkbook(baseUrl) {
   return workbook;
 }
 
-// POST /api/import/teams ï¿½ ?????? ?????? ?? xlsx
+// POST /api/import/teams — import/upsert teams from xlsx
 app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: '???? ?? ????????' });
+  if (!req.file) return res.status(400).json({ error: 'File not provided' });
 
   try {
     const wb = xlsx.read(req.file.buffer, { type: 'buffer' });
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = xlsx.utils.sheet_to_json(ws, { header: 1 });
 
-    if (rows.length < 2) return res.status(400).json({ error: '???? ???? ??? ?? ???????? ??????' });
+    if (rows.length < 2) return res.status(400).json({ error: 'File is empty or has no data rows' });
 
     const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
 
-    // ?????? ?? ????????? ???????? ????? ??????? ? ?????? ??????
     if (headers.includes('username') || headers.includes('steamid')) {
-      return res.status(400).json({ error: '??????, ?? ????????? ???? ???????. ??? ??????? ?????? ??????????? ???? ? ???????? "Team name" ??? ??????? Username/SteamID.' });
+      return res.status(400).json({ error: 'Wrong file type: this is a players file. Teams file must have "Team name" column.' });
     }
 
-    const teamNameIdx = headers.findIndex(h => h === 'team name');
-    const logoIdx = headers.findIndex(h => ['logo', 'team logo', 'avatar'].includes(h));
+    const teamNameIdx  = headers.findIndex(h => h === 'team name');
+    const shortNameIdx = headers.findIndex(h => h === 'short name');
+    const countryIdx   = headers.findIndex(h => h === 'country code' || h === 'country');
+    const logoIdx      = headers.findIndex(h => ['logo', 'team logo', 'avatar'].includes(h));
 
-    if (teamNameIdx === -1) return res.status(400).json({ error: '??????? "Team name" ?? ??????? ? ?????' });
+    if (teamNameIdx === -1) return res.status(400).json({ error: 'Column "Team name" not found in file' });
 
     const imageMap = extractXlsxImageMap(req.file.buffer);
     const logosDir = path.join(__dirname, 'public', 'logos');
     if (!fs.existsSync(logosDir)) fs.mkdirSync(logosDir, { recursive: true });
 
-    let created = 0, skipped = 0;
+    let created = 0, updated = 0, unchanged = 0;
+    let dirty = false;
 
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
       const name = row[teamNameIdx] ? String(row[teamNameIdx]).trim() : null;
       if (!name) continue;
 
-      const exists = teams.find(t => t.name.toLowerCase() === name.toLowerCase());
-      if (exists) {
-        skipped++;
-        continue;
-      }
+      const shortName  = (shortNameIdx !== -1 && row[shortNameIdx]) ? String(row[shortNameIdx]).trim() : undefined;
+      const countryCode = (countryIdx !== -1 && row[countryIdx]) ? String(row[countryIdx]).trim().toUpperCase() : undefined;
 
-      // ?????????? ???????: ??????? ?? ???????, ????? ?? ??????????? ???????????
-      let logo = null;
+      // Resolve logo: text cell first, then embedded image
+      let newLogo = undefined;
       if (logoIdx !== -1 && row[logoIdx]) {
         const val = String(row[logoIdx]).trim();
-        if (/^https?:\/\//i.test(val) || val.startsWith('/')) {
-          logo = val;
-        }
+        if (/^https?:\/\//i.test(val) || val.startsWith('/')) newLogo = val;
       }
-      if (!logo && imageMap[i]) {
+      if (newLogo === undefined && imageMap[i]) {
         const fname = safeFilename(name) + imageMap[i].ext;
         fs.writeFileSync(path.join(logosDir, fname), imageMap[i].data);
-        logo = '/logos/' + fname;
+        newLogo = '/logos/' + fname;
       }
 
-      const newTeam = { id: Date.now().toString() + '_' + i, name, logo, score: 0 };
-      teams.push(newTeam);
-      created++;
+      const existing = teams.find(t => t.name.toLowerCase() === name.toLowerCase());
+
+      if (existing) {
+        // Upsert: update fields that are present in the import file
+        let changed = false;
+        if (shortName !== undefined && existing.shortName !== shortName) { existing.shortName = shortName; changed = true; }
+        if (countryCode !== undefined && existing.countryCode !== countryCode) { existing.countryCode = countryCode; changed = true; }
+        if (newLogo !== undefined && existing.logo !== newLogo) { existing.logo = newLogo; changed = true; }
+        if (changed) { updated++; dirty = true; } else { unchanged++; }
+      } else {
+        const newTeam = {
+          id: Date.now().toString() + '_' + i,
+          name,
+          shortName: shortName || undefined,
+          countryCode: countryCode || undefined,
+          logo: newLogo || null,
+          score: 0
+        };
+        teams.push(newTeam);
+        created++;
+        dirty = true;
+      }
     }
 
-    if (created > 0) saveData();
+    if (dirty) saveData();
     res.json({
-      message: `?????? ????????: ??????? ${created} ??????, ????????? ${skipped} (??? ??????????)`,
+      message: `Import done: created ${created}, updated ${updated}, unchanged ${unchanged}`,
       created,
-      skipped
+      updated,
+      unchanged
     });
   } catch (err) {
-    console.error('?????? ??? ???????? xlsx:', err);
-    res.status(500).json({ error: '?????? ??? ??????? ?????: ' + err.message });
+    console.error('Import teams error:', err);
+    res.status(500).json({ error: 'Import failed: ' + err.message });
   }
 });
 
-// POST /api/import/players ï¿½ ?????? ??????? ?? xlsx
+// POST /api/import/players — import/upsert players from xlsx
 app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: '???? ?? ????????' });
+  if (!req.file) return res.status(400).json({ error: 'File not provided' });
 
   try {
     const wb = xlsx.read(req.file.buffer, { type: 'buffer' });
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = xlsx.utils.sheet_to_json(ws, { header: 1 });
 
-    if (rows.length < 2) return res.status(400).json({ error: '???? ???? ??? ?? ???????? ??????' });
+    if (rows.length < 2) return res.status(400).json({ error: 'File is empty or has no data rows' });
 
     const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
-    const usernameIdx = headers.findIndex(h => h === 'username');
-    const steamIdIdx = headers.findIndex(h => h === 'steamid');
-    const teamNameIdx = headers.findIndex(h => h === 'team name');
-    const photoIdx = headers.findIndex(h => ['avatar', 'photo'].includes(h));
+    const usernameIdx  = headers.findIndex(h => h === 'username');
+    const steamIdIdx   = headers.findIndex(h => h === 'steamid');
+    const teamNameIdx  = headers.findIndex(h => h === 'team name');
+    const photoIdx     = headers.findIndex(h => ['avatar', 'photo'].includes(h));
     const firstNameIdx = headers.findIndex(h => h === 'first name');
-    const lastNameIdx = headers.findIndex(h => h === 'last name');
-    const countryIdx = headers.findIndex(h => h === 'country code' || h === 'country');
+    const lastNameIdx  = headers.findIndex(h => h === 'last name');
+    const countryIdx   = headers.findIndex(h => h === 'country code' || h === 'country');
 
-    if (usernameIdx === -1) return res.status(400).json({ error: '??????? "Username" ?? ??????? ? ?????' });
+    if (usernameIdx === -1) return res.status(400).json({ error: 'Column "Username" not found in file' });
 
     const imageMap = extractXlsxImageMap(req.file.buffer);
     const playersDir = path.join(__dirname, 'public', 'players');
     if (!fs.existsSync(playersDir)) fs.mkdirSync(playersDir, { recursive: true });
 
-    let created = 0, skipped = 0;
+    let created = 0, updated = 0, unchanged = 0;
+    let dirty = false;
 
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
       const name = row[usernameIdx] ? String(row[usernameIdx]).trim() : null;
       if (!name) continue;
 
-      const steamId = (steamIdIdx !== -1 && row[steamIdIdx]) ? String(row[steamIdIdx]).trim() : null;
+      const steamId    = (steamIdIdx   !== -1 && row[steamIdIdx])   ? String(row[steamIdIdx]).trim()                   : undefined;
+      const firstName  = (firstNameIdx !== -1 && row[firstNameIdx]) ? String(row[firstNameIdx]).trim()                 : undefined;
+      const lastName   = (lastNameIdx  !== -1 && row[lastNameIdx])  ? String(row[lastNameIdx]).trim()                  : undefined;
+      const countryCode = (countryIdx  !== -1 && row[countryIdx])   ? String(row[countryIdx]).trim().toUpperCase()     : undefined;
 
-      // ????????? ????????????? ?? steamId (?????????) ??? ?? ????
-      let exists = null;
-      if (steamId) {
-        exists = players.find(p => p.steamId && p.steamId.toLowerCase() === steamId.toLowerCase());
-      }
-      if (!exists) {
-        exists = players.find(p => p.name.toLowerCase() === name.toLowerCase());
-      }
-      if (exists) {
-        skipped++;
-        continue;
-      }
-
-      // ???? ??????? ?? ?????
-      let teamId = null;
+      // Resolve team by name
+      let newTeamId = undefined;
       if (teamNameIdx !== -1 && row[teamNameIdx]) {
         const teamName = String(row[teamNameIdx]).trim();
-        const teamObj = teams.find(t => t.name.toLowerCase() === teamName.toLowerCase());
-        if (teamObj) teamId = teamObj.id;
+        const teamObj  = teams.find(t => t.name.toLowerCase() === teamName.toLowerCase());
+        if (teamObj) newTeamId = teamObj.id;
       }
 
-      // ?????????? ????: ??????? ?? ???????, ????? ?? ??????????? ???????????
-      let photo = null;
+      // Resolve photo: text cell first, then embedded image
+      let newPhoto = undefined;
       if (photoIdx !== -1 && row[photoIdx]) {
         const val = String(row[photoIdx]).trim();
-        if (/^https?:\/\//i.test(val) || val.startsWith('/')) {
-          photo = val;
-        }
+        if (/^https?:\/\//i.test(val) || val.startsWith('/')) newPhoto = val;
       }
-      if (!photo && imageMap[i]) {
+      if (newPhoto === undefined && imageMap[i]) {
         const fname = safeFilename(name) + imageMap[i].ext;
         fs.writeFileSync(path.join(playersDir, fname), imageMap[i].data);
-        photo = '/players/' + fname;
+        newPhoto = '/players/' + fname;
       }
 
-      const newPlayer = {
-        id: Date.now().toString() + '_' + i,
-        name,
-        steamId: steamId || null,
-        photo,
-        teamId,
-        match_stats: {},
-        firstName: (firstNameIdx !== -1 && row[firstNameIdx]) ? String(row[firstNameIdx]).trim() : null,
-        lastName: (lastNameIdx !== -1 && row[lastNameIdx]) ? String(row[lastNameIdx]).trim() : null,
-        country: (countryIdx !== -1 && row[countryIdx]) ? String(row[countryIdx]).trim().toUpperCase() : null
-      };
-      players.push(newPlayer);
-      created++;
+      // Find existing player: prefer steamId match, fall back to name
+      let existing = null;
+      if (steamId) existing = players.find(p => p.steamId && p.steamId.toLowerCase() === steamId.toLowerCase());
+      if (!existing) existing = players.find(p => (p.nickname || p.name || '').toLowerCase() === name.toLowerCase());
+
+      if (existing) {
+        // Upsert: update all fields present in the import row
+        let changed = false;
+        const set = (key, val) => { if (val !== undefined && existing[key] !== val) { existing[key] = val; changed = true; } };
+        set('name',        name);
+        set('nickname',    name);
+        if (steamId !== undefined && !existing.steamId) set('steamId', steamId);
+        set('firstName',   firstName);
+        set('lastName',    lastName);
+        set('countryCode', countryCode);
+        set('country',     countryCode);
+        if (newTeamId !== undefined) set('teamId', newTeamId);
+        if (newPhoto  !== undefined) set('photo',  newPhoto);
+        if (changed) { updated++; dirty = true; } else { unchanged++; }
+      } else {
+        const newPlayer = {
+          id: Date.now().toString() + '_' + i,
+          name,
+          nickname: name,
+          steamId:  steamId || null,
+          photo:    newPhoto || null,
+          teamId:   newTeamId !== undefined ? newTeamId : null,
+          match_stats: {},
+          firstName:   firstName   || null,
+          lastName:    lastName    || null,
+          countryCode: countryCode || null,
+          country:     countryCode || null
+        };
+        players.push(newPlayer);
+        created++;
+        dirty = true;
+      }
     }
 
-    if (created > 0) saveData();
+    if (dirty) saveData();
     res.json({
-      message: `?????? ????????: ??????? ${created} ???????, ????????? ${skipped} (??? ??????????)`,
+      message: `Import done: created ${created}, updated ${updated}, unchanged ${unchanged}`,
       created,
-      skipped
+      updated,
+      unchanged
     });
   } catch (err) {
-    console.error('?????? ??? ???????? xlsx:', err);
-    res.status(500).json({ error: '?????? ??? ??????? ?????: ' + err.message });
+    console.error('Import players error:', err);
+    res.status(500).json({ error: 'Import failed: ' + err.message });
   }
 });
 
