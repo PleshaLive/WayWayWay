@@ -4461,14 +4461,14 @@ app.post('/api/import/teams', uploadXlsx.single('xlsxFile'), (req, res) => {
 
     if (dirty) saveData();
     res.json({
-      message: `Import done: created ${created}, updated ${updated}, unchanged ${unchanged}`,
+      message: `Импорт выполнен: создано ${created}, обновлено ${updated}, без изменений ${unchanged}`,
       created,
       updated,
       unchanged
     });
   } catch (err) {
     console.error('Import teams error:', err);
-    res.status(500).json({ error: 'Import failed: ' + err.message });
+    res.status(500).json({ error: 'Ошибка импорта: ' + err.message });
   }
 });
 
@@ -4572,14 +4572,14 @@ app.post('/api/import/players', uploadXlsx.single('xlsxFile'), (req, res) => {
 
     if (dirty) saveData();
     res.json({
-      message: `Import done: created ${created}, updated ${updated}, unchanged ${unchanged}`,
+      message: `Импорт выполнен: создано ${created}, обновлено ${updated}, без изменений ${unchanged}`,
       created,
       updated,
       unchanged
     });
   } catch (err) {
     console.error('Import players error:', err);
-    res.status(500).json({ error: 'Import failed: ' + err.message });
+    res.status(500).json({ error: 'Ошибка импорта: ' + err.message });
   }
 });
 

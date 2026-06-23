@@ -1743,8 +1743,8 @@
       importEndpoint = type === 'teams' ? '/api/import/teams' : '/api/import/players';
       const label = type === 'teams' ? 'команд' : 'игроков';
       const desc = type === 'teams'
-        ? 'Файл должен содержать колонку <b>Team name</b>. Дубликаты по названию будут пропущены.'
-        : 'Файл должен содержать колонки <b>Username</b>, <b>SteamID</b>, <b>Team Name</b>. Дубликаты по SteamID или нику будут пропущены.';
+        ? 'Файл должен содержать колонку <b>Team name</b>. Существующие записи будут обновлены, новые — добавлены.'
+        : 'Файл должен содержать колонки <b>Username</b>, <b>SteamID</b>, <b>Team Name</b>. Существующие записи будут обновлены, новые — добавлены.';
       $('#importModalTitle').html('<i class="fas fa-file-excel"></i> Импорт ' + label);
       $('#importModalDesc').html(desc);
       $('#importXlsxFile').val('');
