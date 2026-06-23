@@ -339,6 +339,76 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(num) ? num : fallback;
 }
 
+function extractTeamNameValue(teamValue) {
+  if (!teamValue) return '';
+  if (typeof teamValue === 'string') return teamValue;
+  if (typeof teamValue === 'object') {
+    return teamValue.name || teamValue.teamName || '';
+  }
+  return '';
+}
+
+function extractTeamIdValue(teamValue) {
+  if (!teamValue || typeof teamValue !== 'object') return null;
+  return teamValue.id || teamValue.teamId || null;
+}
+
+function hasPositiveNumeric(value) {
+  const num = Number(value);
+  return Number.isFinite(num) && num > 0;
+}
+
+function getSortableRating(player) {
+  if (!player || typeof player !== 'object') return null;
+  if (hasPositiveNumeric(player.rating)) return Number(player.rating);
+  if (hasPositiveNumeric(player.customRating)) return Number(player.customRating);
+  return null;
+}
+
+function sortPlayersBestToWorst(playersList) {
+  if (!Array.isArray(playersList)) return [];
+  return [...playersList].sort((a, b) => {
+    const aRating = getSortableRating(a);
+    const bRating = getSortableRating(b);
+
+    if (aRating != null && bRating != null && bRating !== aRating) return bRating - aRating;
+    if (aRating != null && bRating == null) return -1;
+    if (aRating == null && bRating != null) return 1;
+
+    const aAdr = toNumber(a?.adr, 0);
+    const bAdr = toNumber(b?.adr, 0);
+    if (bAdr !== aAdr) return bAdr - aAdr;
+
+    const aKills = toNumber(a?.kills, 0);
+    const bKills = toNumber(b?.kills, 0);
+    if (bKills !== aKills) return bKills - aKills;
+
+    const aPlusMinus = toNumber(a?.plusMinus, 0);
+    const bPlusMinus = toNumber(b?.plusMinus, 0);
+    if (bPlusMinus !== aPlusMinus) return bPlusMinus - aPlusMinus;
+
+    return toNumber(a?.deaths, 0) - toNumber(b?.deaths, 0);
+  });
+}
+
+function isPlayerInTeam(player, { teamId = null, teamName = '', side = '' } = {}) {
+  if (!player || typeof player !== 'object') return false;
+
+  const playerTeamId = player.teamId != null ? String(player.teamId).toLowerCase() : '';
+  const targetTeamId = teamId != null ? String(teamId).toLowerCase() : '';
+  if (playerTeamId && targetTeamId && playerTeamId === targetTeamId) return true;
+
+  const playerTeamName = (player.teamName || '').toString().trim().toLowerCase();
+  const targetTeamName = (teamName || '').toString().trim().toLowerCase();
+  if (playerTeamName && targetTeamName && playerTeamName === targetTeamName) return true;
+
+  const playerSide = (player.side || '').toString().trim().toUpperCase();
+  const targetSide = (side || '').toString().trim().toUpperCase();
+  if (playerSide && targetSide && playerSide === targetSide) return true;
+
+  return false;
+}
+
 function safeDivide(numerator, denominator, digits = 2) {
   if (!denominator) return numerator;
   return parseFloat((numerator / denominator).toFixed(digits));
@@ -761,15 +831,7 @@ function buildPlayerStatsPayload(mode, req, options = {}) {
     }
   }
 
-  const meaningfulPlayers = candidates.filter((player) => !player.isPlaceholder);
-  meaningfulPlayers.sort((a, b) => {
-    const aRating = toNumber(a.rating || a.customRating, 0);
-    const bRating = toNumber(b.rating || b.customRating, 0);
-    if (bRating !== aRating) return bRating - aRating;
-    if (toNumber(b.adr, 0) !== toNumber(a.adr, 0)) return toNumber(b.adr, 0) - toNumber(a.adr, 0);
-    if (toNumber(b.kills, 0) !== toNumber(a.kills, 0)) return toNumber(b.kills, 0) - toNumber(a.kills, 0);
-    return toNumber(a.deaths, 0) - toNumber(b.deaths, 0);
-  });
+  const meaningfulPlayers = sortPlayersBestToWorst(candidates.filter((player) => !player.isPlaceholder));
 
   const topSelector = (selector) => meaningfulPlayers
     .slice()
@@ -805,28 +867,38 @@ function buildPlayerStatsPayload(mode, req, options = {}) {
 
   const mvp = buildStableMvp(meaningfulPlayers[0] || null);
 
-  const teamAName = mode === 'live'
-    ? (scoreboard.map?.team_ct?.name || liveData.teamA || currentMatch?.teamCT?.name || currentMatch?.teamA || null)
-    : (postmatchData.teamA || getLatestCompletedMatch()?.teamA || null);
-  const teamBName = mode === 'live'
-    ? (scoreboard.map?.team_t?.name || liveData.teamB || currentMatch?.teamT?.name || currentMatch?.teamB || null)
-    : (postmatchData.teamB || getLatestCompletedMatch()?.teamB || null);
+  const teamALiveValue = liveData.teamA || scoreboard.map?.team_ct?.name || currentMatch?.teamCT?.name || currentMatch?.teamA || null;
+  const teamBLiveValue = liveData.teamB || scoreboard.map?.team_t?.name || currentMatch?.teamT?.name || currentMatch?.teamB || null;
+  const teamAPostValue = postmatchData.teamA || getLatestCompletedMatch()?.teamA || null;
+  const teamBPostValue = postmatchData.teamB || getLatestCompletedMatch()?.teamB || null;
 
-  const teamAPlayersRaw = meaningfulPlayers.filter((player) => {
-    if (mode === 'live') {
-      const liveSide = player.side || player.teamName || '';
-      return liveSide === 'CT' || (teamAName && player.teamName === teamAName);
-    }
-    return teamAName ? player.teamName === teamAName : player.side === 'CT';
-  }).slice(0, teamSlots);
+  const teamAValue = mode === 'live' ? teamALiveValue : teamAPostValue;
+  const teamBValue = mode === 'live' ? teamBLiveValue : teamBPostValue;
+  const teamAName = extractTeamNameValue(teamAValue);
+  const teamBName = extractTeamNameValue(teamBValue);
+  const teamAId = extractTeamIdValue(teamAValue);
+  const teamBId = extractTeamIdValue(teamBValue);
 
-  const teamBPlayersRaw = meaningfulPlayers.filter((player) => {
-    if (mode === 'live') {
-      const liveSide = player.side || player.teamName || '';
-      return liveSide === 'T' || (teamBName && player.teamName === teamBName);
-    }
-    return teamBName ? player.teamName === teamBName : player.side === 'T';
-  }).slice(0, teamSlots);
+  const rankedTeamAPlayers = sortPlayersBestToWorst(
+    meaningfulPlayers.filter((player) =>
+      isPlayerInTeam(player, { teamId: teamAId, teamName: teamAName, side: 'CT' })
+    )
+  );
+  const rankedTeamBPlayers = sortPlayersBestToWorst(
+    meaningfulPlayers.filter((player) =>
+      isPlayerInTeam(player, { teamId: teamBId, teamName: teamBName, side: 'T' })
+    )
+  );
+
+  const fallbackTeamAPlayers = sortPlayersBestToWorst(
+    meaningfulPlayers.filter((player) => (player.side || '').toUpperCase() === 'CT')
+  );
+  const fallbackTeamBPlayers = sortPlayersBestToWorst(
+    meaningfulPlayers.filter((player) => (player.side || '').toUpperCase() === 'T')
+  );
+
+  const teamAPlayersRaw = (rankedTeamAPlayers.length ? rankedTeamAPlayers : fallbackTeamAPlayers).slice(0, teamSlots);
+  const teamBPlayersRaw = (rankedTeamBPlayers.length ? rankedTeamBPlayers : fallbackTeamBPlayers).slice(0, teamSlots);
 
   const players = buildStablePlayerList(meaningfulPlayers, totalPlayerSlots);
   const teamAPlayers = buildTeamSlotList(teamAPlayersRaw, teamSlots);
@@ -854,8 +926,8 @@ function buildPlayerStatsPayload(mode, req, options = {}) {
     teamBPlayers,
     topPlayers,
     mvp,
-    teamA: teamAName,
-    teamB: teamBName,
+    teamA: teamAValue,
+    teamB: teamBValue,
     teamStats: mode === 'postmatch'
       ? (postmatchData.teamStats || getLatestCompletedMatch()?.teamStats || { teamA: null, teamB: null })
       : (liveData.teamStats || { teamA: null, teamB: null })
@@ -949,16 +1021,9 @@ function buildPlayerStatsPayloadFromMatch(match, req) {
       })
     : [];
 
-  playersOut.sort((a, b) => {
-    const aRating = a.rating ?? a.customRating ?? 0;
-    const bRating = b.rating ?? b.customRating ?? 0;
-    if (bRating !== aRating) return bRating - aRating;
-    if (b.adr !== a.adr) return b.adr - a.adr;
-    if (b.kills !== a.kills) return b.kills - a.kills;
-    return (a.deaths || 0) - (b.deaths || 0);
-  });
+  const rankedPlayers = sortPlayersBestToWorst(playersOut);
 
-  const topSelector = (selector) => [...playersOut].sort((a, b) => {
+  const topSelector = (selector) => [...rankedPlayers].sort((a, b) => {
     const bv = selector(b);
     const av = selector(a);
     if (bv !== av) return bv - av;
@@ -986,14 +1051,22 @@ function buildPlayerStatsPayloadFromMatch(match, req) {
     enemiesFlashed: topSelector((p) => p.utility?.enemiesFlashed || 0)
   };
 
-  const mvp = [...playersOut].sort((a, b) => {
-    const ar = a.rating ?? a.customRating ?? 0;
-    const br = b.rating ?? b.customRating ?? 0;
-    if (br !== ar) return br - ar;
-    if ((b.adr || 0) !== (a.adr || 0)) return (b.adr || 0) - (a.adr || 0);
-    if ((b.kills || 0) !== (a.kills || 0)) return (b.kills || 0) - (a.kills || 0);
-    return (a.deaths || 0) - (b.deaths || 0);
-  })[0] || null;
+  const mvp = rankedPlayers[0] || null;
+
+  const teamAName = extractTeamNameValue(teamA);
+  const teamBName = extractTeamNameValue(teamB);
+  const teamAId = extractTeamIdValue(teamA);
+  const teamBId = extractTeamIdValue(teamB);
+
+  const rankedTeamAPlayers = sortPlayersBestToWorst(
+    rankedPlayers.filter((player) => isPlayerInTeam(player, { teamId: teamAId, teamName: teamAName, side: 'CT' }))
+  );
+  const rankedTeamBPlayers = sortPlayersBestToWorst(
+    rankedPlayers.filter((player) => isPlayerInTeam(player, { teamId: teamBId, teamName: teamBName, side: 'T' }))
+  );
+
+  const fallbackTeamA = sortPlayersBestToWorst(rankedPlayers.filter((player) => (player.side || '').toUpperCase() === 'CT'));
+  const fallbackTeamB = sortPlayersBestToWorst(rankedPlayers.filter((player) => (player.side || '').toUpperCase() === 'T'));
 
   return {
     mode: 'postmatch',
@@ -1002,13 +1075,13 @@ function buildPlayerStatsPayloadFromMatch(match, req) {
     map: match.map || match.mapName || null,
     round: match.round || match.roundCount || 0,
     updatedAt: match.updatedAt || match.finishedAt || new Date().toISOString(),
-    players: playersOut.slice(0, 10),
+    players: buildStablePlayerList(rankedPlayers, 10),
     topPlayers,
     mvp,
     teamA: match.teamA || null,
     teamB: match.teamB || null,
-    teamAPlayers: match.teamAPlayers || playersOut.filter((p) => p.side === 'CT'),
-    teamBPlayers: match.teamBPlayers || playersOut.filter((p) => p.side === 'T'),
+    teamAPlayers: buildTeamSlotList(rankedTeamAPlayers.length ? rankedTeamAPlayers : fallbackTeamA, 5),
+    teamBPlayers: buildTeamSlotList(rankedTeamBPlayers.length ? rankedTeamBPlayers : fallbackTeamB, 5),
     teamStats: match.teamStats || { teamA: null, teamB: null },
     roundHistory: Array.isArray(match.roundHistory) ? match.roundHistory : []
   };
@@ -2619,8 +2692,17 @@ app.get('/api/graphics/scoreboard', (req, res) => {
       playersData.push(playerProfile);
     }
 
-    // Sort by kills
+    // Keep full list globally sorted for generic consumers
     playersData.sort((a, b) => b.kills - a.kills);
+
+    const stablePlayers = buildStablePlayerList(playersData, 10);
+    const meaningfulPlayers = stablePlayers.filter((p) => !p.isPlaceholder);
+
+    // Team slices for overlay bindings: always 5 slots, sorted best -> worst
+    const rankedTeamAPlayers = sortPlayersBestToWorst(playersData.filter((p) => p.side === 'CT'));
+    const rankedTeamBPlayers = sortPlayersBestToWorst(playersData.filter((p) => p.side === 'T'));
+    const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers, 5);
+    const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers, 5);
 
     // Prepare response
     const response = {
@@ -2649,19 +2731,23 @@ app.get('/api/graphics/scoreboard', (req, res) => {
         }
       },
 
-      players: playersData,
+      players: stablePlayers,
+
+      teamAPlayers,
+      teamBPlayers,
 
       teams: {
-        teamAPlayers: playersData.filter(p => p.side === 'CT'),
-        teamBPlayers: playersData.filter(p => p.side === 'T'),
-        ctPlayers: playersData.filter(p => p.side === 'CT'),
-        tPlayers: playersData.filter(p => p.side === 'T')
+        teamAPlayers,
+        teamBPlayers,
+        ctPlayers: teamAPlayers,
+        tPlayers: teamBPlayers
       },
 
       topPlayers: {
-        kills: playersData.slice(0, 3),
-        adr: [...playersData].sort((a, b) => b.adr - a.adr).slice(0, 3),
-        damage: [...playersData].sort((a, b) => b.damage - a.damage).slice(0, 3)
+        kills: [...meaningfulPlayers].sort((a, b) => b.kills - a.kills).slice(0, 3),
+        adr: [...meaningfulPlayers].sort((a, b) => b.adr - a.adr).slice(0, 3),
+        damage: [...meaningfulPlayers].sort((a, b) => b.damage - a.damage).slice(0, 3),
+        rating: sortPlayersBestToWorst(meaningfulPlayers).slice(0, 3)
       }
     };
 
@@ -2937,13 +3023,51 @@ app.get('/api/graphics/prematch', (req, res) => {
 app.get('/api/graphics/postmatch', (req, res) => {
   try {
     const POSTMATCH_FILE = STORAGE_FILES.postmatch;
-    
-    if (fs.existsSync(POSTMATCH_FILE)) {
-      const postmatch = JSON.parse(fs.readFileSync(POSTMATCH_FILE, 'utf8'));
-      res.json(postmatch);
-    } else {
-      res.json(getIdlePostmatch());
-    }
+
+    const postmatch = fs.existsSync(POSTMATCH_FILE)
+      ? JSON.parse(fs.readFileSync(POSTMATCH_FILE, 'utf8'))
+      : getIdlePostmatch();
+
+    const normalizedPlayers = buildStablePlayerList(Array.isArray(postmatch.players) ? postmatch.players : [], 10);
+    const meaningfulPlayers = normalizedPlayers.filter((p) => !p.isPlaceholder);
+
+    const teamAValue = postmatch.teamA || null;
+    const teamBValue = postmatch.teamB || null;
+    const teamAName = extractTeamNameValue(teamAValue);
+    const teamBName = extractTeamNameValue(teamBValue);
+    const teamAId = extractTeamIdValue(teamAValue);
+    const teamBId = extractTeamIdValue(teamBValue);
+
+    const rankedTeamAPlayers = sortPlayersBestToWorst(
+      meaningfulPlayers.filter((player) =>
+        isPlayerInTeam(player, { teamId: teamAId, teamName: teamAName, side: 'CT' })
+      )
+    );
+    const rankedTeamBPlayers = sortPlayersBestToWorst(
+      meaningfulPlayers.filter((player) =>
+        isPlayerInTeam(player, { teamId: teamBId, teamName: teamBName, side: 'T' })
+      )
+    );
+
+    const fallbackTeamA = sortPlayersBestToWorst(
+      meaningfulPlayers.filter((player) => (player.side || '').toUpperCase() === 'CT')
+    );
+    const fallbackTeamB = sortPlayersBestToWorst(
+      meaningfulPlayers.filter((player) => (player.side || '').toUpperCase() === 'T')
+    );
+
+    const teamAPlayers = buildTeamSlotList(rankedTeamAPlayers.length ? rankedTeamAPlayers : fallbackTeamA, 5);
+    const teamBPlayers = buildTeamSlotList(rankedTeamBPlayers.length ? rankedTeamBPlayers : fallbackTeamB, 5);
+
+    res.json({
+      ...postmatch,
+      players: normalizedPlayers,
+      teamAPlayers,
+      teamBPlayers,
+      mvp: postmatch.mvp || null,
+      topPlayers: buildStableTopPlayers(postmatch.topPlayers),
+      teamStats: postmatch.teamStats || { teamA: null, teamB: null }
+    });
   } catch (err) {
     console.error('Error in /api/graphics/postmatch:', err);
     res.status(500).json({ error: 'Internal Server Error', message: err.message });
@@ -2959,22 +3083,21 @@ app.get('/api/graphics/player-stats/live', (req, res) => {
   }
 });
 
+app.get('/api/graphics/player-stats/postmatch', (req, res) => {
+  try {
+    res.json(buildPlayerStatsPayload('postmatch', req));
+  } catch (err) {
+    console.error('Error in /api/graphics/player-stats/postmatch:', err);
+    res.status(500).json({ mode: 'postmatch', error: err.message, players: [] });
+  }
+});
+
 app.get('/api/graphics/player-stats/live/compact', (req, res) => {
   try {
     res.json(buildPlayerStatsPayload('live', req, { compact: true }));
   } catch (err) {
     console.error('Error in /api/graphics/player-stats/live/compact:', err);
     res.status(500).json({ mode: 'live', error: err.message, players: [], teamAPlayers: [], teamBPlayers: [], topPlayers: {}, mvp: null, updatedAt: '' });
-  }
-});
-
-app.get('/api/graphics/player-stats/postmatch', (req, res) => {
-  try {
-    const postmatch = readJsonSafe(STORAGE_FILES.postmatch, getIdlePostmatch());
-    res.json(buildPlayerStatsPayload('postmatch', req));
-  } catch (err) {
-    console.error('Error in /api/graphics/player-stats/postmatch:', err);
-    res.status(500).json({ mode: 'postmatch', error: err.message, players: [] });
   }
 });
 
