@@ -39,6 +39,981 @@ const STORAGE_FILES = {
   headToHead: path.join(STORAGE_DIR, 'headToHead.json')
 };
 
+const DEFAULT_PLAYER_STATS = {
+  kills: 0,
+  deaths: 0,
+  assists: 0,
+  damage: 0,
+  roundsPlayed: 0,
+  headshots: null,
+  headshotRate: null,
+  multiKills: {
+    oneKillRounds: 0,
+    twoKillRounds: 0,
+    threeKillRounds: 0,
+    fourKillRounds: 0,
+    fiveKillRounds: 0,
+    aces: 0,
+    totalMultiKillRounds: 0
+  },
+  opening: {
+    firstKills: null,
+    firstDeaths: null,
+    entryDiff: null
+  },
+  clutches: {
+    attempts: null,
+    wins: null,
+    oneVsOne: null,
+    oneVsTwo: null,
+    oneVsThree: null,
+    oneVsFour: null,
+    oneVsFive: null
+  },
+  utility: {
+    flashesThrown: null,
+    enemiesFlashed: null,
+    flashAssists: null,
+    smokesThrown: null,
+    heThrown: null,
+    molotovsThrown: null,
+    decoysThrown: null,
+    utilityDamage: null
+  },
+  economy: {
+    money: null,
+    equipmentValue: null,
+    spendThisRound: null
+  },
+  weaponStats: {},
+  sideStats: {
+    CT: { rounds: 0, kills: 0, deaths: 0, adr: 0 },
+    T: { rounds: 0, kills: 0, deaths: 0, adr: 0 }
+  },
+  rating: 0,
+  customRating: 0
+};
+
+const EMPTY_TOP_PLAYERS = {
+  kills: [],
+  adr: [],
+  damage: [],
+  kd: [],
+  plusMinus: [],
+  rating: [],
+  aces: [],
+  multiKills: [],
+  flashAssists: [],
+  enemiesFlashed: []
+};
+
+function cloneEmptyTopPlayers() {
+  return {
+    kills: [],
+    adr: [],
+    damage: [],
+    kd: [],
+    plusMinus: [],
+    rating: [],
+    aces: [],
+    multiKills: [],
+    flashAssists: [],
+    enemiesFlashed: []
+  };
+}
+
+function createPlaceholderPlayer() {
+  return {
+    id: null,
+    steamId: '',
+    nickname: '',
+    name: '',
+    photo: '',
+    teamId: null,
+    teamName: '',
+    teamLogo: '',
+    side: '',
+    kills: 0,
+    deaths: 0,
+    assists: 0,
+    kd: 0,
+    plusMinus: 0,
+    damage: 0,
+    adr: 0,
+    damagePerKill: 0,
+    roundsPlayed: 0,
+    headshots: null,
+    headshotRate: null,
+    multiKills: {
+      oneKillRounds: 0,
+      twoKillRounds: 0,
+      threeKillRounds: 0,
+      fourKillRounds: 0,
+      fiveKillRounds: 0,
+      aces: 0,
+      totalMultiKillRounds: 0
+    },
+    opening: {
+      firstKills: null,
+      firstDeaths: null,
+      entryDiff: null
+    },
+    clutches: {
+      attempts: null,
+      wins: null,
+      oneVsOne: null,
+      oneVsTwo: null,
+      oneVsThree: null,
+      oneVsFour: null,
+      oneVsFive: null
+    },
+    utility: {
+      flashesThrown: null,
+      enemiesFlashed: null,
+      flashAssists: null,
+      smokesThrown: null,
+      heThrown: null,
+      molotovsThrown: null,
+      decoysThrown: null,
+      utilityDamage: null
+    },
+    economy: {
+      money: null,
+      equipmentValue: null,
+      spendThisRound: null
+    },
+    weaponStats: {},
+    sideStats: {
+      CT: { rounds: 0, kills: 0, deaths: 0, adr: 0 },
+      T: { rounds: 0, kills: 0, deaths: 0, adr: 0 }
+    },
+    rating: 0,
+    customRating: 0,
+    isPlaceholder: true
+  };
+}
+
+function createPlaceholderPlayers(count) {
+  return Array.from({ length: count }, () => createPlaceholderPlayer());
+}
+
+function normalizePlayerStatsShape(player, { placeholder = false } = {}) {
+  const source = player || {};
+  const result = {
+    ...createPlaceholderPlayer(),
+    ...source,
+    multiKills: {
+      ...createPlaceholderPlayer().multiKills,
+      ...(source.multiKills || {})
+    },
+    opening: {
+      ...createPlaceholderPlayer().opening,
+      ...(source.opening || {})
+    },
+    clutches: {
+      ...createPlaceholderPlayer().clutches,
+      ...(source.clutches || {})
+    },
+    utility: {
+      ...createPlaceholderPlayer().utility,
+      ...(source.utility || {})
+    },
+    economy: {
+      ...createPlaceholderPlayer().economy,
+      ...(source.economy || {})
+    },
+    sideStats: {
+      CT: {
+        ...createPlaceholderPlayer().sideStats.CT,
+        ...(source.sideStats?.CT || {})
+      },
+      T: {
+        ...createPlaceholderPlayer().sideStats.T,
+        ...(source.sideStats?.T || {})
+      }
+    },
+    weaponStats: source.weaponStats || {},
+    isPlaceholder: placeholder || !!source.isPlaceholder
+  };
+
+  result.id = source.id ?? null;
+  result.steamId = source.steamId != null ? String(source.steamId) : '';
+  result.nickname = source.nickname != null ? String(source.nickname) : '';
+  result.name = source.name != null ? String(source.name) : '';
+  result.photo = source.photo != null ? String(source.photo) : '';
+  result.teamId = source.teamId ?? null;
+  result.teamName = source.teamName != null ? String(source.teamName) : '';
+  result.teamLogo = source.teamLogo != null ? String(source.teamLogo) : '';
+  result.side = source.side != null ? String(source.side) : '';
+  result.kills = toNumber(source.kills, 0);
+  result.deaths = toNumber(source.deaths, 0);
+  result.assists = toNumber(source.assists, 0);
+  result.kd = toNumber(source.kd, 0);
+  result.plusMinus = toNumber(source.plusMinus, 0);
+  result.damage = toNumber(source.damage, 0);
+  result.adr = toNumber(source.adr, 0);
+  result.damagePerKill = toNumber(source.damagePerKill, 0);
+  result.roundsPlayed = toNumber(source.roundsPlayed, 0);
+  result.headshots = source.headshots ?? null;
+  result.headshotRate = source.headshotRate ?? null;
+  result.rating = toNumber(source.rating, 0);
+  result.customRating = toNumber(source.customRating, 0);
+  result.isPlaceholder = !!source.isPlaceholder || placeholder;
+
+  return result;
+}
+
+function normalizeTopPlayerEntry(player) {
+  if (!player) return null;
+  return {
+    id: player.id ?? null,
+    name: player.name || player.nickname || '',
+    nickname: player.nickname || player.name || '',
+    photo: player.photo || '',
+    teamId: player.teamId ?? null,
+    teamLogo: player.teamLogo || '',
+    value: toNumber(player.value, 0)
+  };
+}
+
+function buildStableTopPlayers(rawTopPlayers) {
+  const source = rawTopPlayers && typeof rawTopPlayers === 'object' ? rawTopPlayers : {};
+  const result = cloneEmptyTopPlayers();
+  for (const key of Object.keys(result)) {
+    result[key] = Array.isArray(source[key]) ? source[key].map(normalizeTopPlayerEntry).filter(Boolean) : [];
+  }
+  return result;
+}
+
+function buildStableMvp(player) {
+  if (!player) return null;
+  return normalizePlayerStatsShape(player, { placeholder: false });
+}
+
+function buildStablePlayerList(playersList, totalSlots) {
+  const normalized = Array.isArray(playersList)
+    ? playersList.slice(0, totalSlots).map((player) => normalizePlayerStatsShape(player, { placeholder: !!player?.isPlaceholder }))
+    : [];
+  while (normalized.length < totalSlots) {
+    normalized.push(createPlaceholderPlayer());
+  }
+  return normalized;
+}
+
+function buildTeamSlotList(playersList, totalSlots) {
+  const slots = buildStablePlayerList(playersList, totalSlots);
+  while (slots.length > totalSlots) slots.pop();
+  return slots;
+}
+
+function buildCompactPlayerStatsPayload(payload) {
+  return {
+    mode: payload.mode,
+    players: Array.isArray(payload.players) ? payload.players.map((player) => normalizePlayerStatsShape(player, { placeholder: !!player?.isPlaceholder })) : [],
+    teamAPlayers: Array.isArray(payload.teamAPlayers) ? payload.teamAPlayers.map((player) => normalizePlayerStatsShape(player, { placeholder: !!player?.isPlaceholder })) : [],
+    teamBPlayers: Array.isArray(payload.teamBPlayers) ? payload.teamBPlayers.map((player) => normalizePlayerStatsShape(player, { placeholder: !!player?.isPlaceholder })) : [],
+    topPlayers: buildStableTopPlayers(payload.topPlayers),
+    mvp: payload.mvp ? normalizePlayerStatsShape(payload.mvp, { placeholder: !!payload.mvp.isPlaceholder }) : null,
+    updatedAt: payload.updatedAt || ''
+  };
+}
+
+function readCompletedMatches() {
+  const completed = readJsonSafe(STORAGE_FILES.completedMatches, []);
+  return Array.isArray(completed) ? completed : [];
+}
+
+function getLatestCompletedMatch() {
+  const completed = readCompletedMatches();
+  if (!completed.length) return null;
+  return completed[completed.length - 1] || null;
+}
+
+function isFinishedMatch(match) {
+  if (!match || typeof match !== 'object') return false;
+  return match.status === 'finished' || match.status === 'completed' || match.status === 'final' || !!match.finishedAt;
+}
+
+function toNumber(value, fallback = 0) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : fallback;
+}
+
+function safeDivide(numerator, denominator, digits = 2) {
+  if (!denominator) return numerator;
+  return parseFloat((numerator / denominator).toFixed(digits));
+}
+
+function normalizeSteamId(value) {
+  return value ? String(value).trim().toLowerCase() : '';
+}
+
+function getBaseUrl(req) {
+  const protocol = req.protocol || 'http';
+  const host = req.get('host') || `localhost:${port}`;
+  return `${protocol}://${host}`;
+}
+
+function getPlayerFirstName(player) {
+  return player?.firstName || player?.['First Name'] || player?.firstname || player?.FirstName || null;
+}
+
+function getPlayerLastName(player) {
+  return player?.lastName || player?.['Last Name'] || player?.lastname || player?.LastName || null;
+}
+
+function getPlayerCountryCode(player) {
+  return (player?.countryCode || player?.['Country Code'] || player?.country_code || player?.country || '').toString().trim().toUpperCase() || null;
+}
+
+function getPlayerNickname(player) {
+  return player?.nickname || player?.name || player?.player || player?.nick || '';
+}
+
+function buildPlayerFullName(player) {
+  const firstName = getPlayerFirstName(player);
+  const lastName = getPlayerLastName(player);
+  const nickname = getPlayerNickname(player);
+  return player?.fullName || player?.['Full Name'] || player?.fullname || (firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || nickname);
+}
+
+function buildPlayerStatsSnapshot(steamId, baseUrl = '') {
+  const gsiPlayer = scoreboard.players[steamId] || null;
+  const regPlayer = players.find((player) => normalizeSteamId(player.steamId) === normalizeSteamId(steamId)) || null;
+  const team = regPlayer ? teams.find((t) => t.id === regPlayer.teamId) : null;
+  const side = gsiPlayer?.team || null;
+  const kills = toNumber(gsiPlayer?.match_stats?.kills, toNumber(regPlayer?.match_stats?.kills, 0));
+  const deaths = toNumber(gsiPlayer?.match_stats?.deaths, toNumber(regPlayer?.match_stats?.deaths, 0));
+  const assists = toNumber(gsiPlayer?.match_stats?.assists, toNumber(regPlayer?.match_stats?.assists, 0));
+  const damage = toNumber(gsiPlayer?.accumulatedDmg, toNumber(regPlayer?.match_stats?.damage, 0));
+  const roundsPlayed = getRoundCount();
+  const plusMinus = kills - deaths;
+  const kd = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
+  const adr = roundsPlayed > 0 ? parseFloat((damage / roundsPlayed).toFixed(1)) : 0;
+  const damagePerKill = kills > 0 ? parseFloat((damage / kills).toFixed(1)) : 0;
+  const headshots = gsiPlayer?.match_stats?.headshots ?? regPlayer?.match_stats?.headshots ?? null;
+  const headshotRate = headshots != null && kills > 0 ? parseFloat(((headshots / kills) * 100).toFixed(1)) : null;
+  const oneKillRounds = gsiPlayer?.match_stats?.oneKillRounds ?? gsiPlayer?.match_stats?.multikills_1k ?? null;
+  const twoKillRounds = gsiPlayer?.match_stats?.twoKillRounds ?? gsiPlayer?.match_stats?.multikills_2k ?? null;
+  const threeKillRounds = gsiPlayer?.match_stats?.threeKillRounds ?? gsiPlayer?.match_stats?.multikills_3k ?? null;
+  const fourKillRounds = gsiPlayer?.match_stats?.fourKillRounds ?? gsiPlayer?.match_stats?.multikills_4k ?? null;
+  const fiveKillRounds = gsiPlayer?.match_stats?.fiveKillRounds ?? gsiPlayer?.match_stats?.multikills_5k ?? null;
+  const totalMultiKillRounds = [oneKillRounds, twoKillRounds, threeKillRounds, fourKillRounds, fiveKillRounds]
+    .reduce((sum, value) => sum + (value != null ? toNumber(value, 0) : 0), 0);
+  const aces = fiveKillRounds != null ? toNumber(fiveKillRounds, 0) : null;
+  const firstKills = gsiPlayer?.match_stats?.firstKills ?? regPlayer?.match_stats?.firstKills ?? null;
+  const firstDeaths = gsiPlayer?.match_stats?.firstDeaths ?? regPlayer?.match_stats?.firstDeaths ?? null;
+  const entryDiff = firstKills != null && firstDeaths != null ? firstKills - firstDeaths : null;
+  const flashesThrown = gsiPlayer?.match_stats?.flashesThrown ?? gsiPlayer?.match_stats?.flashes_thrown ?? null;
+  const enemiesFlashed = gsiPlayer?.match_stats?.enemiesFlashed ?? gsiPlayer?.match_stats?.enemies_flashed ?? null;
+  const flashAssists = gsiPlayer?.match_stats?.flashAssists ?? gsiPlayer?.match_stats?.flash_assists ?? null;
+  const smokesThrown = gsiPlayer?.match_stats?.smokesThrown ?? gsiPlayer?.match_stats?.smokes_thrown ?? null;
+  const heThrown = gsiPlayer?.match_stats?.heThrown ?? gsiPlayer?.match_stats?.he_thrown ?? null;
+  const molotovsThrown = gsiPlayer?.match_stats?.molotovsThrown ?? gsiPlayer?.match_stats?.molotovs_thrown ?? null;
+  const decoysThrown = gsiPlayer?.match_stats?.decoysThrown ?? gsiPlayer?.match_stats?.decoys_thrown ?? null;
+  const utilityDamage = gsiPlayer?.match_stats?.utilityDamage ?? gsiPlayer?.match_stats?.utility_damage ?? null;
+  const money = gsiPlayer?.state?.money ?? gsiPlayer?.match_stats?.money ?? null;
+  const equipmentValue = gsiPlayer?.state?.equipment_value ?? gsiPlayer?.match_stats?.equipmentValue ?? null;
+  const spendThisRound = gsiPlayer?.state?.spend_this_round ?? gsiPlayer?.match_stats?.spendThisRound ?? null;
+  const currentMatchStats = gsiPlayer?.match_stats || {};
+  const sideStats = {
+    CT: {
+      rounds: toNumber(currentMatchStats.ct_rounds, 0),
+      kills: toNumber(currentMatchStats.ct_kills, 0),
+      deaths: toNumber(currentMatchStats.ct_deaths, 0),
+      adr: toNumber(currentMatchStats.ct_rounds, 0) > 0 ? parseFloat((toNumber(currentMatchStats.ct_damage, 0) / toNumber(currentMatchStats.ct_rounds, 0)).toFixed(1)) : 0
+    },
+    T: {
+      rounds: toNumber(currentMatchStats.t_rounds, 0),
+      kills: toNumber(currentMatchStats.t_kills, 0),
+      deaths: toNumber(currentMatchStats.t_deaths, 0),
+      adr: toNumber(currentMatchStats.t_rounds, 0) > 0 ? parseFloat((toNumber(currentMatchStats.t_damage, 0) / toNumber(currentMatchStats.t_rounds, 0)).toFixed(1)) : 0
+    }
+  };
+  const customRating = parseFloat((0.5 + ((kills * 0.35) + (assists * 0.1) - (deaths * 0.2) + (adr * 0.015) + (plusMinus * 0.05)) / 20).toFixed(2));
+  const photo = graphicsUtils.resolvePlayerPhoto(regPlayer || { photo: gsiPlayer?.photo }, baseUrl, '/NoneP.png');
+  const teamLogo = team ? graphicsUtils.resolveLogo(team, baseUrl, '/logos/none-team.png') : (regPlayer?.teamId ? graphicsUtils.resolveLogo(teams.find((t) => t.id === regPlayer.teamId), baseUrl, '/logos/none-team.png') : `${baseUrl}/logos/none-team.png`);
+
+  return {
+    id: regPlayer?.id || gsiPlayer?.id || `temp_${steamId}`,
+    steamId: regPlayer?.steamId || steamId,
+    nickname: getPlayerNickname(regPlayer || gsiPlayer) || gsiPlayer?.name || 'Unknown',
+    name: getPlayerNickname(regPlayer || gsiPlayer) || gsiPlayer?.name || 'Unknown',
+    firstName: getPlayerFirstName(regPlayer || gsiPlayer),
+    lastName: getPlayerLastName(regPlayer || gsiPlayer),
+    fullName: buildPlayerFullName(regPlayer || gsiPlayer),
+    country: regPlayer?.country || gsiPlayer?.country || null,
+    countryCode: getPlayerCountryCode(regPlayer || gsiPlayer),
+    role: regPlayer?.role || gsiPlayer?.role || '',
+    photo,
+    teamId: regPlayer?.teamId || team?.id || null,
+    teamName: team?.name || gsiPlayer?.teamName || (side === 'CT' ? scoreboard.map?.team_ct?.name : scoreboard.map?.team_t?.name) || null,
+    teamLogo,
+    side,
+    kills,
+    deaths,
+    assists,
+    kd,
+    plusMinus,
+    damage,
+    adr,
+    damagePerKill,
+    roundsPlayed,
+    headshots,
+    headshotRate,
+    multiKills: {
+      oneKillRounds,
+      twoKillRounds,
+      threeKillRounds,
+      fourKillRounds,
+      fiveKillRounds,
+      aces,
+      totalMultiKillRounds
+    },
+    opening: {
+      firstKills,
+      firstDeaths,
+      entryDiff
+    },
+    clutches: {
+      attempts: null,
+      wins: null,
+      oneVsOne: null,
+      oneVsTwo: null,
+      oneVsThree: null,
+      oneVsFour: null,
+      oneVsFive: null
+    },
+    utility: {
+      flashesThrown,
+      enemiesFlashed,
+      flashAssists,
+      smokesThrown,
+      heThrown,
+      molotovsThrown,
+      decoysThrown,
+      utilityDamage
+    },
+    economy: {
+      money,
+      equipmentValue,
+      spendThisRound
+    },
+    weaponStats: {},
+    sideStats,
+    rating: customRating,
+    customRating
+  };
+}
+
+function buildLivePlayerStatsSnapshot(steamId, livePlayer, currentMatch, baseUrl = '') {
+  const regPlayer = players.find((player) => normalizeSteamId(player.steamId) === normalizeSteamId(steamId)) || null;
+  const team = regPlayer ? teams.find((t) => t.id === regPlayer.teamId) : null;
+  const kills = toNumber(livePlayer?.kills, 0);
+  const deaths = toNumber(livePlayer?.deaths, 0);
+  const assists = toNumber(livePlayer?.assists, 0);
+  const damage = toNumber(livePlayer?.damage, 0);
+  const roundsPlayed = toNumber(livePlayer?.rounds, currentMatch?.roundCount || getRoundCount());
+  const plusMinus = kills - deaths;
+  const kd = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
+  const adr = roundsPlayed > 0 ? parseFloat((damage / roundsPlayed).toFixed(1)) : 0;
+  const damagePerKill = kills > 0 ? parseFloat((damage / kills).toFixed(1)) : 0;
+  const headshots = livePlayer?.headshots ?? null;
+  const headshotRate = headshots != null && kills > 0 ? parseFloat(((headshots / kills) * 100).toFixed(1)) : null;
+  const multiKills = livePlayer?.threeKills != null || livePlayer?.fourKills != null || livePlayer?.fiveKills != null
+    ? {
+        oneKillRounds: livePlayer?.oneKillRounds ?? null,
+        twoKillRounds: livePlayer?.twoKillRounds ?? null,
+        threeKillRounds: livePlayer?.threeKills ?? null,
+        fourKillRounds: livePlayer?.fourKills ?? null,
+        fiveKillRounds: livePlayer?.fiveKills ?? null,
+        aces: livePlayer?.fiveKills ?? null,
+        totalMultiKillRounds: toNumber(livePlayer?.oneKillRounds, 0) + toNumber(livePlayer?.twoKillRounds, 0) + toNumber(livePlayer?.threeKills, 0) + toNumber(livePlayer?.fourKills, 0) + toNumber(livePlayer?.fiveKills, 0)
+      }
+    : DEFAULT_PLAYER_STATS.multiKills;
+
+  return {
+    ...DEFAULT_PLAYER_STATS,
+    id: regPlayer?.id || livePlayer?.id || `temp_${steamId}`,
+    steamId: regPlayer?.steamId || steamId,
+    nickname: getPlayerNickname(regPlayer || livePlayer) || livePlayer?.name || 'Unknown',
+    name: getPlayerNickname(regPlayer || livePlayer) || livePlayer?.name || 'Unknown',
+    firstName: getPlayerFirstName(regPlayer || livePlayer),
+    lastName: getPlayerLastName(regPlayer || livePlayer),
+    fullName: buildPlayerFullName(regPlayer || livePlayer),
+    country: regPlayer?.country || livePlayer?.country || null,
+    countryCode: getPlayerCountryCode(regPlayer || livePlayer),
+    role: regPlayer?.role || livePlayer?.role || '',
+    photo: graphicsUtils.resolvePlayerPhoto(regPlayer || livePlayer, baseUrl),
+    teamId: regPlayer?.teamId || team?.id || livePlayer?._teamId || null,
+    teamName: team?.name || livePlayer?.teamName || livePlayer?._team || null,
+    teamLogo: team ? graphicsUtils.resolveLogo(team, baseUrl) : `${baseUrl}/logos/none-team.png`,
+    side: livePlayer?._team || null,
+    kills,
+    deaths,
+    assists,
+    kd,
+    plusMinus,
+    damage,
+    adr,
+    damagePerKill,
+    roundsPlayed,
+    headshots,
+    headshotRate,
+    multiKills,
+    opening: {
+      firstKills: livePlayer?.firstKills ?? null,
+      firstDeaths: livePlayer?.firstDeaths ?? null,
+      entryDiff: livePlayer?.firstKills != null && livePlayer?.firstDeaths != null ? livePlayer.firstKills - livePlayer.firstDeaths : null
+    },
+    utility: {
+      flashesThrown: livePlayer?.flashesThrown ?? null,
+      enemiesFlashed: livePlayer?.enemiesFlashed ?? null,
+      flashAssists: livePlayer?.flashAssists ?? null,
+      smokesThrown: livePlayer?.smokesThrown ?? null,
+      heThrown: livePlayer?.heThrown ?? null,
+      molotovsThrown: livePlayer?.molotovsThrown ?? null,
+      decoysThrown: livePlayer?.decoysThrown ?? null,
+      utilityDamage: livePlayer?.utilityDamage ?? null
+    },
+    economy: {
+      money: livePlayer?.money ?? null,
+      equipmentValue: livePlayer?.equipmentValue ?? null,
+      spendThisRound: livePlayer?.spendThisRound ?? null
+    },
+    sideStats: livePlayer?.sideStats || DEFAULT_PLAYER_STATS.sideStats,
+    rating: livePlayer?.galaxyRating ?? livePlayer?.rating ?? livePlayer?.customRating ?? 0,
+    customRating: livePlayer?.galaxyRating ?? livePlayer?.rating ?? livePlayer?.customRating ?? 0
+  };
+}
+
+function buildPlayerStatsPayload(mode, req, options = {}) {
+  const baseUrl = getBaseUrl(req);
+  const liveData = readJsonSafe(STORAGE_FILES.liveMatch, getIdleLiveMatch());
+  const postmatchData = readJsonSafe(STORAGE_FILES.postmatch, getIdlePostmatch());
+  const currentMatch = stats.getCurrentMatchStats();
+
+  const isCompact = !!options.compact;
+  const totalPlayerSlots = 10;
+  const teamSlots = 5;
+
+  const baseIdle = {
+    mode,
+    status: mode === 'live' ? 'idle' : 'idle',
+    matchId: null,
+    map: null,
+    round: 0,
+    updatedAt: '',
+    players: createPlaceholderPlayers(totalPlayerSlots),
+    teamAPlayers: createPlaceholderPlayers(teamSlots),
+    teamBPlayers: createPlaceholderPlayers(teamSlots),
+    topPlayers: buildStableTopPlayers(EMPTY_TOP_PLAYERS),
+    mvp: null,
+    teamA: null,
+    teamB: null
+  };
+
+  const seen = new Set();
+  const candidates = [];
+  const addCandidate = (candidate) => {
+    if (!candidate) return;
+    const normalized = normalizePlayerStatsShape(candidate, { placeholder: !!candidate.isPlaceholder });
+    const key = normalizeSteamId(normalized.steamId || normalized.id);
+    if (key && seen.has(key)) return;
+    if (key) seen.add(key);
+    candidates.push(normalized);
+  };
+
+  const buildKnownPlayersFromIds = (ids, sourceResolver) => {
+    for (const steamId of ids) {
+      const sourcePlayer = typeof sourceResolver === 'function' ? sourceResolver(steamId) : null;
+      if (sourcePlayer) {
+        addCandidate(sourcePlayer);
+      } else {
+        addCandidate(buildPlayerStatsSnapshot(steamId, baseUrl));
+      }
+    }
+  };
+
+  const liveFromScoreboard = Object.entries(scoreboard.players || {}).map(([steamId, player]) => ({
+    id: player.id || null,
+    steamId,
+    nickname: player.name || player.nickname || '',
+    name: player.name || player.nickname || '',
+    photo: graphicsUtils.resolvePlayerPhoto(players.find((reg) => normalizeSteamId(reg.steamId) === normalizeSteamId(steamId)), baseUrl, ''),
+    teamId: players.find((reg) => normalizeSteamId(reg.steamId) === normalizeSteamId(steamId))?.teamId || null,
+    teamName: player.team || '',
+    teamLogo: '',
+    side: player.team || '',
+    kills: toNumber(player.match_stats?.kills, 0),
+    deaths: toNumber(player.match_stats?.deaths, 0),
+    assists: toNumber(player.match_stats?.assists, 0),
+    damage: toNumber(player.accumulatedDmg, 0),
+    roundsPlayed: getRoundCount(),
+    headshots: player.match_stats?.headshots ?? null,
+    multiKills: {
+      oneKillRounds: toNumber(player.match_stats?.oneKillRounds, 0),
+      twoKillRounds: toNumber(player.match_stats?.twoKillRounds, 0),
+      threeKillRounds: toNumber(player.match_stats?.threeKillRounds, 0),
+      fourKillRounds: toNumber(player.match_stats?.fourKillRounds, 0),
+      fiveKillRounds: toNumber(player.match_stats?.fiveKillRounds, 0),
+      aces: toNumber(player.match_stats?.fiveKillRounds, 0),
+      totalMultiKillRounds: toNumber(player.match_stats?.oneKillRounds, 0) + toNumber(player.match_stats?.twoKillRounds, 0) + toNumber(player.match_stats?.threeKillRounds, 0) + toNumber(player.match_stats?.fourKillRounds, 0) + toNumber(player.match_stats?.fiveKillRounds, 0)
+    },
+    opening: {
+      firstKills: player.match_stats?.firstKills ?? null,
+      firstDeaths: player.match_stats?.firstDeaths ?? null,
+      entryDiff: player.match_stats?.firstKills != null && player.match_stats?.firstDeaths != null ? toNumber(player.match_stats.firstKills, 0) - toNumber(player.match_stats.firstDeaths, 0) : null
+    },
+    utility: {
+      flashesThrown: player.match_stats?.flashesThrown ?? null,
+      enemiesFlashed: player.match_stats?.enemiesFlashed ?? null,
+      flashAssists: player.match_stats?.flashAssists ?? null,
+      smokesThrown: player.match_stats?.smokesThrown ?? null,
+      heThrown: player.match_stats?.heThrown ?? null,
+      molotovsThrown: player.match_stats?.molotovsThrown ?? null,
+      decoysThrown: player.match_stats?.decoysThrown ?? null,
+      utilityDamage: player.match_stats?.utilityDamage ?? null
+    },
+    economy: {
+      money: player.state?.money ?? null,
+      equipmentValue: player.state?.equipment_value ?? null,
+      spendThisRound: player.state?.spend_this_round ?? null
+    },
+    sideStats: {
+      CT: {
+        rounds: toNumber(player.match_stats?.ct_rounds, 0),
+        kills: toNumber(player.match_stats?.ct_kills, 0),
+        deaths: toNumber(player.match_stats?.ct_deaths, 0),
+        adr: toNumber(player.match_stats?.ct_rounds, 0) > 0 ? parseFloat((toNumber(player.match_stats?.ct_damage, 0) / toNumber(player.match_stats?.ct_rounds, 0)).toFixed(1)) : 0
+      },
+      T: {
+        rounds: toNumber(player.match_stats?.t_rounds, 0),
+        kills: toNumber(player.match_stats?.t_kills, 0),
+        deaths: toNumber(player.match_stats?.t_deaths, 0),
+        adr: toNumber(player.match_stats?.t_rounds, 0) > 0 ? parseFloat((toNumber(player.match_stats?.t_damage, 0) / toNumber(player.match_stats?.t_rounds, 0)).toFixed(1)) : 0
+      }
+    },
+    rating: calcGalaxyRating({
+      kills: toNumber(player.match_stats?.kills, 0),
+      deaths: toNumber(player.match_stats?.deaths, 0),
+      assists: toNumber(player.match_stats?.assists, 0),
+      damage: toNumber(player.accumulatedDmg, 0),
+      kastRounds: toNumber(player.match_stats?.kastRounds, 0),
+      rounds: getRoundCount()
+    }),
+    customRating: calcGalaxyRating({
+      kills: toNumber(player.match_stats?.kills, 0),
+      deaths: toNumber(player.match_stats?.deaths, 0),
+      assists: toNumber(player.match_stats?.assists, 0),
+      damage: toNumber(player.accumulatedDmg, 0),
+      kastRounds: toNumber(player.match_stats?.kastRounds, 0),
+      rounds: getRoundCount()
+    }),
+    isPlaceholder: false
+  }));
+
+  const liveMatchPlayers = Object.entries(scoreboard.players || {}).length > 0
+    ? liveFromScoreboard
+    : Object.entries(currentMatch?.players || {}).map(([steamId, player]) => {
+        const regPlayer = players.find((reg) => normalizeSteamId(reg.steamId) === normalizeSteamId(steamId));
+        return buildLivePlayerStatsSnapshot(steamId, player, currentMatch, baseUrl) || buildPlayerStatsSnapshot(steamId, baseUrl);
+      });
+
+  const liveDataPlayers = Array.isArray(liveData.players) ? liveData.players : [];
+  const postmatchPlayers = Array.isArray(postmatchData.players) ? postmatchData.players : [];
+
+  if (mode === 'live') {
+    if (liveMatchPlayers.length > 0) {
+      liveMatchPlayers.forEach(addCandidate);
+    }
+    if (candidates.length === 0 && liveDataPlayers.length > 0) {
+      liveDataPlayers.forEach((player) => addCandidate(player));
+    }
+    if (candidates.length === 0 && currentMatch && currentMatch.players) {
+      Object.keys(currentMatch.players).forEach((steamId) => addCandidate(buildPlayerStatsSnapshot(steamId, baseUrl)));
+    }
+    if (candidates.length === 0) {
+      const allKnownIds = [
+        ...Object.keys(scoreboard.players || {}),
+        ...Object.keys(liveData.players || {}),
+        ...Object.keys(currentMatch?.players || {})
+      ];
+      buildKnownPlayersFromIds(allKnownIds);
+    }
+  } else {
+    const isFinishedPostmatch = isFinishedMatch(postmatchData);
+    const completedMatch = isFinishedPostmatch ? postmatchData : getLatestCompletedMatch();
+    const sourcePlayers = Array.isArray(completedMatch?.players) ? completedMatch.players : postmatchPlayers;
+    if (sourcePlayers.length > 0) {
+      sourcePlayers.forEach((player) => addCandidate(player));
+    }
+    if (candidates.length === 0 && completedMatch && completedMatch.players) {
+      Object.keys(completedMatch.players).forEach((steamId) => addCandidate(buildPlayerStatsSnapshot(steamId, baseUrl)));
+    }
+    if (candidates.length === 0) {
+      const allKnownIds = [
+        ...Object.keys(scoreboard.players || {}),
+        ...Object.keys(liveData.players || {}),
+        ...Object.keys(postmatchData.players || {})
+      ];
+      buildKnownPlayersFromIds(allKnownIds);
+    }
+  }
+
+  const meaningfulPlayers = candidates.filter((player) => !player.isPlaceholder);
+  meaningfulPlayers.sort((a, b) => {
+    const aRating = toNumber(a.rating || a.customRating, 0);
+    const bRating = toNumber(b.rating || b.customRating, 0);
+    if (bRating !== aRating) return bRating - aRating;
+    if (toNumber(b.adr, 0) !== toNumber(a.adr, 0)) return toNumber(b.adr, 0) - toNumber(a.adr, 0);
+    if (toNumber(b.kills, 0) !== toNumber(a.kills, 0)) return toNumber(b.kills, 0) - toNumber(a.kills, 0);
+    return toNumber(a.deaths, 0) - toNumber(b.deaths, 0);
+  });
+
+  const topSelector = (selector) => meaningfulPlayers
+    .slice()
+    .sort((a, b) => {
+      const aValue = selector(a);
+      const bValue = selector(b);
+      if (bValue !== aValue) return bValue - aValue;
+      return toNumber(a.deaths, 0) - toNumber(b.deaths, 0);
+    })
+    .slice(0, 5)
+    .map((player) => normalizeTopPlayerEntry({
+      id: player.id,
+      name: player.name,
+      nickname: player.nickname,
+      photo: player.photo,
+      teamId: player.teamId,
+      teamLogo: player.teamLogo,
+      value: selector(player)
+    }));
+
+  const topPlayers = buildStableTopPlayers({
+    kills: topSelector((player) => toNumber(player.kills, 0)),
+    adr: topSelector((player) => toNumber(player.adr, 0)),
+    damage: topSelector((player) => toNumber(player.damage, 0)),
+    kd: topSelector((player) => toNumber(player.kd, 0)),
+    plusMinus: topSelector((player) => toNumber(player.plusMinus, 0)),
+    rating: topSelector((player) => toNumber(player.rating || player.customRating, 0)),
+    aces: topSelector((player) => toNumber(player.multiKills?.aces, 0)),
+    multiKills: topSelector((player) => toNumber(player.multiKills?.totalMultiKillRounds, 0)),
+    flashAssists: topSelector((player) => toNumber(player.utility?.flashAssists, 0)),
+    enemiesFlashed: topSelector((player) => toNumber(player.utility?.enemiesFlashed, 0))
+  });
+
+  const mvp = buildStableMvp(meaningfulPlayers[0] || null);
+
+  const teamAName = mode === 'live'
+    ? (scoreboard.map?.team_ct?.name || liveData.teamA || currentMatch?.teamCT?.name || currentMatch?.teamA || null)
+    : (postmatchData.teamA || getLatestCompletedMatch()?.teamA || null);
+  const teamBName = mode === 'live'
+    ? (scoreboard.map?.team_t?.name || liveData.teamB || currentMatch?.teamT?.name || currentMatch?.teamB || null)
+    : (postmatchData.teamB || getLatestCompletedMatch()?.teamB || null);
+
+  const teamAPlayersRaw = meaningfulPlayers.filter((player) => {
+    if (mode === 'live') {
+      const liveSide = player.side || player.teamName || '';
+      return liveSide === 'CT' || (teamAName && player.teamName === teamAName);
+    }
+    return teamAName ? player.teamName === teamAName : player.side === 'CT';
+  }).slice(0, teamSlots);
+
+  const teamBPlayersRaw = meaningfulPlayers.filter((player) => {
+    if (mode === 'live') {
+      const liveSide = player.side || player.teamName || '';
+      return liveSide === 'T' || (teamBName && player.teamName === teamBName);
+    }
+    return teamBName ? player.teamName === teamBName : player.side === 'T';
+  }).slice(0, teamSlots);
+
+  const players = buildStablePlayerList(meaningfulPlayers, totalPlayerSlots);
+  const teamAPlayers = buildTeamSlotList(teamAPlayersRaw, teamSlots);
+  const teamBPlayers = buildTeamSlotList(teamBPlayersRaw, teamSlots);
+
+  const payload = {
+    mode,
+    status: mode === 'live'
+      ? (meaningfulPlayers.length > 0 ? 'live' : 'idle')
+      : (isFinishedMatch(postmatchData) || getLatestCompletedMatch() ? 'finished' : 'idle'),
+    matchId: mode === 'live'
+      ? (scoreboard.matchId || liveData.matchId || currentMatch?.mapName || null)
+      : (postmatchData.matchId || getLatestCompletedMatch()?.matchId || getLatestCompletedMatch()?.id || null),
+    map: mode === 'live'
+      ? (scoreboard.map?.name || liveData.map || currentMatch?.mapName || null)
+      : (postmatchData.map || getLatestCompletedMatch()?.map || null),
+    round: mode === 'live'
+      ? (scoreboard.map?.round || currentMatch?.roundCount || liveData.round || 0)
+      : (postmatchData.round || getLatestCompletedMatch()?.round || 0),
+    updatedAt: mode === 'live'
+      ? (liveData.updatedAt || currentMatch?.startedAt || lastScoreboardUpdate || new Date().toISOString())
+      : (postmatchData.updatedAt || getLatestCompletedMatch()?.updatedAt || new Date().toISOString()),
+    players,
+    teamAPlayers,
+    teamBPlayers,
+    topPlayers,
+    mvp,
+    teamA: teamAName,
+    teamB: teamBName,
+    teamStats: mode === 'postmatch'
+      ? (postmatchData.teamStats || getLatestCompletedMatch()?.teamStats || { teamA: null, teamB: null })
+      : (liveData.teamStats || { teamA: null, teamB: null })
+  };
+
+  return isCompact ? buildCompactPlayerStatsPayload(payload) : payload;
+}
+
+function buildPlayerStatsPayloadFromMatch(match, req) {
+  const baseUrl = getBaseUrl(req);
+  if (!match || typeof match !== 'object') return null;
+
+  const teamA = match.teamA || null;
+  const teamB = match.teamB || null;
+  const playersOut = Array.isArray(match.players)
+    ? match.players.map((player) => {
+        const reg = players.find((p) => normalizeSteamId(p.steamId) === normalizeSteamId(player.steamId));
+        const team = reg?.teamId ? teams.find((t) => t.id === reg.teamId) : null;
+        return {
+          ...DEFAULT_PLAYER_STATS,
+          ...player,
+          id: player.id || reg?.id || `temp_${player.steamId || player.name}`,
+          steamId: player.steamId || reg?.steamId || null,
+          nickname: player.nickname || player.name || reg?.name || 'Unknown',
+          name: player.name || player.nickname || reg?.name || 'Unknown',
+          firstName: player.firstName ?? getPlayerFirstName(reg),
+          lastName: player.lastName ?? getPlayerLastName(reg),
+          fullName: player.fullName || buildPlayerFullName(player) || buildPlayerFullName(reg),
+          country: player.country ?? reg?.country ?? null,
+          countryCode: player.countryCode ?? getPlayerCountryCode(reg),
+          role: player.role || reg?.role || '',
+          photo: player.photo || graphicsUtils.resolvePlayerPhoto(reg, baseUrl),
+          teamId: player.teamId || reg?.teamId || null,
+          teamName: player.teamName || team?.name || null,
+          teamLogo: player.teamLogo || (team ? graphicsUtils.resolveLogo(team, baseUrl) : `${baseUrl}/logos/none-team.png`),
+          side: player.side || null,
+          kills: toNumber(player.kills, 0),
+          deaths: toNumber(player.deaths, 0),
+          assists: toNumber(player.assists, 0),
+          kd: player.kd != null ? toNumber(player.kd, 0) : (toNumber(player.deaths, 0) > 0 ? parseFloat((toNumber(player.kills, 0) / toNumber(player.deaths, 0)).toFixed(2)) : toNumber(player.kills, 0)),
+          plusMinus: player.plusMinus != null ? toNumber(player.plusMinus, 0) : toNumber(player.kills, 0) - toNumber(player.deaths, 0),
+          damage: toNumber(player.damage, 0),
+          adr: player.adr != null ? toNumber(player.adr, 0) : 0,
+          damagePerKill: player.damagePerKill != null ? toNumber(player.damagePerKill, 0) : null,
+          roundsPlayed: toNumber(player.roundsPlayed ?? player.rounds, 0),
+          headshots: player.headshots ?? null,
+          headshotRate: player.headshotRate ?? null,
+          multiKills: {
+            oneKillRounds: player.multiKills?.oneKillRounds ?? null,
+            twoKillRounds: player.multiKills?.twoKillRounds ?? null,
+            threeKillRounds: player.multiKills?.threeKillRounds ?? null,
+            fourKillRounds: player.multiKills?.fourKillRounds ?? null,
+            fiveKillRounds: player.multiKills?.fiveKillRounds ?? null,
+            aces: player.multiKills?.aces ?? null,
+            totalMultiKillRounds: player.multiKills?.totalMultiKillRounds ?? null
+          },
+          opening: {
+            firstKills: player.opening?.firstKills ?? null,
+            firstDeaths: player.opening?.firstDeaths ?? null,
+            entryDiff: player.opening?.entryDiff ?? null
+          },
+          clutches: {
+            attempts: player.clutches?.attempts ?? null,
+            wins: player.clutches?.wins ?? null,
+            oneVsOne: player.clutches?.oneVsOne ?? null,
+            oneVsTwo: player.clutches?.oneVsTwo ?? null,
+            oneVsThree: player.clutches?.oneVsThree ?? null,
+            oneVsFour: player.clutches?.oneVsFour ?? null,
+            oneVsFive: player.clutches?.oneVsFive ?? null
+          },
+          utility: {
+            flashesThrown: player.utility?.flashesThrown ?? null,
+            enemiesFlashed: player.utility?.enemiesFlashed ?? null,
+            flashAssists: player.utility?.flashAssists ?? null,
+            smokesThrown: player.utility?.smokesThrown ?? null,
+            heThrown: player.utility?.heThrown ?? null,
+            molotovsThrown: player.utility?.molotovsThrown ?? null,
+            decoysThrown: player.utility?.decoysThrown ?? null,
+            utilityDamage: player.utility?.utilityDamage ?? null
+          },
+          economy: {
+            money: player.economy?.money ?? null,
+            equipmentValue: player.economy?.equipmentValue ?? null,
+            spendThisRound: player.economy?.spendThisRound ?? null
+          },
+          weaponStats: player.weaponStats || {},
+          sideStats: player.sideStats || DEFAULT_PLAYER_STATS.sideStats,
+          rating: player.rating ?? player.customRating ?? 0,
+          customRating: player.customRating ?? player.rating ?? 0
+        };
+      })
+    : [];
+
+  playersOut.sort((a, b) => {
+    const aRating = a.rating ?? a.customRating ?? 0;
+    const bRating = b.rating ?? b.customRating ?? 0;
+    if (bRating !== aRating) return bRating - aRating;
+    if (b.adr !== a.adr) return b.adr - a.adr;
+    if (b.kills !== a.kills) return b.kills - a.kills;
+    return (a.deaths || 0) - (b.deaths || 0);
+  });
+
+  const topSelector = (selector) => [...playersOut].sort((a, b) => {
+    const bv = selector(b);
+    const av = selector(a);
+    if (bv !== av) return bv - av;
+    return (a.deaths || 0) - (b.deaths || 0);
+  }).slice(0, 5).map((p) => ({
+    id: p.id,
+    name: p.name,
+    nickname: p.nickname,
+    photo: p.photo,
+    teamId: p.teamId,
+    teamLogo: p.teamLogo,
+    value: selector(p)
+  }));
+
+  const topPlayers = {
+    kills: topSelector((p) => p.kills || 0),
+    adr: topSelector((p) => p.adr || 0),
+    damage: topSelector((p) => p.damage || 0),
+    kd: topSelector((p) => p.kd || 0),
+    plusMinus: topSelector((p) => p.plusMinus || 0),
+    rating: topSelector((p) => p.rating || p.customRating || 0),
+    aces: topSelector((p) => p.multiKills?.aces || 0),
+    multiKills: topSelector((p) => p.multiKills?.totalMultiKillRounds || 0),
+    flashAssists: topSelector((p) => p.utility?.flashAssists || 0),
+    enemiesFlashed: topSelector((p) => p.utility?.enemiesFlashed || 0)
+  };
+
+  const mvp = [...playersOut].sort((a, b) => {
+    const ar = a.rating ?? a.customRating ?? 0;
+    const br = b.rating ?? b.customRating ?? 0;
+    if (br !== ar) return br - ar;
+    if ((b.adr || 0) !== (a.adr || 0)) return (b.adr || 0) - (a.adr || 0);
+    if ((b.kills || 0) !== (a.kills || 0)) return (b.kills || 0) - (a.kills || 0);
+    return (a.deaths || 0) - (b.deaths || 0);
+  })[0] || null;
+
+  return {
+    mode: 'postmatch',
+    status: match.status || 'finished',
+    matchId: match.matchId || match.id || null,
+    map: match.map || match.mapName || null,
+    round: match.round || match.roundCount || 0,
+    updatedAt: match.updatedAt || match.finishedAt || new Date().toISOString(),
+    players: playersOut.slice(0, 10),
+    topPlayers,
+    mvp,
+    teamA: match.teamA || null,
+    teamB: match.teamB || null,
+    teamAPlayers: match.teamAPlayers || playersOut.filter((p) => p.side === 'CT'),
+    teamBPlayers: match.teamBPlayers || playersOut.filter((p) => p.side === 'T'),
+    teamStats: match.teamStats || { teamA: null, teamB: null },
+    roundHistory: Array.isArray(match.roundHistory) ? match.roundHistory : []
+  };
+}
+
 let lastScoreboardUpdate = null;
 
 function getIdlePostmatch() {
@@ -1972,6 +2947,58 @@ app.get('/api/graphics/postmatch', (req, res) => {
   } catch (err) {
     console.error('Error in /api/graphics/postmatch:', err);
     res.status(500).json({ error: 'Internal Server Error', message: err.message });
+  }
+});
+
+app.get('/api/graphics/player-stats/live', (req, res) => {
+  try {
+    res.json(buildPlayerStatsPayload('live', req));
+  } catch (err) {
+    console.error('Error in /api/graphics/player-stats/live:', err);
+    res.status(500).json({ mode: 'live', error: err.message, players: [] });
+  }
+});
+
+app.get('/api/graphics/player-stats/live/compact', (req, res) => {
+  try {
+    res.json(buildPlayerStatsPayload('live', req, { compact: true }));
+  } catch (err) {
+    console.error('Error in /api/graphics/player-stats/live/compact:', err);
+    res.status(500).json({ mode: 'live', error: err.message, players: [], teamAPlayers: [], teamBPlayers: [], topPlayers: {}, mvp: null, updatedAt: '' });
+  }
+});
+
+app.get('/api/graphics/player-stats/postmatch', (req, res) => {
+  try {
+    const postmatch = readJsonSafe(STORAGE_FILES.postmatch, getIdlePostmatch());
+    res.json(buildPlayerStatsPayload('postmatch', req));
+  } catch (err) {
+    console.error('Error in /api/graphics/player-stats/postmatch:', err);
+    res.status(500).json({ mode: 'postmatch', error: err.message, players: [] });
+  }
+});
+
+app.get('/api/graphics/player-stats/postmatch/compact', (req, res) => {
+  try {
+    res.json(buildPlayerStatsPayload('postmatch', req, { compact: true }));
+  } catch (err) {
+    console.error('Error in /api/graphics/player-stats/postmatch/compact:', err);
+    res.status(500).json({ mode: 'postmatch', error: err.message, players: [], teamAPlayers: [], teamBPlayers: [], topPlayers: {}, mvp: null, updatedAt: '' });
+  }
+});
+
+app.get('/api/graphics/player-stats/:matchId', (req, res) => {
+  try {
+    const { matchId } = req.params;
+    const completed = readCompletedMatches();
+    const match = Array.isArray(completed) ? completed.find((m) => m.matchId === matchId || m.id === matchId) : null;
+    if (!match) {
+      return res.status(404).json({ mode: 'postmatch', error: 'Match not found', matchId, players: [] });
+    }
+    res.json(buildPlayerStatsPayloadFromMatch(match, req));
+  } catch (err) {
+    console.error('Error in /api/graphics/player-stats/:matchId:', err);
+    res.status(500).json({ mode: 'postmatch', error: err.message, players: [] });
   }
 });
 

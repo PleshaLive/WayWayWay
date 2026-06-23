@@ -1303,6 +1303,12 @@
       <input type="text" name="name" id="playerName" required class="header-input" placeholder="Enter player's name">
       <label for="playerSteamId"><i class="fab fa-steam-symbol"></i> Steam ID (Optional):</label>
       <input type="text" name="steamId" id="playerSteamId" class="header-input" placeholder="Enter Steam ID">
+      <label for="playerFirstName"><i class="fas fa-heading"></i> First Name (Optional):</label>
+      <input type="text" name="firstName" id="playerFirstName" class="header-input" placeholder="Enter first name">
+      <label for="playerLastName"><i class="fas fa-heading"></i> Last Name (Optional):</label>
+      <input type="text" name="lastName" id="playerLastName" class="header-input" placeholder="Enter last name">
+      <label for="playerCountry"><i class="fas fa-globe"></i> Country Code (Optional):</label>
+      <input type="text" name="country" id="playerCountry" class="header-input" placeholder="e.g., RU, US, KR" maxlength="2">
       <label for="playerPhotoFile"><i class="fas fa-portrait"></i> Photo File:</label>
       <input type="file" id="playerPhotoFile" accept="image/*" class="header-input">
       <button type="button" id="uploadPlayerPhotoBtn" class="app-button tertiary" style="width:100%; margin-top: var(--spacing-xs); margin-bottom: var(--spacing-sm);"><i class="fas fa-upload"></i> Upload Selected Photo</button>
@@ -1385,6 +1391,9 @@
       $("#playerId").val(playerData.id); 
       $("#playerName").val(playerData.name); 
       $("#playerSteamId").val(playerData.steamId); 
+      $("#playerFirstName").val(playerData.firstName); 
+      $("#playerLastName").val(playerData.lastName); 
+      $("#playerCountry").val(playerData.country); 
       $("#playerPhoto").val(playerData.photo); 
       setTimeout(() => { 
         $('#playerTeamId').val(playerData.teamId).trigger('change'); 
@@ -1625,6 +1634,9 @@
       const id = $("#playerId").val(); 
       const name = $("#playerName").val(); 
       const steamId = $("#playerSteamId").val(); 
+      const firstName = $("#playerFirstName").val(); 
+      const lastName = $("#playerLastName").val(); 
+      const country = $("#playerCountry").val(); 
       const photo = $("#playerPhoto").val(); 
       const teamId = $("#playerTeamId").val() || null; 
       const url = id ? "/api/players/" + id : "/api/players"; 
@@ -1633,7 +1645,7 @@
       $.ajax({ 
         url: url, 
         type: type, 
-        data: { name, steamId, photo, teamId }, 
+        data: { name, steamId, firstName, lastName, country, photo, teamId }, 
         success: function(){ 
           console.log("✅ Player saved successfully");
           hidePlayerModal(); 

@@ -4,258 +4,487 @@
       "id": "1741167069740",
       "name": "9iNE",
       "logo": "/logos/1741216671560-9INE.png",
-      "score": 0
+      "score": 0,
+      "shortName": "9IN"
     },
     {
       "id": "1741167466408",
       "name": "GTZ",
       "logo": "/logos/1741553854843-GTZ.ESPORTS.png",
-      "score": 0
+      "score": 0,
+      "shortName": "GTZ"
     },
     {
       "id": "1741168676933",
       "name": "TNL",
       "logo": "/logos/1744296596920-TNL.png",
-      "score": 0
+      "score": 0,
+      "shortName": "TNL"
     },
     {
       "id": "1741169196086",
       "name": "SkyFury",
       "logo": "/logos/1744209187862-SkyFury.png",
-      "score": 0
+      "score": 0,
+      "shortName": "SKY"
     },
     {
       "id": "1741686771770",
       "name": "GUN5",
       "logo": "/logos/1741686770162-GUN5.png",
-      "score": 0
+      "score": 0,
+      "shortName": "GUN"
     },
     {
       "id": "1741686782051",
       "name": "Aurora",
       "logo": "/logos/1741686851236-Aurora.png",
-      "score": 0
+      "score": 0,
+      "shortName": "AUR"
     },
     {
       "id": "1741686867446",
       "name": "Sashi",
       "logo": "/logos/1741686865983-Sashi Esport.png",
-      "score": 0
+      "score": 0,
+      "shortName": "SAS"
     },
     {
       "id": "1741686877630",
       "name": "Alliance",
       "logo": "/logos/1741686876767-Alliance.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ALL"
     },
     {
       "id": "1741686886864",
       "name": "ALASKA",
       "logo": "/logos/1741686886125-ALASKA.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ALA"
     },
     {
       "id": "1741686907133",
       "name": "Monte",
       "logo": "/logos/1741686906029-Monte.png",
-      "score": 0
+      "score": 0,
+      "shortName": "MON"
     },
     {
       "id": "1741686922092",
       "name": "Zero Tenacity",
       "logo": "/logos/1741686934645-Zero Tenacity.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ZER"
     },
     {
       "id": "1741723524749",
       "name": "RUSH B",
       "logo": "/logos/1741723523670-RUSH B.png",
-      "score": 0
+      "score": 0,
+      "shortName": "RUS"
     },
     {
       "id": "1741744617807",
       "name": "Fire Flux",
       "logo": "/logos/1741744617164-Fire Flux.png",
-      "score": 0
+      "score": 0,
+      "shortName": "FIR"
     },
     {
       "id": "1741816438639",
       "name": "WildLotus",
       "logo": "/logos/1741816437495-Wild Lotus.png",
-      "score": 0
+      "score": 0,
+      "shortName": "WIL"
     },
     {
       "id": "1741833056251",
       "name": "ECSTATIC",
       "logo": "/logos/1741833053175-ECSTATIC.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ECS"
     },
     {
       "id": "1741842995229",
       "name": "Chimera",
       "logo": "/logos/1741842994524-Chimera.png",
-      "score": 0
+      "score": 0,
+      "shortName": "CHI"
     },
     {
       "id": "1741843023650",
       "name": "FAVBET Team",
       "logo": "/logos/1741843022649-FAVBET.png",
-      "score": 0
+      "score": 0,
+      "shortName": "FAV"
     },
     {
       "id": "1741901301610",
       "name": "OG",
       "logo": "/logos/1741901301007-OG.png",
-      "score": 0
+      "score": 0,
+      "shortName": "OG"
     },
     {
       "id": "1741901326769",
       "name": "Apogee",
       "logo": "/logos/1741901326055-Apogee.png",
-      "score": 0
+      "score": 0,
+      "shortName": "APO"
     },
     {
       "id": "1742925193043",
       "name": "Passion UA",
       "logo": "/logos/1742925192172-Passion UA.png",
-      "score": 0
+      "score": 0,
+      "shortName": "PAS"
     },
     {
       "id": "1742992319651",
       "name": "Nexus",
       "logo": "/logos/1742992319258-Nexus.png",
-      "score": 0
+      "score": 0,
+      "shortName": "NEX"
     },
     {
       "id": "1743008208545",
       "name": "fnatic",
       "logo": "/logos/1743008208203-Fnatic.png",
-      "score": 0
+      "score": 0,
+      "shortName": "FNA"
     },
     {
       "id": "1743020192913",
       "name": "Partizan",
       "logo": "/logos/1743020192042-Partizan Esports.png",
-      "score": 0
+      "score": 0,
+      "shortName": "PAR"
     },
     {
       "id": "1743065211372",
       "name": "ECLOT",
       "logo": "/logos/1743065210313-Dynamo Eclot.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ECL"
     },
     {
       "id": "1743066069733",
       "name": "METIZPORT",
       "logo": "/logos/1743066069411-Metizport.png",
-      "score": 0
+      "score": 0,
+      "shortName": "MET"
     },
     {
       "id": "1744209007356",
       "name": "9Pandas",
       "logo": "/logos/1744209006391-9Pandas.png",
-      "score": 0
+      "score": 0,
+      "shortName": "9PA"
     },
     {
       "id": "1744209022008",
       "name": "CYBERSHOKE",
       "logo": "/logos/1744209021394-CYBERSHOKE.png",
-      "score": 0
+      "score": 0,
+      "shortName": "CYB"
     },
     {
       "id": "1744209033764",
       "name": "Iberian Soul",
       "logo": "/logos/1744209032876-Iberian Soul.png",
-      "score": 0
+      "score": 0,
+      "shortName": "IBE"
     },
     {
       "id": "1744209041711",
       "name": "JANO",
       "logo": "/logos/1744209040351-JANO.png",
-      "score": 0
+      "score": 0,
+      "shortName": "JAN"
     },
     {
       "id": "1744211594870",
       "name": "SINNERS",
       "logo": "/logos/1744211594196-SINNERS.png",
-      "score": 0
+      "score": 0,
+      "shortName": "SIN"
     },
     {
       "id": "1744295990190",
       "name": "Novaq",
       "logo": "/logos/1744295989462-1744209074741-Novaq.png",
-      "score": 0
+      "score": 0,
+      "shortName": "NOV"
     },
     {
       "id": "1744296013746",
       "name": "NAVI Junior",
       "logo": "/logos/1744296012816-1744209058473-NAVI Junior.png",
-      "score": 0
+      "score": 0,
+      "shortName": "NAV"
     },
     {
       "id": "1744296205095",
       "name": "ENCE",
       "logo": "/logos/1744296204562-ENCE.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ENC"
     },
     {
       "id": "1744296521251",
       "name": "Sangal",
       "logo": "/logos/1744296520421-1744209170831-Sangal.png",
-      "score": 0
+      "score": 0,
+      "shortName": "SAN"
     },
     {
       "id": "1757030641061",
       "name": "123",
       "logo": "/logos/1757030639296-streamdeck.ico",
-      "score": 0
+      "score": 0,
+      "shortName": "123"
     },
     {
       "id": "1757098111903",
       "name": "ETERNAL FIRE",
       "logo": "/logos/1757098109884-ETERNAL FIRE.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ETE"
     },
     {
       "id": "1757098133463",
       "name": "FORZE Reload",
       "logo": "/logos/1757098130666-FORZE Reload.png",
-      "score": 0
+      "score": 0,
+      "shortName": "FOR"
     },
     {
       "id": "1757098145435",
       "name": "Run&Kill",
       "logo": "/logos/1757098142533-Run&Kill.png",
-      "score": 0
+      "score": 0,
+      "shortName": "RUN"
     },
     {
       "id": "1757098171091",
       "name": "Betera",
       "logo": "/logos/1757098169594-Betera.png",
-      "score": 0
+      "score": 0,
+      "shortName": "BET"
     },
     {
       "id": "1757098263003",
       "name": "FAVBET Team",
       "logo": "/logos/1757098261458-FAVBET Team.png",
-      "score": 0
+      "score": 0,
+      "shortName": "FAV"
     },
     {
       "id": "1757098282373",
       "name": "3DMAX Academy",
       "logo": "/logos/1757098280290-3DMAX Academy.png",
-      "score": 0
+      "score": 0,
+      "shortName": "3DM"
     },
     {
       "id": "1757098295042",
       "name": "AMKAL",
       "logo": "/logos/1757098293071-AMKAL.png",
-      "score": 0
+      "score": 0,
+      "shortName": "AMK"
     },
     {
       "id": "1757098306814",
       "name": "500",
       "logo": "/logos/1757098303442-500.png",
+      "score": 0,
+      "shortName": "500"
+    },
+    {
+      "id": "1782170446598_6",
+      "name": "Anonymo",
+      "logo": "/logos/anonymo.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446599_7",
+      "name": "Arcred",
+      "logo": "/logos/arcred.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446600_8",
+      "name": "Astrum",
+      "logo": "/logos/astrum.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446601_10",
+      "name": "BIG",
+      "logo": "/logos/big.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446601_11",
+      "name": "Betclic Apogee",
+      "logo": "/logos/betclic_apogee.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446602_12",
+      "name": "CPH Wolves",
+      "logo": "/logos/cph_wolves.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446603_16",
+      "name": "ENCE AC",
+      "logo": "/logos/ence_ac.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446604_17",
+      "name": "EYEBALLERS",
+      "logo": "/logos/eyeballers.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446605_23",
+      "name": "Gentle Mates",
+      "logo": "/logos/gentle_mates.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446606_24",
+      "name": "Illuminar",
+      "logo": "/logos/illuminar.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446606_25",
+      "name": "Inner Circle",
+      "logo": "/logos/inner_circle.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446607_26",
+      "name": "JiJieHao",
+      "logo": "/logos/jijiehao.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446608_27",
+      "name": "Johnny Speeds",
+      "logo": "/logos/johnny_speeds.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446608_28",
+      "name": "KHAN",
+      "logo": "/logos/khan.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446609_29",
+      "name": "LFO",
+      "logo": "/logos/lfo.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446610_30",
+      "name": "Leo",
+      "logo": "/logos/leo.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446611_31",
+      "name": "MINLATE",
+      "logo": "/logos/minlate.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446611_32",
+      "name": "Marius",
+      "logo": "/logos/marius.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446612_34",
+      "name": "Nemiga",
+      "logo": "/logos/nemiga.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446612_37",
+      "name": "PARIVISION",
+      "logo": "/logos/parivision.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446613_40",
+      "name": "Rebels",
+      "logo": "/logos/rebels.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446614_41",
+      "name": "Roller Coaster",
+      "logo": "/logos/roller_coaster.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446615_42",
+      "name": "Rosy",
+      "logo": "/logos/rosy.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446615_43",
+      "name": "Ruby",
+      "logo": "/logos/ruby.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446616_45",
+      "name": "SENZA",
+      "logo": "/logos/senza.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446617_47",
+      "name": "SPARTA",
+      "logo": "/logos/sparta.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446617_50",
+      "name": "Spirit Academy",
+      "logo": "/logos/spirit_academy.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446618_51",
+      "name": "TPuDCATb TPu",
+      "logo": "/logos/tpudcatb_tpu.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446618_52",
+      "name": "Tricked",
+      "logo": "/logos/tricked.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446619_53",
+      "name": "UNiTY",
+      "logo": "/logos/unity.png",
+      "score": 0
+    },
+    {
+      "id": "1782170446619_55",
+      "name": "modeame",
+      "logo": "/logos/modeame.png",
       "score": 0
     }
   ],
@@ -1283,6 +1512,1887 @@
       "photo": "/players/1743099876710-nbqq.png",
       "teamId": "1743065211372",
       "match_stats": {}
+    },
+    {
+      "id": "1782170458158_1",
+      "name": "0SAMAS",
+      "steamId": "76561199024583803",
+      "photo": "/players/0samas.png",
+      "teamId": "1782170446607_26",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458159_2",
+      "name": "1eeR",
+      "steamId": "76561198837117408",
+      "photo": "/players/1eer.png",
+      "teamId": "1782170446612_34",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458159_3",
+      "name": "1nhuman",
+      "steamId": "76561198035149563",
+      "photo": null,
+      "teamId": "1782170446615_42",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458160_4",
+      "name": "2High",
+      "steamId": "76561198159517407",
+      "photo": "/players/2high.png",
+      "teamId": "1782170446603_16",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458161_5",
+      "name": "AW",
+      "steamId": "76561198269361539",
+      "photo": "/players/aw.png",
+      "teamId": "1782170446612_37",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458162_6",
+      "name": "AZUWU",
+      "steamId": "76561198974494129",
+      "photo": "/players/azuwu.png",
+      "teamId": "1741686907133",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458163_7",
+      "name": "Alkarenn",
+      "steamId": "76561199079856901",
+      "photo": "/players/alkarenn.png",
+      "teamId": "1782170446617_50",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458164_8",
+      "name": "ArtFr0st",
+      "steamId": "76561198156778414",
+      "photo": "/players/artfr0st.png",
+      "teamId": "1782170446614_41",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458166_9",
+      "name": "BELCHONOKK",
+      "steamId": "76561198253670517",
+      "photo": "/players/belchonokk.png",
+      "teamId": "1782170446612_37",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458166_12",
+      "name": "Beccie",
+      "steamId": "76561198093176122",
+      "photo": "/players/beccie.png",
+      "teamId": "1741686867446",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458167_13",
+      "name": "Bibu",
+      "steamId": "76561198110839613",
+      "photo": "/players/bibu.png",
+      "teamId": "1782170446607_26",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458169_14",
+      "name": "Bymas",
+      "steamId": "76561198093386355",
+      "photo": "/players/bymas.png",
+      "teamId": "1741686907133",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458171_16",
+      "name": "Calyx",
+      "steamId": "76561198052546265",
+      "photo": "/players/calyx.png",
+      "teamId": "1757098111903",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458172_17",
+      "name": "CeRq",
+      "steamId": "76561198156353883",
+      "photo": "/players/cerq.png",
+      "teamId": "1757098306814",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458173_19",
+      "name": "Darber",
+      "steamId": "76561198996491569",
+      "photo": "/players/darber.png",
+      "teamId": "1782170446619_53",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458174_20",
+      "name": "Dawy",
+      "steamId": "76561198233474320",
+      "photo": "/players/dawy.png",
+      "teamId": "1782170446606_25",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458174_25",
+      "name": "ElayDzha",
+      "steamId": "76561199105876225",
+      "photo": null,
+      "teamId": "1782170446619_55",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458175_26",
+      "name": "Empera",
+      "steamId": "76561198202185115",
+      "photo": "/players/empera.png",
+      "teamId": "1757098145435",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458176_27",
+      "name": "FenomeN",
+      "steamId": "76561198400817766",
+      "photo": "/players/fenomen.png",
+      "teamId": "1744209022008",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458177_28",
+      "name": "Flayy-",
+      "steamId": "76561198412400644",
+      "photo": "/players/flayy-.png",
+      "teamId": "1782170446613_40",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458179_29",
+      "name": "Flierax",
+      "steamId": "76561198966656353",
+      "photo": "/players/flierax.png",
+      "teamId": "1782170446606_25",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458180_32",
+      "name": "HEAP",
+      "steamId": "76561198141811874",
+      "photo": "/players/heap.png",
+      "teamId": "1782170446608_27",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458181_33",
+      "name": "ISSAA",
+      "steamId": "76561198037812456",
+      "photo": "/players/issaa.png",
+      "teamId": "1782170446607_26",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458182_35",
+      "name": "JDC",
+      "steamId": "76561198078771373",
+      "photo": "/players/jdc.png",
+      "teamId": "1782170446601_10",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458183_36",
+      "name": "Jame",
+      "steamId": "76561198036125584",
+      "photo": "/players/jame.png",
+      "teamId": "1782170446612_37",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458183_37",
+      "name": "Junyme",
+      "steamId": "76561198432053174",
+      "photo": null,
+      "teamId": "1782170446602_12",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458184_38",
+      "name": "K1-FiDa",
+      "steamId": "76561198129824467",
+      "photo": "/players/k1-fida.png",
+      "teamId": "1782170446619_53",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458185_41",
+      "name": "KaiR0N-",
+      "steamId": "76561198157151718",
+      "photo": "/players/kair0n-.png",
+      "teamId": "1757098295042",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458186_44",
+      "name": "Krimbo",
+      "steamId": "76561198170631091",
+      "photo": "/players/krimbo.png",
+      "teamId": "1782170446601_10",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458188_45",
+      "name": "KusMe",
+      "steamId": "76561199021962584",
+      "photo": "/players/kusme.png",
+      "teamId": "1757098133463",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458189_47",
+      "name": "Kyousuke",
+      "steamId": "76561199032006224",
+      "photo": "/players/kyousuke.png",
+      "teamId": "1782170446617_50",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458190_48",
+      "name": "Leakz",
+      "steamId": "76561198304064574",
+      "photo": "/players/leakz.png",
+      "teamId": "1782170446618_52",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458191_49",
+      "name": "Lekr0",
+      "steamId": "76561197961358863",
+      "photo": "/players/lekr0.png",
+      "teamId": "1782170446608_27",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458193_52",
+      "name": "MaSvAl",
+      "steamId": "76561198217410319",
+      "photo": "/players/masval.png",
+      "teamId": "1757098171091",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458194_53",
+      "name": "Malkiss",
+      "steamId": "76561198115931966",
+      "photo": "/players/malkiss.png",
+      "teamId": "1782170446610_30",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458195_55",
+      "name": "Matheos",
+      "steamId": "76561198274726597",
+      "photo": "/players/matheos.png",
+      "teamId": "1782170446602_12",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458197_56",
+      "name": "MistR",
+      "steamId": "76561198188347379",
+      "photo": "/players/mistr.png",
+      "teamId": "1741686867446",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458199_57",
+      "name": "Mokuj1n",
+      "steamId": "76561199038958787",
+      "photo": "/players/mokuj1n.png",
+      "teamId": "1782170446617_50",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458200_58",
+      "name": "MoriiSko",
+      "steamId": "76561198051727799",
+      "photo": "/players/moriisko.png",
+      "teamId": "1744211594870",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458201_59",
+      "name": "Myltsi",
+      "steamId": "76561198803032451",
+      "photo": "/players/myltsi.png",
+      "teamId": "1782170446603_16",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458201_60",
+      "name": "Myzunic",
+      "steamId": "76561198979391272",
+      "photo": null,
+      "teamId": "1757098282373",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458202_61",
+      "name": "NEOFRAG",
+      "steamId": "76561198215434685",
+      "photo": "/players/neofrag.png",
+      "teamId": "1782170446619_53",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458204_62",
+      "name": "Neityu",
+      "steamId": "76561198971718392",
+      "photo": "/players/neityu.png",
+      "teamId": "1744296205095",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458204_63",
+      "name": "Nico",
+      "steamId": "76561198996475055",
+      "photo": null,
+      "teamId": "1757098282373",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458205_64",
+      "name": "Nodios",
+      "steamId": "76561198070876270",
+      "photo": "/players/nodios.png",
+      "teamId": "1782170446618_52",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458205_66",
+      "name": "OneUn1que",
+      "steamId": "76561198429370895",
+      "photo": "/players/oneun1que.png",
+      "teamId": "1782170446610_30",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458205_67",
+      "name": "OxygeN",
+      "steamId": "76561198801912797",
+      "photo": null,
+      "teamId": "1782170446619_55",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458207_68",
+      "name": "Pandi7o",
+      "steamId": "76561199225137504",
+      "photo": "/players/pandi7o.png",
+      "teamId": "1782170446619_53",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458208_70",
+      "name": "Pepo",
+      "steamId": "76561198183147407",
+      "photo": "/players/pepo.png",
+      "teamId": "1744211594870",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458209_71",
+      "name": "PerdY",
+      "steamId": "76561198038590447",
+      "photo": "/players/perdy.png",
+      "teamId": "1782170446619_53",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458210_73",
+      "name": "Pump",
+      "steamId": "76561198199243387",
+      "photo": "/players/pump.png",
+      "teamId": "1744295990190",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458210_74",
+      "name": "R3lifw0w",
+      "steamId": "76561197965924149",
+      "photo": null,
+      "teamId": "1782170446619_55",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458211_76",
+      "name": "Rainwaker",
+      "steamId": "76561198138113790",
+      "photo": "/players/rainwaker.png",
+      "teamId": "1757098306814",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458212_77",
+      "name": "Razzmo",
+      "steamId": "76561198175853018",
+      "photo": "/players/razzmo.png",
+      "teamId": "1757098145435",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458214_78",
+      "name": "Revol",
+      "steamId": "76561198311402334",
+      "photo": "/players/revol.png",
+      "teamId": "1757098145435",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458214_79",
+      "name": "RiiL3",
+      "steamId": "76561198269073418",
+      "photo": "/players/riil3.png",
+      "teamId": "1757098145435",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458216_80",
+      "name": "Robo",
+      "steamId": "76561199120712009",
+      "photo": "/players/robo.png",
+      "teamId": "1782170446617_50",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458217_81",
+      "name": "S0tF1k",
+      "steamId": "76561198135123440",
+      "photo": "/players/s0tf1k.png",
+      "teamId": "1782170446617_50",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458218_82",
+      "name": "SHOCK",
+      "steamId": "76561198169560297",
+      "photo": "/players/shock.png",
+      "teamId": "1744211594870",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458219_83",
+      "name": "SZPERO",
+      "steamId": "76561197979820713",
+      "photo": "/players/szpero.png",
+      "teamId": "1782170446613_40",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458220_84",
+      "name": "Sapec",
+      "steamId": "76561198067523525",
+      "photo": "/players/sapec.png",
+      "teamId": "1782170446608_27",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458221_85",
+      "name": "Schwarz",
+      "steamId": "76561198452820400",
+      "photo": "/players/schwarz.png",
+      "teamId": "1782170446603_16",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458222_88",
+      "name": "Sobol",
+      "steamId": "76561198150625317",
+      "photo": "/players/sobol.png",
+      "teamId": "1782170446613_40",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458225_89",
+      "name": "Sowalio",
+      "steamId": "76561199034495166",
+      "photo": "/players/sowalio.png",
+      "teamId": "1782170446612_34",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458226_90",
+      "name": "Svedjehed",
+      "steamId": "76561198130440634",
+      "photo": "/players/svedjehed.png",
+      "teamId": "1782170446608_27",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458228_91",
+      "name": "TRAVIS",
+      "steamId": "76561198362970723",
+      "photo": "/players/travis.png",
+      "teamId": "1757098295042",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458229_92",
+      "name": "Tapewaare",
+      "steamId": "76561198930218135",
+      "photo": "/players/tapewaare.png",
+      "teamId": "1782170446602_12",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458230_93",
+      "name": "Teme",
+      "steamId": "76561198377968451",
+      "photo": "/players/teme.png",
+      "teamId": "1782170446603_16",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458231_97",
+      "name": "Vert",
+      "steamId": "76561198170561831",
+      "photo": "/players/vert.png",
+      "teamId": "1757098171091",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458231_98",
+      "name": "Wierd_1k",
+      "steamId": "76561197987575199",
+      "photo": null,
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458232_99",
+      "name": "Woro2k",
+      "steamId": "76561198975452660",
+      "photo": "/players/woro2k.png",
+      "teamId": "1742925193043",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458234_100",
+      "name": "Xant3r",
+      "steamId": "76561198839305865",
+      "photo": "/players/xant3r.png",
+      "teamId": "1782170446612_34",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458234_101",
+      "name": "XiMaa",
+      "steamId": "76561198863042050",
+      "photo": null,
+      "teamId": "1757098282373",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458235_102",
+      "name": "ZEDKO",
+      "steamId": "76561198134164683",
+      "photo": "/players/zedko.png",
+      "teamId": "1744211594870",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458236_105",
+      "name": "afro",
+      "steamId": "76561198035581101",
+      "photo": "/players/afro.png",
+      "teamId": "1741686907133",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458237_106",
+      "name": "alex",
+      "steamId": "76561198000984547",
+      "photo": "/players/alex.png",
+      "teamId": "1782170446605_23",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458238_108",
+      "name": "b1elany",
+      "steamId": "76561198212208204",
+      "photo": "/players/b1elany.png",
+      "teamId": "1782170446602_12",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458238_109",
+      "name": "bL4SEZ",
+      "steamId": "76561198311857376",
+      "photo": null,
+      "teamId": "1757098282373",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458240_110",
+      "name": "beastik",
+      "steamId": "76561198033438750",
+      "photo": "/players/beastik.png",
+      "teamId": "1744211594870",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458240_111",
+      "name": "bekker",
+      "steamId": "76561199439779019",
+      "photo": null,
+      "teamId": "1782170446602_12",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458241_112",
+      "name": "bl1x1",
+      "steamId": "76561199032362645",
+      "photo": "/players/bl1x1.png",
+      "teamId": "1744209022008",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458242_114",
+      "name": "bnox",
+      "steamId": "76561198360682773",
+      "photo": "/players/bnox.png",
+      "teamId": "1757098111903",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458242_116",
+      "name": "bogemt",
+      "steamId": "76561198139320078",
+      "photo": null,
+      "teamId": "1782170446615_42",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458242_118",
+      "name": "borosto",
+      "steamId": "76561198130994171",
+      "photo": null,
+      "teamId": "1782170446615_42",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458243_120",
+      "name": "buster",
+      "steamId": "76561198173201923",
+      "photo": "/players/buster.png",
+      "teamId": "1744295990190",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458243_121",
+      "name": "byek",
+      "steamId": "76561198321859332",
+      "photo": null,
+      "teamId": "1782170446615_42",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458245_123",
+      "name": "cairne",
+      "steamId": "76561198884121016",
+      "photo": "/players/cairne.png",
+      "teamId": "1782170446606_25",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458245_125",
+      "name": "crickeyyy",
+      "steamId": "76561198202132417",
+      "photo": null,
+      "teamId": "1782170446609_29",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458246_126",
+      "name": "d1Ledez",
+      "steamId": "76561198859428279",
+      "photo": "/players/d1ledez.png",
+      "teamId": "1782170446614_41",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458247_127",
+      "name": "danistzz",
+      "steamId": "76561198217764976",
+      "photo": "/players/danistzz.png",
+      "teamId": "1744296521251",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458248_128",
+      "name": "dav1g",
+      "steamId": "76561198417348056",
+      "photo": "/players/dav1g.png",
+      "teamId": "1782170446605_23",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458249_129",
+      "name": "ddoni",
+      "steamId": "76561198394100893",
+      "photo": "/players/ddoni.png",
+      "teamId": "1782170446611_32",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458250_130",
+      "name": "def1zer",
+      "steamId": "76561198222819764",
+      "photo": "/players/def1zer.png",
+      "teamId": "1744295990190",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458250_131",
+      "name": "dosikk",
+      "steamId": "76561199239106311",
+      "photo": "/players/dosikk.png",
+      "teamId": "1782170446611_32",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458252_132",
+      "name": "draken",
+      "steamId": "76561198119388735",
+      "photo": "/players/draken.png",
+      "teamId": "1782170446608_27",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458252_133",
+      "name": "duggy",
+      "steamId": "76561198214410548",
+      "photo": "/players/duggy.png",
+      "teamId": "1741744617807",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458255_134",
+      "name": "dune",
+      "steamId": "76561199249562203",
+      "photo": "/players/dune.png",
+      "teamId": "1782170446611_32",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458255_135",
+      "name": "eSx-",
+      "steamId": "76561198996743020",
+      "photo": null,
+      "teamId": "1757098282373",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458255_137",
+      "name": "emot1on",
+      "steamId": "76561199193992619",
+      "photo": null,
+      "teamId": "1782170446615_42",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458255_141",
+      "name": "fakerealityy",
+      "steamId": "76561199152181207",
+      "photo": null,
+      "teamId": "1782170446609_29",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458255_142",
+      "name": "fatestyoshi",
+      "steamId": "76561198837983953",
+      "photo": null,
+      "teamId": "1782170446619_55",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458255_144",
+      "name": "for2na",
+      "steamId": "76561199154437466",
+      "photo": null,
+      "teamId": "1782170446619_55",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458256_145",
+      "name": "forkyz",
+      "steamId": "76561198339617378",
+      "photo": "/players/forkyz.png",
+      "teamId": "1744295990190",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458256_147",
+      "name": "forzetsky",
+      "steamId": "76561198096823520",
+      "photo": null,
+      "teamId": "1782170446615_42",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458257_149",
+      "name": "gla1ve",
+      "steamId": "76561198010511021",
+      "photo": "/players/gla1ve.png",
+      "teamId": "1744296205095",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458258_150",
+      "name": "glowiing",
+      "steamId": "76561198174263909",
+      "photo": "/players/glowiing.png",
+      "teamId": "1744209022008",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458259_152",
+      "name": "h1te",
+      "steamId": "76561198204167031",
+      "photo": "/players/h1te.png",
+      "teamId": "1757098171091",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458259_155",
+      "name": "hodix",
+      "steamId": "76561199041006873",
+      "photo": null,
+      "teamId": "1782170446609_29",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458260_156",
+      "name": "homeboyz",
+      "steamId": "76561198019527985",
+      "photo": "/players/homeboyz.png",
+      "teamId": "1782170446611_32",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458262_157",
+      "name": "hyped",
+      "steamId": "76561198139604328",
+      "photo": "/players/hyped.png",
+      "teamId": "1782170446601_10",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458264_159",
+      "name": "iDISBALANCE",
+      "steamId": "76561198170649897",
+      "photo": "/players/idisbalance.png",
+      "teamId": "1757098295042",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458265_160",
+      "name": "innocent",
+      "steamId": "76561197986829261",
+      "photo": "/players/innocent.png",
+      "teamId": "1782170446613_40",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458265_163",
+      "name": "jackast",
+      "steamId": "76561198057809228",
+      "photo": null,
+      "teamId": "1782170446609_29",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458266_165",
+      "name": "jresy",
+      "steamId": "76561198806335083",
+      "photo": "/players/jresy.png",
+      "teamId": "1757098111903",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458266_166",
+      "name": "kL1o",
+      "steamId": "76561198857766187",
+      "photo": "/players/kl1o.png",
+      "teamId": "1782170446610_30",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458267_167",
+      "name": "kaziken",
+      "steamId": "76561199370463129",
+      "photo": null,
+      "teamId": "1782170446611_32",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458267_168",
+      "name": "khaN",
+      "steamId": "76561198951467648",
+      "photo": "/players/khan.png",
+      "teamId": "1782170446612_34",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458268_170",
+      "name": "kisserek",
+      "steamId": "76561198252742076",
+      "photo": "/players/kisserek.png",
+      "teamId": "1782170446613_40",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458269_171",
+      "name": "kr1vda",
+      "steamId": "76561198160486877",
+      "photo": "/players/kr1vda.png",
+      "teamId": "1782170446610_30",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458269_173",
+      "name": "kroK",
+      "steamId": "76561198422822248",
+      "photo": null,
+      "teamId": "1782170446618_52",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458270_174",
+      "name": "kumao",
+      "steamId": "76561199073314096",
+      "photo": "/players/kumao.png",
+      "teamId": "1782170446607_26",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458272_175",
+      "name": "kyuubii",
+      "steamId": "76561198144926364",
+      "photo": "/players/kyuubii.png",
+      "teamId": "1782170446601_10",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458273_176",
+      "name": "lauNX",
+      "steamId": "76561198972795853",
+      "photo": "/players/launx.png",
+      "teamId": "1742992319651",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458273_177",
+      "name": "lov1kus",
+      "steamId": "76561198239621484",
+      "photo": "/players/lov1kus.png",
+      "teamId": "1744209022008",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458274_178",
+      "name": "m1N1",
+      "steamId": "76561198422389693",
+      "photo": "/players/m1n1.png",
+      "teamId": "1782170446607_26",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458275_179",
+      "name": "m1te",
+      "steamId": "76561198313623296",
+      "photo": "/players/m1te.png",
+      "teamId": "1782170446611_32",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458276_180",
+      "name": "mASKED",
+      "steamId": "76561198245773992",
+      "photo": "/players/masked.png",
+      "teamId": "1757098111903",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458276_183",
+      "name": "marat2k",
+      "steamId": "76561198277084708",
+      "photo": "/players/marat2k.png",
+      "teamId": "1782170446610_30",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458276_184",
+      "name": "maxster",
+      "steamId": "76561199132217533",
+      "photo": null,
+      "teamId": "1782170446604_17",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458278_185",
+      "name": "millert",
+      "steamId": "76561199087398707",
+      "photo": "/players/millert.png",
+      "teamId": "1782170446603_16",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458279_186",
+      "name": "mixmaster",
+      "steamId": "76561198957687458",
+      "photo": "/players/mixmaster.png",
+      "teamId": "1782170446611_32",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458280_187",
+      "name": "mopoz",
+      "steamId": "76561197998197366",
+      "photo": "/players/mopoz.png",
+      "teamId": "1782170446605_23",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458281_188",
+      "name": "n0rb3r7",
+      "steamId": "76561198222442504",
+      "photo": "/players/n0rb3r7.png",
+      "teamId": "1782170446614_41",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458281_189",
+      "name": "n1Xen",
+      "steamId": "76561198024870703",
+      "photo": "/players/n1xen.png",
+      "teamId": "1782170446602_12",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458282_191",
+      "name": "nafany",
+      "steamId": "76561198059714128",
+      "photo": "/players/nafany.png",
+      "teamId": "1757098295042",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458283_193",
+      "name": "neaLaN",
+      "steamId": "76561198054042778",
+      "photo": "/players/nealan.png",
+      "teamId": "1744295990190",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458283_194",
+      "name": "neiter",
+      "steamId": "76561199008367506",
+      "photo": null,
+      "teamId": "1782170446609_29",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458284_195",
+      "name": "nifee",
+      "steamId": "76561198316034540",
+      "photo": "/players/nifee.png",
+      "teamId": "1782170446606_25",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458285_196",
+      "name": "nota",
+      "steamId": "76561198975070027",
+      "photo": "/players/nota.png",
+      "teamId": "1782170446612_37",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458286_197",
+      "name": "notineki",
+      "steamId": "76561198293974689",
+      "photo": "/players/notineki.png",
+      "teamId": "1744209022008",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458287_198",
+      "name": "olik",
+      "steamId": "76561198386673664",
+      "photo": "/players/olik.png",
+      "teamId": "1782170446619_53",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458288_199",
+      "name": "onic",
+      "steamId": "76561198300474132",
+      "photo": "/players/onic.png",
+      "teamId": "1782170446606_25",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458289_201",
+      "name": "podi",
+      "steamId": "76561198128931118",
+      "photo": "/players/podi.png",
+      "teamId": "1744296205095",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458290_202",
+      "name": "poiii",
+      "steamId": "76561197995178481",
+      "photo": "/players/poiii.png",
+      "teamId": "1741686877630",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458290_203",
+      "name": "qlocuu",
+      "steamId": "76561198245925350",
+      "photo": "/players/qlocuu.png",
+      "teamId": "1782170446613_40",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458291_204",
+      "name": "r3salt",
+      "steamId": "76561198350362302",
+      "photo": "/players/r3salt.png",
+      "teamId": "1744296521251",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458293_207",
+      "name": "rexxie",
+      "steamId": "76561198170267106",
+      "photo": "/players/rexxie.png",
+      "teamId": "1757098133463",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458294_208",
+      "name": "rikon",
+      "steamId": "76561199126465213",
+      "photo": "/players/rikon.png",
+      "teamId": "1757098133463",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458294_209",
+      "name": "rinn",
+      "steamId": "76561199244575291",
+      "photo": null,
+      "teamId": "1782170446619_55",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458295_210",
+      "name": "riskyb0b",
+      "steamId": "76561198889240025",
+      "photo": "/players/riskyb0b.png",
+      "teamId": "1782170446612_34",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458296_213",
+      "name": "s4ltovsk1yy",
+      "steamId": "76561198086223064",
+      "photo": "/players/s4ltovsk1yy.png",
+      "teamId": "1741843023650",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458297_214",
+      "name": "salazar",
+      "steamId": "176561198102263776",
+      "photo": "/players/salazar.png",
+      "teamId": "1782170446618_52",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458298_215",
+      "name": "sausoL",
+      "steamId": "76561197991593267",
+      "photo": "/players/sausol.png",
+      "teamId": "1782170446605_23",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458299_216",
+      "name": "sdy",
+      "steamId": "76561198040577200",
+      "photo": "/players/sdy.png",
+      "teamId": "1744296205095",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458300_217",
+      "name": "shady",
+      "steamId": "76561198096372312",
+      "photo": "/players/shady.png",
+      "teamId": "1757098133463",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458300_221",
+      "name": "speed4k",
+      "steamId": "76561198040194649",
+      "photo": null,
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458300_222",
+      "name": "spira",
+      "steamId": "76561197969416229",
+      "photo": null,
+      "teamId": "1782170446615_42",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458301_223",
+      "name": "spirit",
+      "steamId": "76561198184955555",
+      "photo": "/players/spirit.png",
+      "teamId": "1757098133463",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458302_224",
+      "name": "sstiNiX",
+      "steamId": "76561198143856298",
+      "photo": "/players/sstinix.png",
+      "teamId": "1757098295042",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458303_225",
+      "name": "stadodo",
+      "steamId": "76561198047402862",
+      "photo": "/players/stadodo.png",
+      "teamId": "1782170446605_23",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458304_226",
+      "name": "synyx",
+      "steamId": "76561198231549032",
+      "photo": "/players/synyx.png",
+      "teamId": "1757098171091",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458305_227",
+      "name": "syph0",
+      "steamId": "76561198409543515",
+      "photo": "/players/syph0.png",
+      "teamId": "1782170446617_50",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458306_229",
+      "name": "tENZY",
+      "steamId": "76561198853612047",
+      "photo": "/players/tenzy.png",
+      "teamId": "1757098171091",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458307_230",
+      "name": "tabseN",
+      "steamId": "76561197961491680",
+      "photo": "/players/tabsen.png",
+      "teamId": "1782170446601_10",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458308_231",
+      "name": "tasman",
+      "steamId": "76561198825802213",
+      "photo": "/players/tasman.png",
+      "teamId": "1744295990190",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458309_235",
+      "name": "volt",
+      "steamId": "76561198155754447",
+      "photo": "/players/volt.png",
+      "teamId": "1757098306814",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458310_236",
+      "name": "woozzzi",
+      "steamId": "76561199105136854",
+      "photo": "/players/woozzzi.png",
+      "teamId": "1782170446619_53",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458311_237",
+      "name": "xKacpersky",
+      "steamId": "76561198362964332",
+      "photo": "/players/xkacpersky.png",
+      "teamId": "1744296205095",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458312_238",
+      "name": "xReal",
+      "steamId": "76561198043134849",
+      "photo": "/players/xreal.png",
+      "teamId": "1757098145435",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458313_242",
+      "name": "zweih",
+      "steamId": "76561198210626739",
+      "photo": "/players/zweih.png",
+      "teamId": "1782170446612_34",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
+    },
+    {
+      "id": "1782170458315_243",
+      "name": "İmoRR",
+      "steamId": "76561198067348168",
+      "photo": "/players/_morr.png",
+      "teamId": "1757098111903",
+      "match_stats": {},
+      "firstName": null,
+      "lastName": null,
+      "country": null
     }
   ]
 }

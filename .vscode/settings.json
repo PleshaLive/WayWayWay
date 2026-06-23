@@ -1,6 +1,36 @@
 {
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/storage/**/*.json": true,
+    "**/*.xlsx": true,
+    "**/*.xls": true,
+    "**/*unzipped*/**": true,
+    "**/uploads/**": true,
+    "**/tmp/**": true,
+    "**/temp/**": true,
+    "**/*.log": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/storage": true,
+    "**/*.xlsx": true,
+    "**/*.xls": true,
+    "**/*unzipped*": true,
+    "**/uploads": true,
+    "**/tmp": true,
+    "**/temp": true,
+    "**/*.log": true
+  },
   "files.exclude": {
     "**/*unzipped*": true,
-    "**/*_unzipped": true
-  }
+    "**/*_unzipped": true,
+    "**/node_modules": true,
+    "**/*.log": true
+  },
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "git.autorefresh": false,
+  "extensions.ignoreRecommendations": true
 }
