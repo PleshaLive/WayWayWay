@@ -3,9 +3,9 @@
     {
       "id": "1741167069740",
       "name": "9iNE",
-      "logo": "/logos/1741216671560-9INE.png",
+      "logo": "/logos/9ine.png",
       "score": 0,
-      "shortName": "9IN"
+      "shortName": "9INE"
     },
     {
       "id": "1741167466408",
@@ -31,9 +31,9 @@
     {
       "id": "1741686771770",
       "name": "GUN5",
-      "logo": "/logos/1741686770162-GUN5.png",
+      "logo": "/logos/gun5.png",
       "score": 0,
-      "shortName": "GUN"
+      "shortName": "GUN5"
     },
     {
       "id": "1741686782051",
@@ -45,16 +45,16 @@
     {
       "id": "1741686867446",
       "name": "Sashi",
-      "logo": "/logos/1741686865983-Sashi Esport.png",
+      "logo": "/logos/sashi.png",
       "score": 0,
-      "shortName": "SAS"
+      "shortName": "Sashi"
     },
     {
       "id": "1741686877630",
       "name": "Alliance",
-      "logo": "/logos/1741686876767-Alliance.png",
+      "logo": "/logos/alliance.png",
       "score": 0,
-      "shortName": "ALL"
+      "shortName": "Alliance"
     },
     {
       "id": "1741686886864",
@@ -66,16 +66,16 @@
     {
       "id": "1741686907133",
       "name": "Monte",
-      "logo": "/logos/1741686906029-Monte.png",
+      "logo": "/logos/monte.png",
       "score": 0,
-      "shortName": "MON"
+      "shortName": "Monte"
     },
     {
       "id": "1741686922092",
       "name": "Zero Tenacity",
-      "logo": "/logos/1741686934645-Zero Tenacity.png",
+      "logo": "/logos/zero_tenacity.png",
       "score": 0,
-      "shortName": "ZER"
+      "shortName": "Z10"
     },
     {
       "id": "1741723524749",
@@ -87,9 +87,9 @@
     {
       "id": "1741744617807",
       "name": "Fire Flux",
-      "logo": "/logos/1741744617164-Fire Flux.png",
+      "logo": "/logos/fire_flux.png",
       "score": 0,
-      "shortName": "FIR"
+      "shortName": "Fire Flux"
     },
     {
       "id": "1741816438639",
@@ -115,9 +115,9 @@
     {
       "id": "1741843023650",
       "name": "FAVBET Team",
-      "logo": "/logos/1741843022649-FAVBET.png",
+      "logo": "/logos/favbet_team.png",
       "score": 0,
-      "shortName": "FAV"
+      "shortName": "FAVBET Team"
     },
     {
       "id": "1741901301610",
@@ -136,16 +136,16 @@
     {
       "id": "1742925193043",
       "name": "Passion UA",
-      "logo": "/logos/1742925192172-Passion UA.png",
+      "logo": "/logos/passion_ua.png",
       "score": 0,
-      "shortName": "PAS"
+      "shortName": "Passion UA"
     },
     {
       "id": "1742992319651",
       "name": "Nexus",
-      "logo": "/logos/1742992319258-Nexus.png",
+      "logo": "/logos/nexus.png",
       "score": 0,
-      "shortName": "NEX"
+      "shortName": "Nexus"
     },
     {
       "id": "1743008208545",
@@ -157,16 +157,16 @@
     {
       "id": "1743020192913",
       "name": "Partizan",
-      "logo": "/logos/1743020192042-Partizan Esports.png",
+      "logo": "/logos/partizan.png",
       "score": 0,
-      "shortName": "PAR"
+      "shortName": "Partizan"
     },
     {
       "id": "1743065211372",
       "name": "ECLOT",
-      "logo": "/logos/1743065210313-Dynamo Eclot.png",
+      "logo": "/logos/eclot.png",
       "score": 0,
-      "shortName": "ECL"
+      "shortName": "ECLOT"
     },
     {
       "id": "1743066069733",
@@ -185,9 +185,9 @@
     {
       "id": "1744209022008",
       "name": "CYBERSHOKE",
-      "logo": "/logos/1744209021394-CYBERSHOKE.png",
+      "logo": "/logos/cybershoke.png",
       "score": 0,
-      "shortName": "CYB"
+      "shortName": "CYBERSHOKE"
     },
     {
       "id": "1744209033764",
@@ -206,16 +206,16 @@
     {
       "id": "1744211594870",
       "name": "SINNERS",
-      "logo": "/logos/1744211594196-SINNERS.png",
+      "logo": "/logos/sinners.png",
       "score": 0,
-      "shortName": "SIN"
+      "shortName": "SINNERS"
     },
     {
       "id": "1744295990190",
       "name": "Novaq",
-      "logo": "/logos/1744295989462-1744209074741-Novaq.png",
+      "logo": "/logos/novaq.png",
       "score": 0,
-      "shortName": "NOV"
+      "shortName": "Novaq"
     },
     {
       "id": "1744296013746",
@@ -227,16 +227,16 @@
     {
       "id": "1744296205095",
       "name": "ENCE",
-      "logo": "/logos/1744296204562-ENCE.png",
+      "logo": "/logos/ence.png",
       "score": 0,
-      "shortName": "ENC"
+      "shortName": "ENCE"
     },
     {
       "id": "1744296521251",
       "name": "Sangal",
-      "logo": "/logos/1744296520421-1744209170831-Sangal.png",
+      "logo": "/logos/sangal.png",
       "score": 0,
-      "shortName": "SAN"
+      "shortName": "Sangal"
     },
     {
       "id": "1757030641061",
@@ -248,30 +248,30 @@
     {
       "id": "1757098111903",
       "name": "ETERNAL FIRE",
-      "logo": "/logos/1757098109884-ETERNAL FIRE.png",
+      "logo": "/logos/eternal_fire.png",
       "score": 0,
-      "shortName": "ETE"
+      "shortName": "Eternal Fire"
     },
     {
       "id": "1757098133463",
       "name": "FORZE Reload",
-      "logo": "/logos/1757098130666-FORZE Reload.png",
+      "logo": "/logos/forze_reload.png",
       "score": 0,
-      "shortName": "FOR"
+      "shortName": "FORZE Reload"
     },
     {
       "id": "1757098145435",
       "name": "Run&Kill",
-      "logo": "/logos/1757098142533-Run&Kill.png",
+      "logo": "/logos/run_kill.png",
       "score": 0,
-      "shortName": "RUN"
+      "shortName": "Run&Kill"
     },
     {
       "id": "1757098171091",
       "name": "Betera",
-      "logo": "/logos/1757098169594-Betera.png",
+      "logo": "/logos/betera.png",
       "score": 0,
-      "shortName": "BET"
+      "shortName": "BETERA"
     },
     {
       "id": "1757098263003",
@@ -283,21 +283,21 @@
     {
       "id": "1757098282373",
       "name": "3DMAX Academy",
-      "logo": "/logos/1757098280290-3DMAX Academy.png",
+      "logo": "/logos/3dmax_academy.png",
       "score": 0,
-      "shortName": "3DM"
+      "shortName": "3DMAX AC"
     },
     {
       "id": "1757098295042",
       "name": "AMKAL",
-      "logo": "/logos/1757098293071-AMKAL.png",
+      "logo": "/logos/amkal.png",
       "score": 0,
-      "shortName": "AMK"
+      "shortName": "AMKAL"
     },
     {
       "id": "1757098306814",
       "name": "500",
-      "logo": "/logos/1757098303442-500.png",
+      "logo": "/logos/500.png",
       "score": 0,
       "shortName": "500"
     },
@@ -305,187 +305,218 @@
       "id": "1782170446598_6",
       "name": "Anonymo",
       "logo": "/logos/anonymo.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Anonymo"
     },
     {
       "id": "1782170446599_7",
       "name": "Arcred",
       "logo": "/logos/arcred.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Arcred"
     },
     {
       "id": "1782170446600_8",
       "name": "Astrum",
       "logo": "/logos/astrum.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Astrum"
     },
     {
       "id": "1782170446601_10",
       "name": "BIG",
       "logo": "/logos/big.png",
-      "score": 0
+      "score": 0,
+      "shortName": "BIG"
     },
     {
       "id": "1782170446601_11",
       "name": "Betclic Apogee",
       "logo": "/logos/betclic_apogee.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Betclic Apogee"
     },
     {
       "id": "1782170446602_12",
       "name": "CPH Wolves",
       "logo": "/logos/cph_wolves.png",
-      "score": 0
+      "score": 0,
+      "shortName": "CPH Wolves"
     },
     {
       "id": "1782170446603_16",
       "name": "ENCE AC",
       "logo": "/logos/ence_ac.png",
-      "score": 0
+      "score": 0,
+      "shortName": "ENCE AC"
     },
     {
       "id": "1782170446604_17",
       "name": "EYEBALLERS",
       "logo": "/logos/eyeballers.png",
-      "score": 0
+      "score": 0,
+      "shortName": "EYEBALLERS"
     },
     {
       "id": "1782170446605_23",
       "name": "Gentle Mates",
       "logo": "/logos/gentle_mates.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Gentle Mates"
     },
     {
       "id": "1782170446606_24",
       "name": "Illuminar",
       "logo": "/logos/illuminar.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Illuminar"
     },
     {
       "id": "1782170446606_25",
       "name": "Inner Circle",
       "logo": "/logos/inner_circle.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Inner Circle"
     },
     {
       "id": "1782170446607_26",
       "name": "JiJieHao",
       "logo": "/logos/jijiehao.png",
-      "score": 0
+      "score": 0,
+      "shortName": "JiJieHao"
     },
     {
       "id": "1782170446608_27",
       "name": "Johnny Speeds",
       "logo": "/logos/johnny_speeds.png",
-      "score": 0
+      "score": 0,
+      "shortName": "JS"
     },
     {
       "id": "1782170446608_28",
       "name": "KHAN",
       "logo": "/logos/khan.png",
-      "score": 0
+      "score": 0,
+      "shortName": "KHAN"
     },
     {
       "id": "1782170446609_29",
       "name": "LFO",
       "logo": "/logos/lfo.png",
-      "score": 0
+      "score": 0,
+      "shortName": "LFO"
     },
     {
       "id": "1782170446610_30",
       "name": "Leo",
       "logo": "/logos/leo.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Leo"
     },
     {
       "id": "1782170446611_31",
       "name": "MINLATE",
       "logo": "/logos/minlate.png",
-      "score": 0
+      "score": 0,
+      "shortName": "MINLATE"
     },
     {
       "id": "1782170446611_32",
       "name": "Marius",
       "logo": "/logos/marius.png",
-      "score": 0
+      "score": 0,
+      "shortName": "MAR"
     },
     {
       "id": "1782170446612_34",
       "name": "Nemiga",
       "logo": "/logos/nemiga.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Nemiga"
     },
     {
       "id": "1782170446612_37",
       "name": "PARIVISION",
       "logo": "/logos/parivision.png",
-      "score": 0
+      "score": 0,
+      "shortName": "PARIVISION"
     },
     {
       "id": "1782170446613_40",
       "name": "Rebels",
       "logo": "/logos/rebels.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Rebels"
     },
     {
       "id": "1782170446614_41",
       "name": "Roller Coaster",
       "logo": "/logos/roller_coaster.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Roller Coaster"
     },
     {
       "id": "1782170446615_42",
       "name": "Rosy",
       "logo": "/logos/rosy.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Rosy"
     },
     {
       "id": "1782170446615_43",
       "name": "Ruby",
       "logo": "/logos/ruby.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Ruby"
     },
     {
       "id": "1782170446616_45",
       "name": "SENZA",
       "logo": "/logos/senza.png",
-      "score": 0
+      "score": 0,
+      "shortName": "SENZA"
     },
     {
       "id": "1782170446617_47",
       "name": "SPARTA",
       "logo": "/logos/sparta.png",
-      "score": 0
+      "score": 0,
+      "shortName": "SPARTA"
     },
     {
       "id": "1782170446617_50",
       "name": "Spirit Academy",
       "logo": "/logos/spirit_academy.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Spirit Academy"
     },
     {
       "id": "1782170446618_51",
       "name": "TPuDCATb TPu",
       "logo": "/logos/tpudcatb_tpu.png",
-      "score": 0
+      "score": 0,
+      "shortName": "TPuDCATb TPu"
     },
     {
       "id": "1782170446618_52",
       "name": "Tricked",
       "logo": "/logos/tricked.png",
-      "score": 0
+      "score": 0,
+      "shortName": "Tricked"
     },
     {
       "id": "1782170446619_53",
       "name": "UNiTY",
       "logo": "/logos/unity.png",
-      "score": 0
+      "score": 0,
+      "shortName": "UNiTY"
     },
     {
       "id": "1782170446619_55",
       "name": "modeame",
       "logo": "/logos/modeame.png",
-      "score": 0
+      "score": 0,
+      "shortName": "modeame"
     }
   ],
   "players": [
@@ -565,17 +596,19 @@
       "id": "1741735320260",
       "name": "ryu",
       "steamId": "76561198168401372",
-      "photo": "/players/1741740339583-hltv gizmy.png",
+      "photo": "/players/ryu.png",
       "teamId": "1741686907133",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "ryu"
     },
     {
       "id": "1741737007716",
       "name": "DemQQ",
       "steamId": "76561198126171426",
-      "photo": "/players/1741740440949-hltv demqq.png",
-      "teamId": "1741686907133",
-      "match_stats": {}
+      "photo": "/players/demqq.png",
+      "teamId": "1742925193043",
+      "match_stats": {},
+      "nickname": "DemQQ"
     },
     {
       "id": "1741737020785",
@@ -589,65 +622,73 @@
       "id": "1741737034283",
       "name": "Gizmy",
       "steamId": "76561198344226986",
-      "photo": "/players/1741740465609-hltv gizmy.png",
+      "photo": "/players/gizmy.png",
       "teamId": "1741686907133",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Gizmy"
     },
     {
       "id": "1741744283973",
       "name": "mantuu",
       "steamId": "76561198016432560",
-      "photo": "/players/1741744280530-mantuu.png",
+      "photo": "/players/mantuu.png",
       "teamId": "1741167069740",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "mantuu"
     },
     {
       "id": "1741744308291",
       "name": "bobeksde",
       "steamId": "76561198060916227",
-      "photo": "/players/1741744307221-bobeksde.png",
+      "photo": "/players/bobeksde.png",
       "teamId": "1741167069740",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "bobeksde"
     },
     {
       "id": "1741744340007",
       "name": "raalz",
       "steamId": "76561197996060155",
-      "photo": "/players/1741744330187-raalz.png",
+      "photo": "/players/raalz.png",
       "teamId": "1741167069740",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "raalz"
     },
     {
       "id": "1741744359444",
       "name": "kraghen",
       "steamId": "76561198047198945",
-      "photo": "/players/1741744357123-kraghen.png",
+      "photo": "/players/kraghen.png",
       "teamId": "1741167069740",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "kraghen"
     },
     {
       "id": "1741744383727",
       "name": "faveN",
       "steamId": "76561198118196092",
-      "photo": "/players/1741744383119-faven.png",
+      "photo": "/players/faven.png",
       "teamId": "1741167069740",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "faveN"
     },
     {
       "id": "1741744623283",
       "name": "ScrunK",
       "steamId": "76561197974106188",
-      "photo": "/players/1741745962725-Scrunk.png",
+      "photo": "/players/scrunk.png",
       "teamId": "1741744617807",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "ScrunK"
     },
     {
       "id": "1741745587596",
-      "name": "paz",
+      "name": "sowalio",
       "steamId": "76561198028790343",
-      "photo": "/players/1741746194653-Paz.png",
-      "teamId": "1741744617807",
-      "match_stats": {}
+      "photo": "/players/sowalio.png",
+      "teamId": "1782170446615_43",
+      "match_stats": {},
+      "nickname": "sowalio"
     },
     {
       "id": "1741745597573",
@@ -659,19 +700,21 @@
     },
     {
       "id": "1741745634504",
-      "name": "Banjo",
+      "name": "fozil",
       "steamId": "76561198276486363",
-      "photo": "/players/1741752945414-Banjo.png",
-      "teamId": "1741744617807",
-      "match_stats": {}
+      "photo": "/players/fozil.png",
+      "teamId": "1782170446615_43",
+      "match_stats": {},
+      "nickname": "fozil"
     },
     {
       "id": "1741745651695",
       "name": "soulfly",
       "steamId": "76561198327068178",
-      "photo": "/players/1741746229523-Soulfly.png",
+      "photo": "/players/soulfly.png",
       "teamId": "1741744617807",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "soulfly"
     },
     {
       "id": "1741816845782",
@@ -691,11 +734,12 @@
     },
     {
       "id": "1741816907471",
-      "name": "REDS7AR",
+      "name": "REDSTAR",
       "steamId": "76561198048720735",
-      "photo": "/players/1741816906673-REDSTAR.png",
-      "teamId": "1741816438639",
-      "match_stats": {}
+      "photo": "/players/redstar.png",
+      "teamId": "1757098306814",
+      "match_stats": {},
+      "nickname": "REDSTAR"
     },
     {
       "id": "1741816926189",
@@ -763,11 +807,12 @@
     },
     {
       "id": "1741843184143",
-      "name": "bluewhite",
+      "name": "bluewh1te",
       "steamId": "76561198976881234",
       "photo": "/players/1741843180704-bluewhite.png",
-      "teamId": "1741842995229",
-      "match_stats": {}
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "nickname": "bluewh1te"
     },
     {
       "id": "1741843200826",
@@ -797,41 +842,46 @@
       "id": "1741843377193",
       "name": "bondik",
       "steamId": "76561198007184371",
-      "photo": "/players/1741843375286-bondik.png",
+      "photo": "/players/bondik.png",
       "teamId": "1741843023650",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "bondik"
     },
     {
       "id": "1741843394733",
       "name": "Smash",
       "steamId": "76561198174293313",
-      "photo": "/players/1741843390136-smash.png",
+      "photo": "/players/smash.png",
       "teamId": "1741843023650",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Smash"
     },
     {
       "id": "1741843410531",
       "name": "j3kie",
       "steamId": "76561198327980204",
-      "photo": "/players/1741843408704-j3kie.png",
+      "photo": "/players/j3kie.png",
       "teamId": "1741843023650",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "j3kie"
     },
     {
       "id": "1741843425605",
-      "name": "t3ns1on ",
+      "name": "t3ns1on",
       "steamId": "76561198819279246",
-      "photo": "/players/1741843419614-t3ns1on.png",
+      "photo": "/players/t3ns1on.png",
       "teamId": "1741843023650",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "t3ns1on"
     },
     {
       "id": "1741843441060",
       "name": "Marix",
       "steamId": "76561198176422667",
-      "photo": "/players/1741843440196-Marix.png",
+      "photo": "/players/marix.png",
       "teamId": "1741843023650",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Marix"
     },
     {
       "id": "1741843463760",
@@ -845,49 +895,55 @@
       "id": "1741901190425",
       "name": "kinqie",
       "steamId": "76561198002372151",
-      "photo": "/players/1741901189223-kinqie.png",
-      "teamId": "1741723524749",
-      "match_stats": {}
+      "photo": "/players/kinqie.png",
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "nickname": "kinqie"
     },
     {
       "id": "1741901202685",
       "name": "KIRO",
       "steamId": "76561198145768818",
-      "photo": "/players/1741901200209-kiro.png",
-      "teamId": "1741723524749",
-      "match_stats": {}
+      "photo": "/players/kiro.png",
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "nickname": "KIRO"
     },
     {
       "id": "1741901214564",
       "name": "executor",
       "steamId": "76561199095171343",
-      "photo": "/players/1741901212383-executor.png",
-      "teamId": "1741723524749",
-      "match_stats": {}
+      "photo": "/players/executor.png",
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "nickname": "executor"
     },
     {
       "id": "1741901226486",
       "name": "tex1y",
       "steamId": "76561199173322766",
-      "photo": "/players/1741901224532-tex1y.png",
-      "teamId": "1741723524749",
-      "match_stats": {}
+      "photo": "/players/tex1y.png",
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "nickname": "tex1y"
     },
     {
       "id": "1741901240055",
       "name": "z1Nny",
       "steamId": "76561198237043662",
-      "photo": "/players/1741901237883-z1Nny.png",
-      "teamId": "1741723524749",
-      "match_stats": {}
+      "photo": "/players/z1nny.png",
+      "teamId": "1782170446618_51",
+      "match_stats": {},
+      "nickname": "z1Nny"
     },
     {
       "id": "1741918209796",
       "name": "twist",
       "steamId": "76561197980244859",
-      "photo": "/players/1741918374304-twist.png",
+      "photo": "/players/twist.png",
       "teamId": "1741686877630",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "twist"
     },
     {
       "id": "1741918234026",
@@ -901,57 +957,64 @@
       "id": "1741918259703",
       "name": "avid",
       "steamId": "76561198202417343",
-      "photo": "/players/1741918258775-avid.png",
+      "photo": "/players/avid.png",
       "teamId": "1741686877630",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "avid"
     },
     {
       "id": "1741918277393",
       "name": "upE",
       "steamId": "76561198045056482",
-      "photo": "/players/1741918276290-avid.png",
+      "photo": "/players/upe.png",
       "teamId": "1741686877630",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "upE"
     },
     {
       "id": "1741918302747",
       "name": "eraa",
       "steamId": "76561198374154451",
-      "photo": "/players/1741918301858-avid.png",
+      "photo": "/players/eraa.png",
       "teamId": "1741686877630",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "eraa"
     },
     {
       "id": "1741918477880",
       "name": "Lucky",
       "steamId": "76561198110563159",
-      "photo": "/players/1741918476357-Lucky.png",
+      "photo": "/players/lucky.png",
       "teamId": "1741686867446",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Lucky"
     },
     {
       "id": "1741918489955",
       "name": "IceBerg",
       "steamId": "76561197991000831",
       "photo": "/players/1741918487509-IceBerg.png",
-      "teamId": "1741686867446",
-      "match_stats": {}
+      "teamId": "1782170446618_52",
+      "match_stats": {},
+      "nickname": "IceBerg"
     },
     {
       "id": "1741918501084",
       "name": "Cabbi",
       "steamId": "76561198190930470",
-      "photo": "/players/1741918499867-IceBerg.png",
+      "photo": "/players/cabbi.png",
       "teamId": "1741686867446",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Cabbi"
     },
     {
       "id": "1741918525690",
       "name": "Zyphon",
       "steamId": "76561198158377244",
-      "photo": "/players/1741918524575-Zyphon.png",
+      "photo": "/players/zyphon.png",
       "teamId": "1741686867446",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Zyphon"
     },
     {
       "id": "1741918558072",
@@ -965,9 +1028,10 @@
       "id": "1742080412697",
       "name": "xiELO",
       "steamId": "76561198141272052",
-      "photo": "/players/1742080409941-xiELO.png",
-      "teamId": "1741686771770",
-      "match_stats": {}
+      "photo": "/players/xielo.png",
+      "teamId": "1782170446612_37",
+      "match_stats": {},
+      "nickname": "xiELO"
     },
     {
       "id": "1742080426535",
@@ -1005,81 +1069,91 @@
       "id": "1742061195741",
       "name": "clax",
       "steamId": "76561198129084615",
-      "photo": "/players/1742061194802-clax.png",
-      "teamId": "1741686782051",
-      "match_stats": {}
+      "photo": "/players/clax.png",
+      "teamId": "1744296521251",
+      "match_stats": {},
+      "nickname": "clax"
     },
     {
       "id": "1742061247022",
       "name": "Patsi",
       "steamId": "76561198288540801",
-      "photo": "/players/1742061244742-clax-1.png",
-      "teamId": "1741686782051",
-      "match_stats": {}
+      "photo": "/players/patsi.png",
+      "teamId": "1744296521251",
+      "match_stats": {},
+      "nickname": "Patsi"
     },
     {
       "id": "1742061263732",
       "name": "Norwi",
       "steamId": "76561198154904607",
-      "photo": "/players/1742061260756-Norwi.png",
-      "teamId": "1741686782051",
-      "match_stats": {}
+      "photo": "/players/norwi.png",
+      "teamId": "1744296521251",
+      "match_stats": {},
+      "nickname": "Norwi"
     },
     {
       "id": "1742061282965",
       "name": "gr1ks",
       "steamId": "76561198370176682",
-      "photo": "/players/1742061280471-Norwi-1.png",
-      "teamId": "1741686782051",
-      "match_stats": {}
+      "photo": "/players/gr1ks.png",
+      "teamId": "1782170446600_8",
+      "match_stats": {},
+      "nickname": "gr1ks"
     },
     {
       "id": "1742061295621",
       "name": "KENSi",
       "steamId": "76561198400646282",
-      "photo": "/players/1742061293040-KENSi.png",
-      "teamId": "1741686782051",
-      "match_stats": {}
+      "photo": "/players/kensi.png",
+      "teamId": "1782170446600_8",
+      "match_stats": {},
+      "nickname": "KENSi"
     },
     {
       "id": "1742061384470",
       "name": "aVN",
       "steamId": "76561198191567453",
-      "photo": "/players/1742061383065-AVN.png",
+      "photo": "/players/avn.png",
       "teamId": "1741686922092",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "aVN"
     },
     {
       "id": "1742061403453",
       "name": "Cjoffo",
       "steamId": "76561198283118254",
-      "photo": "/players/1742061402323-Cjoffo.png",
+      "photo": "/players/cjoffo.png",
       "teamId": "1741686922092",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Cjoffo"
     },
     {
       "id": "1742061425575",
       "name": "nEMANHA",
       "steamId": "76561197982341849",
-      "photo": "/players/1742061424782-nEMANHA.png",
+      "photo": "/players/nemanha.png",
       "teamId": "1741686922092",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "nEMANHA"
     },
     {
       "id": "1742061466181",
       "name": "simke",
       "steamId": "76561198335534043",
-      "photo": "/players/1742061465441-nEMANHA-1.png",
+      "photo": "/players/simke.png",
       "teamId": "1741686922092",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "simke"
     },
     {
       "id": "1742061484302",
       "name": "brutmonster",
       "steamId": "76561198258996278",
-      "photo": "/players/1742061481641-brutmonster.png",
+      "photo": "/players/brutmonster.png",
       "teamId": "1741686922092",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "brutmonster"
     },
     {
       "id": "1742229337029",
@@ -1125,41 +1199,46 @@
       "id": "1742379673431",
       "name": "jcobbb",
       "steamId": "76561198178737429",
-      "photo": "/players/1742379672103-jcobbb.png",
-      "teamId": "1741901326769",
-      "match_stats": {}
+      "photo": "/players/jcobbb.png",
+      "teamId": "1782170446601_11",
+      "match_stats": {},
+      "nickname": "jcobbb"
     },
     {
       "id": "1742379688520",
       "name": "hypex",
       "steamId": "76561198254686734",
-      "photo": "/players/1742379687725-hypex.png",
-      "teamId": "1741901326769",
-      "match_stats": {}
+      "photo": "/players/hypex.png",
+      "teamId": "1782170446601_11",
+      "match_stats": {},
+      "nickname": "hypex"
     },
     {
       "id": "1742379709620",
       "name": "Prism",
       "steamId": "76561198077677671",
-      "photo": "/players/1742379703351-prism.png",
-      "teamId": "1741901326769",
-      "match_stats": {}
+      "photo": "/players/prism.png",
+      "teamId": "1782170446601_11",
+      "match_stats": {},
+      "nickname": "Prism"
     },
     {
       "id": "1742379734178",
       "name": "hfah",
       "steamId": "76561198308155775",
-      "photo": "/players/1742379732025-hfah.png",
-      "teamId": "1741901326769",
-      "match_stats": {}
+      "photo": "/players/hfah.png",
+      "teamId": "1782170446601_11",
+      "match_stats": {},
+      "nickname": "hfah"
     },
     {
       "id": "1742379755042",
       "name": "Demho",
       "steamId": "76561198107012488",
-      "photo": "/players/1742379751932-demho.png",
-      "teamId": "1741901326769",
-      "match_stats": {}
+      "photo": "/players/demho.png",
+      "teamId": "1782170446601_11",
+      "match_stats": {},
+      "nickname": "Demho"
     },
     {
       "id": "1742389533178",
@@ -1229,9 +1308,10 @@
       "id": "1742927878228",
       "name": "Topa",
       "steamId": "76561198134742883",
-      "photo": "/players/1742927875094-Topa.png",
+      "photo": "/players/topa.png",
       "teamId": "1742925193043",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Topa"
     },
     {
       "id": "1742927891124",
@@ -1245,17 +1325,19 @@
       "id": "1742927907699",
       "name": "jackasmo",
       "steamId": "76561198446445284",
-      "photo": "/players/1742927903685-jackasmo.png",
+      "photo": "/players/jackasmo.png",
       "teamId": "1742925193043",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "jackasmo"
     },
     {
       "id": "1742927935361",
       "name": "Kvem",
       "steamId": "76561198845436666",
-      "photo": "/players/1742927930916-Kvem.png",
+      "photo": "/players/kvem.png",
       "teamId": "1742925193043",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Kvem"
     },
     {
       "id": "1742927951743",
@@ -1317,33 +1399,37 @@
       "id": "1742994835952",
       "name": "BTN",
       "steamId": "76561197981355847",
-      "photo": "/players/1742994831997-BTN.png",
+      "photo": "/players/btn.png",
       "teamId": "1742992319651",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "BTN"
     },
     {
       "id": "1742994851623",
       "name": "ragga",
       "steamId": "76561198070199303",
-      "photo": "/players/1742994847506-ragga.png",
+      "photo": "/players/ragga.png",
       "teamId": "1742992319651",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "ragga"
     },
     {
       "id": "1742994866467",
       "name": "s0und",
       "steamId": "76561198156197967",
-      "photo": "/players/1742994863998-s0und.png",
+      "photo": "/players/s0und.png",
       "teamId": "1742992319651",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "s0und"
     },
     {
       "id": "1742994878442",
       "name": "xellow",
       "steamId": "76561198052354821",
-      "photo": "/players/1742994876164-xellow.png",
+      "photo": "/players/xellow.png",
       "teamId": "1742992319651",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "xellow"
     },
     {
       "id": "1742994895771",
@@ -1397,49 +1483,55 @@
       "id": "1743026009379",
       "name": "emi",
       "steamId": "76561198003614432",
-      "photo": "/players/1743026005480-emi.png",
+      "photo": "/players/emi.png",
       "teamId": "1743020192913",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "emi"
     },
     {
       "id": "1743026023007",
       "name": "c0llins",
       "steamId": "76561198039524450",
-      "photo": "/players/1743026020448-c0llins.png",
+      "photo": "/players/c0llins.png",
       "teamId": "1743020192913",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "c0llins"
     },
     {
       "id": "1743026037928",
       "name": "VLDN",
       "steamId": "76561198099198308",
-      "photo": "/players/1743026035426-VLDN.png",
+      "photo": "/players/vldn.png",
       "teamId": "1743020192913",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "VLDN"
     },
     {
       "id": "1743026054755",
       "name": "Dragon",
       "steamId": "76561198120215734",
-      "photo": "/players/1743026053923-Dragon.png",
+      "photo": "/players/dragon.png",
       "teamId": "1743020192913",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Dragon"
     },
     {
       "id": "1743026068613",
       "name": "Kind0",
       "steamId": "76561198062283345",
-      "photo": "/players/1743026067614-Kind0.png",
+      "photo": "/players/kind0.png",
       "teamId": "1743020192913",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Kind0"
     },
     {
       "id": "1743068398448",
       "name": "hampus",
       "steamId": "76561198086945950",
-      "photo": "/players/1743068392265-hampus.png",
-      "teamId": "1743066069733",
-      "match_stats": {}
+      "photo": "/players/hampus.png",
+      "teamId": "1757098306814",
+      "match_stats": {},
+      "nickname": "hampus"
     },
     {
       "id": "1743068420159",
@@ -1477,41 +1569,46 @@
       "id": "1743099822197",
       "name": "M1key",
       "steamId": "76561198182168605",
-      "photo": "/players/1743099819827-M1key.png",
+      "photo": "/players/m1key.png",
       "teamId": "1743065211372",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "M1key"
     },
     {
       "id": "1743099839365",
       "name": "The eLiVe",
       "steamId": "76561198071291375",
-      "photo": "/players/1743099838407-The eLiVe.png",
+      "photo": "/players/the_elive.png",
       "teamId": "1743065211372",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "The eLiVe"
     },
     {
       "id": "1743099854178",
       "name": "Dytor",
       "steamId": "76561198201554338",
-      "photo": "/players/1743099850629-Dytor.png",
+      "photo": "/players/dytor.png",
       "teamId": "1743065211372",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "Dytor"
     },
     {
       "id": "1743099867037",
-      "name": "forsyy",
+      "name": "nbqq",
       "steamId": "76561198084163512",
-      "photo": "/players/1743099863960-forsyy.png",
+      "photo": "/players/nbqq.png",
       "teamId": "1743065211372",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "nbqq"
     },
     {
       "id": "1743099878644",
-      "name": "nbqq",
+      "name": "forsyy",
       "steamId": "76561198065294895",
-      "photo": "/players/1743099876710-nbqq.png",
+      "photo": "/players/forsyy.png",
       "teamId": "1743065211372",
-      "match_stats": {}
+      "match_stats": {},
+      "nickname": "forsyy"
     },
     {
       "id": "1782170458158_1",
@@ -1522,7 +1619,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "0SAMAS"
     },
     {
       "id": "1782170458159_2",
@@ -1533,7 +1631,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "1eeR"
     },
     {
       "id": "1782170458159_3",
@@ -1544,7 +1643,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "1nhuman"
     },
     {
       "id": "1782170458160_4",
@@ -1555,7 +1655,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "2High"
     },
     {
       "id": "1782170458161_5",
@@ -1566,7 +1667,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "AW"
     },
     {
       "id": "1782170458162_6",
@@ -1577,7 +1679,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "AZUWU"
     },
     {
       "id": "1782170458163_7",
@@ -1588,7 +1691,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Alkarenn"
     },
     {
       "id": "1782170458164_8",
@@ -1599,7 +1703,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "ArtFr0st"
     },
     {
       "id": "1782170458166_9",
@@ -1610,7 +1715,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "BELCHONOKK"
     },
     {
       "id": "1782170458166_12",
@@ -1621,7 +1727,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Beccie"
     },
     {
       "id": "1782170458167_13",
@@ -1632,7 +1739,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Bibu"
     },
     {
       "id": "1782170458169_14",
@@ -1643,7 +1751,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Bymas"
     },
     {
       "id": "1782170458171_16",
@@ -1654,7 +1763,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Calyx"
     },
     {
       "id": "1782170458172_17",
@@ -1665,7 +1775,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "CeRq"
     },
     {
       "id": "1782170458173_19",
@@ -1676,7 +1787,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Darber"
     },
     {
       "id": "1782170458174_20",
@@ -1687,7 +1799,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Dawy"
     },
     {
       "id": "1782170458174_25",
@@ -1698,7 +1811,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "ElayDzha"
     },
     {
       "id": "1782170458175_26",
@@ -1709,7 +1823,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Empera"
     },
     {
       "id": "1782170458176_27",
@@ -1720,7 +1835,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "FenomeN"
     },
     {
       "id": "1782170458177_28",
@@ -1731,7 +1847,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Flayy-"
     },
     {
       "id": "1782170458179_29",
@@ -1742,7 +1859,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Flierax"
     },
     {
       "id": "1782170458180_32",
@@ -1753,7 +1871,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "HEAP"
     },
     {
       "id": "1782170458181_33",
@@ -1764,7 +1883,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "ISSAA"
     },
     {
       "id": "1782170458182_35",
@@ -1775,7 +1895,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "JDC"
     },
     {
       "id": "1782170458183_36",
@@ -1786,7 +1907,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Jame"
     },
     {
       "id": "1782170458183_37",
@@ -1797,7 +1919,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Junyme"
     },
     {
       "id": "1782170458184_38",
@@ -1808,7 +1931,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "K1-FiDa"
     },
     {
       "id": "1782170458185_41",
@@ -1819,7 +1943,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "KaiR0N-"
     },
     {
       "id": "1782170458186_44",
@@ -1830,7 +1955,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Krimbo"
     },
     {
       "id": "1782170458188_45",
@@ -1841,7 +1967,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "KusMe"
     },
     {
       "id": "1782170458189_47",
@@ -1852,7 +1979,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Kyousuke"
     },
     {
       "id": "1782170458190_48",
@@ -1863,7 +1991,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Leakz"
     },
     {
       "id": "1782170458191_49",
@@ -1874,7 +2003,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Lekr0"
     },
     {
       "id": "1782170458193_52",
@@ -1885,7 +2015,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "MaSvAl"
     },
     {
       "id": "1782170458194_53",
@@ -1896,7 +2027,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Malkiss"
     },
     {
       "id": "1782170458195_55",
@@ -1907,7 +2039,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Matheos"
     },
     {
       "id": "1782170458197_56",
@@ -1918,7 +2051,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "MistR"
     },
     {
       "id": "1782170458199_57",
@@ -1929,7 +2063,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Mokuj1n"
     },
     {
       "id": "1782170458200_58",
@@ -1940,7 +2075,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "MoriiSko"
     },
     {
       "id": "1782170458201_59",
@@ -1951,7 +2087,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Myltsi"
     },
     {
       "id": "1782170458201_60",
@@ -1962,7 +2099,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Myzunic"
     },
     {
       "id": "1782170458202_61",
@@ -1973,7 +2111,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "NEOFRAG"
     },
     {
       "id": "1782170458204_62",
@@ -1984,7 +2123,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Neityu"
     },
     {
       "id": "1782170458204_63",
@@ -1995,7 +2135,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Nico"
     },
     {
       "id": "1782170458205_64",
@@ -2006,7 +2147,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Nodios"
     },
     {
       "id": "1782170458205_66",
@@ -2017,7 +2159,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "OneUn1que"
     },
     {
       "id": "1782170458205_67",
@@ -2028,7 +2171,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "OxygeN"
     },
     {
       "id": "1782170458207_68",
@@ -2039,7 +2183,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Pandi7o"
     },
     {
       "id": "1782170458208_70",
@@ -2050,7 +2195,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Pepo"
     },
     {
       "id": "1782170458209_71",
@@ -2061,7 +2207,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "PerdY"
     },
     {
       "id": "1782170458210_73",
@@ -2072,7 +2219,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Pump"
     },
     {
       "id": "1782170458210_74",
@@ -2083,7 +2231,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "R3lifw0w"
     },
     {
       "id": "1782170458211_76",
@@ -2094,7 +2243,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Rainwaker"
     },
     {
       "id": "1782170458212_77",
@@ -2105,7 +2255,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Razzmo"
     },
     {
       "id": "1782170458214_78",
@@ -2116,7 +2267,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Revol"
     },
     {
       "id": "1782170458214_79",
@@ -2127,7 +2279,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "RiiL3"
     },
     {
       "id": "1782170458216_80",
@@ -2138,7 +2291,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Robo"
     },
     {
       "id": "1782170458217_81",
@@ -2149,7 +2303,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "S0tF1k"
     },
     {
       "id": "1782170458218_82",
@@ -2160,7 +2315,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "SHOCK"
     },
     {
       "id": "1782170458219_83",
@@ -2171,7 +2327,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "SZPERO"
     },
     {
       "id": "1782170458220_84",
@@ -2182,7 +2339,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Sapec"
     },
     {
       "id": "1782170458221_85",
@@ -2193,7 +2351,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Schwarz"
     },
     {
       "id": "1782170458222_88",
@@ -2204,7 +2363,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Sobol"
     },
     {
       "id": "1782170458225_89",
@@ -2215,7 +2375,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Sowalio"
     },
     {
       "id": "1782170458226_90",
@@ -2226,7 +2387,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Svedjehed"
     },
     {
       "id": "1782170458228_91",
@@ -2237,7 +2399,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "TRAVIS"
     },
     {
       "id": "1782170458229_92",
@@ -2248,7 +2411,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Tapewaare"
     },
     {
       "id": "1782170458230_93",
@@ -2259,7 +2423,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Teme"
     },
     {
       "id": "1782170458231_97",
@@ -2270,7 +2435,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Vert"
     },
     {
       "id": "1782170458231_98",
@@ -2281,7 +2447,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Wierd_1k"
     },
     {
       "id": "1782170458232_99",
@@ -2292,7 +2459,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Woro2k"
     },
     {
       "id": "1782170458234_100",
@@ -2303,7 +2471,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "Xant3r"
     },
     {
       "id": "1782170458234_101",
@@ -2314,7 +2483,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "XiMaa"
     },
     {
       "id": "1782170458235_102",
@@ -2325,7 +2495,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "ZEDKO"
     },
     {
       "id": "1782170458236_105",
@@ -2336,7 +2507,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "afro"
     },
     {
       "id": "1782170458237_106",
@@ -2347,7 +2519,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "alex"
     },
     {
       "id": "1782170458238_108",
@@ -2358,7 +2531,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "b1elany"
     },
     {
       "id": "1782170458238_109",
@@ -2369,7 +2543,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "bL4SEZ"
     },
     {
       "id": "1782170458240_110",
@@ -2380,7 +2555,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "beastik"
     },
     {
       "id": "1782170458240_111",
@@ -2391,7 +2567,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "bekker"
     },
     {
       "id": "1782170458241_112",
@@ -2402,7 +2579,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "bl1x1"
     },
     {
       "id": "1782170458242_114",
@@ -2413,7 +2591,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "bnox"
     },
     {
       "id": "1782170458242_116",
@@ -2424,7 +2603,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "bogemt"
     },
     {
       "id": "1782170458242_118",
@@ -2435,7 +2615,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "borosto"
     },
     {
       "id": "1782170458243_120",
@@ -2446,7 +2627,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "buster"
     },
     {
       "id": "1782170458243_121",
@@ -2457,7 +2639,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "byek"
     },
     {
       "id": "1782170458245_123",
@@ -2468,7 +2651,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "cairne"
     },
     {
       "id": "1782170458245_125",
@@ -2479,7 +2663,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "crickeyyy"
     },
     {
       "id": "1782170458246_126",
@@ -2490,7 +2675,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "d1Ledez"
     },
     {
       "id": "1782170458247_127",
@@ -2501,7 +2687,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "danistzz"
     },
     {
       "id": "1782170458248_128",
@@ -2512,7 +2699,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "dav1g"
     },
     {
       "id": "1782170458249_129",
@@ -2523,7 +2711,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "ddoni"
     },
     {
       "id": "1782170458250_130",
@@ -2534,7 +2723,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "def1zer"
     },
     {
       "id": "1782170458250_131",
@@ -2545,7 +2735,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "dosikk"
     },
     {
       "id": "1782170458252_132",
@@ -2556,18 +2747,20 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "draken"
     },
     {
       "id": "1782170458252_133",
-      "name": "duggy",
+      "name": "maQuein",
       "steamId": "76561198214410548",
-      "photo": "/players/duggy.png",
-      "teamId": "1741744617807",
+      "photo": "/players/maquein.png",
+      "teamId": "1782170446615_43",
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "maQuein"
     },
     {
       "id": "1782170458255_134",
@@ -2578,7 +2771,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "dune"
     },
     {
       "id": "1782170458255_135",
@@ -2589,7 +2783,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "eSx-"
     },
     {
       "id": "1782170458255_137",
@@ -2600,7 +2795,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "emot1on"
     },
     {
       "id": "1782170458255_141",
@@ -2611,7 +2807,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "fakerealityy"
     },
     {
       "id": "1782170458255_142",
@@ -2622,7 +2819,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "fatestyoshi"
     },
     {
       "id": "1782170458255_144",
@@ -2633,7 +2831,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "for2na"
     },
     {
       "id": "1782170458256_145",
@@ -2644,7 +2843,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "forkyz"
     },
     {
       "id": "1782170458256_147",
@@ -2655,7 +2855,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "forzetsky"
     },
     {
       "id": "1782170458257_149",
@@ -2666,7 +2867,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "gla1ve"
     },
     {
       "id": "1782170458258_150",
@@ -2677,7 +2879,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "glowiing"
     },
     {
       "id": "1782170458259_152",
@@ -2688,7 +2891,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "h1te"
     },
     {
       "id": "1782170458259_155",
@@ -2699,7 +2903,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "hodix"
     },
     {
       "id": "1782170458260_156",
@@ -2710,7 +2915,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "homeboyz"
     },
     {
       "id": "1782170458262_157",
@@ -2721,7 +2927,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "hyped"
     },
     {
       "id": "1782170458264_159",
@@ -2732,7 +2939,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "iDISBALANCE"
     },
     {
       "id": "1782170458265_160",
@@ -2743,7 +2951,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "innocent"
     },
     {
       "id": "1782170458265_163",
@@ -2754,7 +2963,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "jackast"
     },
     {
       "id": "1782170458266_165",
@@ -2765,7 +2975,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "jresy"
     },
     {
       "id": "1782170458266_166",
@@ -2776,7 +2987,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "kL1o"
     },
     {
       "id": "1782170458267_167",
@@ -2787,7 +2999,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "kaziken"
     },
     {
       "id": "1782170458267_168",
@@ -2798,7 +3011,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "khaN"
     },
     {
       "id": "1782170458268_170",
@@ -2809,7 +3023,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "kisserek"
     },
     {
       "id": "1782170458269_171",
@@ -2820,7 +3035,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "kr1vda"
     },
     {
       "id": "1782170458269_173",
@@ -2831,7 +3047,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "kroK"
     },
     {
       "id": "1782170458270_174",
@@ -2842,7 +3059,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "kumao"
     },
     {
       "id": "1782170458272_175",
@@ -2853,7 +3071,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "kyuubii"
     },
     {
       "id": "1782170458273_176",
@@ -2864,7 +3083,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "lauNX"
     },
     {
       "id": "1782170458273_177",
@@ -2875,7 +3095,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "lov1kus"
     },
     {
       "id": "1782170458274_178",
@@ -2886,7 +3107,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "m1N1"
     },
     {
       "id": "1782170458275_179",
@@ -2897,7 +3119,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "m1te"
     },
     {
       "id": "1782170458276_180",
@@ -2908,7 +3131,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "mASKED"
     },
     {
       "id": "1782170458276_183",
@@ -2919,7 +3143,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "marat2k"
     },
     {
       "id": "1782170458276_184",
@@ -2930,7 +3155,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "maxster"
     },
     {
       "id": "1782170458278_185",
@@ -2941,7 +3167,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "millert"
     },
     {
       "id": "1782170458279_186",
@@ -2952,7 +3179,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "mixmaster"
     },
     {
       "id": "1782170458280_187",
@@ -2963,7 +3191,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "mopoz"
     },
     {
       "id": "1782170458281_188",
@@ -2974,7 +3203,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "n0rb3r7"
     },
     {
       "id": "1782170458281_189",
@@ -2985,7 +3215,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "n1Xen"
     },
     {
       "id": "1782170458282_191",
@@ -2996,7 +3227,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "nafany"
     },
     {
       "id": "1782170458283_193",
@@ -3007,7 +3239,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "neaLaN"
     },
     {
       "id": "1782170458283_194",
@@ -3018,7 +3251,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "neiter"
     },
     {
       "id": "1782170458284_195",
@@ -3029,7 +3263,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "nifee"
     },
     {
       "id": "1782170458285_196",
@@ -3040,7 +3275,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "nota"
     },
     {
       "id": "1782170458286_197",
@@ -3051,7 +3287,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "notineki"
     },
     {
       "id": "1782170458287_198",
@@ -3062,7 +3299,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "olik"
     },
     {
       "id": "1782170458288_199",
@@ -3073,7 +3311,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "onic"
     },
     {
       "id": "1782170458289_201",
@@ -3084,7 +3323,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "podi"
     },
     {
       "id": "1782170458290_202",
@@ -3095,7 +3335,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "poiii"
     },
     {
       "id": "1782170458290_203",
@@ -3106,7 +3347,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "qlocuu"
     },
     {
       "id": "1782170458291_204",
@@ -3117,7 +3359,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "r3salt"
     },
     {
       "id": "1782170458293_207",
@@ -3128,7 +3371,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "rexxie"
     },
     {
       "id": "1782170458294_208",
@@ -3139,7 +3383,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "rikon"
     },
     {
       "id": "1782170458294_209",
@@ -3150,7 +3395,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "rinn"
     },
     {
       "id": "1782170458295_210",
@@ -3161,7 +3407,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "riskyb0b"
     },
     {
       "id": "1782170458296_213",
@@ -3172,7 +3419,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "s4ltovsk1yy"
     },
     {
       "id": "1782170458297_214",
@@ -3183,7 +3431,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "salazar"
     },
     {
       "id": "1782170458298_215",
@@ -3194,7 +3443,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "sausoL"
     },
     {
       "id": "1782170458299_216",
@@ -3205,7 +3455,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "sdy"
     },
     {
       "id": "1782170458300_217",
@@ -3216,7 +3467,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "shady"
     },
     {
       "id": "1782170458300_221",
@@ -3227,7 +3479,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "speed4k"
     },
     {
       "id": "1782170458300_222",
@@ -3238,7 +3491,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "spira"
     },
     {
       "id": "1782170458301_223",
@@ -3249,7 +3503,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "spirit"
     },
     {
       "id": "1782170458302_224",
@@ -3260,7 +3515,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "sstiNiX"
     },
     {
       "id": "1782170458303_225",
@@ -3271,7 +3527,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "stadodo"
     },
     {
       "id": "1782170458304_226",
@@ -3282,7 +3539,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "synyx"
     },
     {
       "id": "1782170458305_227",
@@ -3293,7 +3551,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "syph0"
     },
     {
       "id": "1782170458306_229",
@@ -3304,7 +3563,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "tENZY"
     },
     {
       "id": "1782170458307_230",
@@ -3315,7 +3575,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "tabseN"
     },
     {
       "id": "1782170458308_231",
@@ -3326,7 +3587,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "tasman"
     },
     {
       "id": "1782170458309_235",
@@ -3337,7 +3599,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "volt"
     },
     {
       "id": "1782170458310_236",
@@ -3348,7 +3611,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "woozzzi"
     },
     {
       "id": "1782170458311_237",
@@ -3359,7 +3623,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "xKacpersky"
     },
     {
       "id": "1782170458312_238",
@@ -3370,7 +3635,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "xReal"
     },
     {
       "id": "1782170458313_242",
@@ -3381,7 +3647,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "zweih"
     },
     {
       "id": "1782170458315_243",
@@ -3392,7 +3659,8 @@
       "match_stats": {},
       "firstName": null,
       "lastName": null,
-      "country": null
+      "country": null,
+      "nickname": "İmoRR"
     }
   ]
 }
